@@ -12,15 +12,15 @@ using RHWebApplication.Database;
 namespace RHWebApplication.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20241008074555_CreatingDB")]
-    partial class CreatingDB
+    [Migration("20241009035221_CreatingDatabase")]
+    partial class CreatingDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -36,8 +36,8 @@ namespace RHWebApplication.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("BaseSalary")
-                        .HasColumnType("real");
+                    b.Property<decimal>("BaseSalary")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
                         .IsRequired()

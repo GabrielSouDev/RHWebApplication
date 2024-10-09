@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RHWebApplication.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class CreatingDB : Migration
+    public partial class CreatingDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +38,7 @@ namespace RHWebApplication.Database.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Unhealthy = table.Column<bool>(type: "bit", nullable: false),
                     Periculosity = table.Column<bool>(type: "bit", nullable: false),
-                    BaseSalary = table.Column<float>(type: "real", nullable: false)
+                    BaseSalary = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {

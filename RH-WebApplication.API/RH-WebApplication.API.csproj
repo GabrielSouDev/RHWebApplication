@@ -20,9 +20,5 @@
   <ItemGroup>
     <ProjectReference Include="..\RHWebApplication.DataBase\RHWebApplication.Database.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
+	
 </Project>

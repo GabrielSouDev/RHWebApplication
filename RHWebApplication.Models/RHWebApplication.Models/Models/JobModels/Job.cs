@@ -5,14 +5,13 @@ namespace RHWebApplication.Shared.Models.JobModels;
 public class Job
 {
     public Job() {}
-    public Job(string title, string description, bool unhealthy, bool periculosity, float baseSalary)
+    public Job(string title, string description, bool unhealthy, bool periculosity, decimal baseSalary)
     {
         Title = title;
         Description = description;
         Unhealthy = unhealthy;
         Periculosity = periculosity;
         BaseSalary = baseSalary;
-
     }
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,6 +20,6 @@ public class Job
     public string Description { get; set; } = string.Empty;
     public bool Unhealthy { get; private set; } = false;
     public bool Periculosity { get; private set; } = false;
-    public float BaseSalary { get; set; } = default;
+    public decimal BaseSalary { get; set; } = default;
 
 }

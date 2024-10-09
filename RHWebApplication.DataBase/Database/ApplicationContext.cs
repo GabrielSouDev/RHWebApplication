@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RHWebApplication.Shared.Models.UserModels;
 using RHWebApplication.Shared.Models.PayrollModels;
+using RHWebApplication.Shared.Models.JobModels;
 
 namespace RHWebApplication.Database;
 public class ApplicationContext : DbContext
@@ -20,5 +21,37 @@ public class ApplicationContext : DbContext
             optionsBuilder.UseSqlServer(ConnectionString)
             .UseLazyLoadingProxies();
         }
+    }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // Configuração para a entidade Job
+        modelBuilder.Entity<Job>()
+            .Property(j => j.BaseSalary)
+            .HasPrecision(18, 2); // 18 é a precisão, 2 é a escala
+
+        // Configuração para a entidade Payroll
+        modelBuilder.Entity<Payroll>()
+            .Property(p => p.Additionals)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Payroll>()
+            .Property(p => p.Commission)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Payroll>()
+            .Property(p => p.Deductions)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Payroll>()
+            .Property(p => p.Gross)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Payroll>()
+            .Property(p => p.Net)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Payroll>()
+            .Property(p => p.OverTime)
+            .HasPrecision(18, 2);
     }
 }
