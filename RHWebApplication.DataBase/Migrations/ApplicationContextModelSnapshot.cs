@@ -34,21 +34,22 @@ namespace RHWebApplication.Database.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("BaseSalary")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Periculosity")
+                    b.Property<bool>("IsPericulosity")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUnhealthy")
                         .HasColumnType("bit");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Unhealthy")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -64,27 +65,33 @@ namespace RHWebApplication.Database.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Additionals")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Commission")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("Deductions")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Gross")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Net")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("OverTime")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -94,7 +101,7 @@ namespace RHWebApplication.Database.Migrations
                     b.ToTable("Payrolls");
                 });
 
-            modelBuilder.Entity("RHWebApplication.Shared.Models.UserModels.Admin", b =>
+            modelBuilder.Entity("RHWebApplication.Shared.Models.UserModels.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,6 +115,9 @@ namespace RHWebApplication.Database.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -123,47 +133,31 @@ namespace RHWebApplication.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admins");
+                    b.ToTable("Users", (string)null);
+
+                    b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("RHWebApplication.Shared.Models.UserModels.Admin", b =>
+                {
+                    b.HasBaseType("RHWebApplication.Shared.Models.UserModels.User");
+
+                    b.ToTable("Admins", (string)null);
                 });
 
             modelBuilder.Entity("RHWebApplication.Shared.Models.UserModels.Employee", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasBaseType("RHWebApplication.Shared.Models.UserModels.User");
 
                     b.Property<int>("JobId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Login")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("TerminationDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
-
                     b.HasIndex("JobId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("RHWebApplication.Shared.Models.PayrollModels.Payroll", b =>
@@ -177,8 +171,23 @@ namespace RHWebApplication.Database.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("RHWebApplication.Shared.Models.UserModels.Admin", b =>
+                {
+                    b.HasOne("RHWebApplication.Shared.Models.UserModels.User", null)
+                        .WithOne()
+                        .HasForeignKey("RHWebApplication.Shared.Models.UserModels.Admin", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RHWebApplication.Shared.Models.UserModels.Employee", b =>
                 {
+                    b.HasOne("RHWebApplication.Shared.Models.UserModels.User", null)
+                        .WithOne()
+                        .HasForeignKey("RHWebApplication.Shared.Models.UserModels.Employee", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("RHWebApplication.Shared.Models.JobModels.Job", "Job")
                         .WithMany()
                         .HasForeignKey("JobId")

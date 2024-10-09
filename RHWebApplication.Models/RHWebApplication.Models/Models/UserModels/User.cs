@@ -12,6 +12,7 @@ public class User
         Name = name;
         Email = email;
         CreationDate = DateTime.Now;
+        IsActive = true;
     }
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,4 +22,5 @@ public class User
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public DateTime CreationDate { get; init; } = default;
+    public bool IsActive { get; set; } = true;
 }

@@ -7,7 +7,7 @@ namespace RHWebApplication.Database;
 public class ApplicationContext : DbContext
 {
     public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
-
+    public DbSet<User> Users { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Admin> Admins { get; set; }
     public DbSet<Payroll> Payrolls { get; set; }
@@ -24,6 +24,13 @@ public class ApplicationContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<Employee>().ToTable("Employees");
+        modelBuilder.Entity<Admin>().ToTable("Admins");
+
+        modelBuilder.Entity<Employee>().HasBaseType<User>();
+        modelBuilder.Entity<Admin>().HasBaseType<User>();
+
         // Configuração para a entidade Job
         modelBuilder.Entity<Job>()
             .Property(j => j.BaseSalary)
