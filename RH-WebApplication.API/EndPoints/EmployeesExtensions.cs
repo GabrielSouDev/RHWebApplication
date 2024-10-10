@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RH_WebApplication.API.Requests;
+using RH_WebApplication.API.Responses;
 using RHWebApplication.Database;
 using RHWebApplication.Shared.Models.JobModels;
 using RHWebApplication.Shared.Models.UserModels;
@@ -10,34 +11,44 @@ public static class EmployeesExtensions
 {
     public static void AddEndPointsEmployees(this WebApplication app)
     {
-        app.MapGet("/Employee", async ([FromServices]DAL<Employee> dalEmployees) =>
+        var employeeGroup = app.MapGroup("/Employee").WithTags("Employee EndPoints");
+
+        employeeGroup.MapGet("/", async ([FromServices]DAL<Employee> dalEmployees) =>
         {
-            return Results.Ok(await dalEmployees.ListAsync());
+            var employees = await dalEmployees.ToListAsync();
+            var employeeResponse = new List<EmployeeResponse>();
+            foreach(var employee in employees)
+            {
+                employeeResponse.Add(new EmployeeResponse(employee.Id, employee.Name, employee.Job.Title, employee.Login, employee.Email, 
+                    employee.CreationDate, employee.TerminationDate, employee.IsActive));
+            }
+            return Results.Ok(employeeResponse);
         });
 
-        app.MapGet("/Employee/{Id}", async ([FromServices]DAL<User> dalUsers, [FromServices]DAL<Employee> dalEmployees, int Id) =>
+        employeeGroup.MapGet("/{Id}", async ([FromServices]DAL<User> dalUsers, int Id) =>
         {
-            var Employee = await dalUsers.FindByAsync<Employee>(a => a.Id == Id);
-            if (Employee is null)
+            var employee = await dalUsers.FindByAsync<Employee>(a => a.Id == Id);
+            if (employee is null)
                 return Results.NotFound("Employee ID is not found!");
-
-            return Results.Ok(Employee);
+            var employeeResponse = new EmployeeResponse(employee.Id, employee.Name, employee.Job.Title, employee.Login, employee.Email,
+                    employee.CreationDate, employee.TerminationDate, employee.IsActive);
+        return Results.Ok(employeeResponse);
         });
 
-        app.MapPost("/Employee", async ([FromServices]DAL<Employee> dalEmployees, [FromServices]DAL<Job> dalJobs, [FromBody]EmployeeRequest employeeRequest) =>
+        employeeGroup.MapPost("/", async ([FromServices]DAL<Employee> dalEmployees, [FromServices]DAL<Job> dalJobs, [FromBody]EmployeeRequest employeeRequest) =>
         {
             var job = await dalJobs.FindByAsync(a=>a.Title.Equals(employeeRequest.JobTitle));
-            if (job == null)
+            if (job is null)
                 return Results.NotFound(employeeRequest.JobTitle + " Job Title is not found!");
 
-            var employee = new Employee(employeeRequest.login, employeeRequest.password, employeeRequest.name, employeeRequest.email, job);
+            var employee = new Employee(employeeRequest.Login, employeeRequest.Password, employeeRequest.Name, employeeRequest.Email, job);
             await dalEmployees.AddAsync(employee);
             return Results.Created();
         });
 
-        app.MapPut("/Employee", async ([FromServices]DAL<Employee> dalEmployees, [FromServices]DAL<Job> dalJobs,[FromBody]EmployeeEditRequest employeeRequest) =>
+        employeeGroup.MapPut("/", async ([FromServices]DAL<Employee> dalEmployees, [FromServices]DAL<User> dalUsers ,[FromServices]DAL<Job> dalJobs,[FromBody]EmployeeEditRequest employeeRequest) =>
         {
-            var employee = await dalEmployees.FindByAsync(a=>a.Id.Equals(employeeRequest.id));
+            var employee = await dalUsers.FindByAsync<Employee>(a=>a.Id == employeeRequest.Id);
             if (employee is null)
                 return Results.NotFound("Employee ID is not found!");
 
@@ -45,16 +56,16 @@ public static class EmployeesExtensions
             if (job == null)
                 return Results.NotFound(employeeRequest.JobTitle + " Job Title is not found!");
 
-            employee.Login = employeeRequest.login;
-            employee.Password = employeeRequest.password;
-            employee.Name = employeeRequest.name;
-            employee.Email = employeeRequest.email;
+            employee.Login = employeeRequest.Login;
+            employee.Password = employeeRequest.Password;
+            employee.Name = employeeRequest.Name;
+            employee.Email = employeeRequest.Email;
             employee.Job = job;
-
+            await dalEmployees.UpdateAsync(employee);
             return Results.NoContent();
         });
 
-        app.MapDelete("/Employee/{Id}", async ([FromServices]DAL<User> dalUsers, [FromServices]DAL<Employee>dalEmployees, int Id) =>
+        employeeGroup.MapDelete("/{Id}", async ([FromServices]DAL<User> dalUsers, [FromServices]DAL<Employee>dalEmployees, int Id) =>
         {
             var employee = await dalUsers.FindByAsync<Employee>(a => a.Id == Id);
             if (employee is null)

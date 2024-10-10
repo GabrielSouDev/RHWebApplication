@@ -13,7 +13,7 @@ public class DAL<T> where T : class
         this._context = _context;
     }
 
-    public async Task<IEnumerable<T>> ListAsync()
+    public async Task<IEnumerable<T>> ToListAsync()
     {
         return await _context.Set<T>().ToListAsync();
     }
@@ -37,8 +37,8 @@ public class DAL<T> where T : class
         return await _context.Set<T>().FirstOrDefaultAsync(e);
     }
     //Retorna dado em uma tabela TPT aonde <T> é a tabela pai e <U> é a tabela filha.
-    public async Task<U?> FindByAsync<U>(Expression<Func<U, bool>> predicate) where U : T
+    public async Task<U?> FindByAsync<U>(Expression<Func<U, bool>> e) where U : T
     {
-        return await _context.Set<T>().OfType<U>().FirstOrDefaultAsync(predicate);
+        return await _context.Set<T>().OfType<U>().FirstOrDefaultAsync(e);
     }
 }

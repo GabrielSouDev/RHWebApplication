@@ -10,30 +10,32 @@ public static class JobsExtensions
 {
     public static void AddEndPointsJob(this WebApplication app)
     {
-        app.MapGet("/Job", async ([FromServices]DAL<Job> dalJobs) =>
+        var jobGroup = app.MapGroup("/Job").WithTags("Job EndPoints");
+
+        jobGroup.MapGet("/", async ([FromServices]DAL<Job> dalJobs) =>
         {
-            return Results.Ok(await dalJobs.ListAsync());
+            return Results.Ok(await dalJobs.ToListAsync());
         });
 
-        app.MapGet("/Job/{Id}", async ([FromServices]DAL<Job> dalJobs, int Id) =>
+        jobGroup.MapGet("/{Id}", async ([FromServices]DAL<Job> dalJobs, int Id) =>
         {
-            var Job = await dalJobs.FindByAsync(a => a.Id.Equals(Id));
+            var Job = await dalJobs.FindByAsync(a => a.Id == Id);
             if(Job is null)
                 return Results.NotFound();
 
             return Results.Ok(Job);
         });
 
-        app.MapPost("/job", async ([FromServices]DAL<Job> dalJobs, [FromBody]JobRequest jobRequest) =>
+        jobGroup.MapPost("/", async ([FromServices]DAL<Job> dalJobs, [FromBody]JobRequest jobRequest) =>
         {
             await dalJobs.AddAsync(new Job(jobRequest.Title, jobRequest.Description, jobRequest.IsUnhealthy,
                 jobRequest.IsPericulosity,jobRequest.BaseSalary));
             return Results.Created();
         });
 
-        app.MapPut("/Job", async ([FromServices]DAL<Job> dalJobs, [FromBody]JobEditRequest jobEditRequest) => 
+        jobGroup.MapPut("/", async ([FromServices]DAL<Job> dalJobs, [FromBody]JobEditRequest jobEditRequest) => 
         {
-            var job = await dalJobs.FindByAsync(a=> a.Id.Equals(jobEditRequest.Id));
+            var job = await dalJobs.FindByAsync(a=> a.Id == jobEditRequest.Id);
             if (job is null)
                 return Results.NotFound();
 
@@ -46,9 +48,9 @@ public static class JobsExtensions
             return Results.NoContent();
         });
 
-        app.MapDelete("/Job/{Id}", async ([FromServices]DAL<Job> dalJobs, int Id) =>
+        jobGroup.MapDelete("/{Id}", async ([FromServices]DAL<Job> dalJobs, int Id) =>
         {
-            var job = await dalJobs.FindByAsync(a=>a.Id.Equals(Id));
+            var job = await dalJobs.FindByAsync(a=>a.Id == Id);
             if(job is null)
                 return Results.NotFound();
 

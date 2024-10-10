@@ -17,11 +17,11 @@ public class Payroll
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
     public virtual Employee Employee { get; init; }
-    public decimal Gross { get; set; } = default; // Salario Bruto
-    public decimal OverTime { get; set; } = default;
-    public decimal Commission { get; set; } = default;
-    public decimal Additionals { get; set; } = default;
-    public decimal Deductions { get; set; } = default;
+    public decimal Gross { get; set; } // Salario Bruto
+    public decimal OverTime { get; set; }
+    public decimal Commission { get; set; }
+    public decimal Additionals { get; set; }
+    public decimal Deductions { get; set; }
     public decimal Net { get; set; } // Salario Liquido
     public DateTime CreationDate { get; init; }
 }

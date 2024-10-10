@@ -14,7 +14,7 @@ public class Employee : User
         PayrollHistory = new List<Payroll>();
         Job = job;
     }
-    public virtual ICollection<Payroll>? PayrollHistory { get; set; }
-    public virtual Job? Job { get; set; } = null;
-    public DateTime TerminationDate { get; set; } = default;
+    public virtual ICollection<Payroll> PayrollHistory { get; set; }
+    public virtual Job Job { get; set; }
+    public DateTime? TerminationDate { get; set; } = null;
 }

@@ -1,8 +1,11 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using RH_WebApplication.API.EndPoints;
 using RHWebApplication.Database;
 using RHWebApplication.Shared.Models.JobModels;
+using RHWebApplication.Shared.Models.PayrollModels;
 using RHWebApplication.Shared.Models.UserModels;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationContext>((options) =>
@@ -11,15 +14,16 @@ builder.Services.AddDbContext<ApplicationContext>((options) =>
     .UseLazyLoadingProxies();
 });
 
-// Add services to the container.
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<DAL<User>>();
 builder.Services.AddTransient<DAL<Employee>>();
+builder.Services.AddTransient<DAL<Payroll>>();
 builder.Services.AddTransient<DAL<Job>>();
 
 var app = builder.Build();
@@ -33,6 +37,7 @@ if (app.Environment.IsDevelopment())
 
 app.AddEndPointsUsers();
 app.AddEndPointsEmployees();
+app.AddEndPointsPayrolls();
 app.AddEndPointsJob();
 
 app.UseHttpsRedirection();
