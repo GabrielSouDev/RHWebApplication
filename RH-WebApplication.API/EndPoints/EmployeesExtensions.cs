@@ -15,13 +15,13 @@ public static class EmployeesExtensions
             return Results.Ok(await dalEmployees.ListAsync());
         });
 
-        app.MapGet("/Employee/{Id}", async ([FromServices]DAL<Employee> dalEmployees, string Id) =>
+        app.MapGet("/Employee/{Id}", async ([FromServices]DAL<User> dalUsers, [FromServices]DAL<Employee> dalEmployees, int Id) =>
         {
-            var employee = await dalEmployees.FindByAsync(a=>a.Id.Equals(Id));
-            if (employee is null)
+            var Employee = await dalUsers.FindByAsync<Employee>(a => a.Id == Id);
+            if (Employee is null)
                 return Results.NotFound("Employee ID is not found!");
 
-            return Results.Ok(employee);
+            return Results.Ok(Employee);
         });
 
         app.MapPost("/Employee", async ([FromServices]DAL<Employee> dalEmployees, [FromServices]DAL<Job> dalJobs, [FromBody]EmployeeRequest employeeRequest) =>
@@ -54,13 +54,13 @@ public static class EmployeesExtensions
             return Results.NoContent();
         });
 
-        app.MapDelete("/Employee/{Id}", async ([FromServices]DAL<Employee>dalEmployee, int Id) =>
+        app.MapDelete("/Employee/{Id}", async ([FromServices]DAL<User> dalUsers, [FromServices]DAL<Employee>dalEmployees, int Id) =>
         {
-            var employee = await dalEmployee.FindByAsync(a => a.Id.Equals(Id));
+            var employee = await dalUsers.FindByAsync<Employee>(a => a.Id == Id);
             if (employee is null)
                 return Results.NotFound("Employee ID is not found!");
 
-            await dalEmployee.DeleteAsync(employee);
+            await dalEmployees.DeleteAsync(employee);
             return Results.NoContent();
         });
     }

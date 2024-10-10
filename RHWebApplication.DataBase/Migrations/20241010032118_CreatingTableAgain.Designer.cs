@@ -12,8 +12,8 @@ using RHWebApplication.Database;
 namespace RHWebApplication.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20241009190107_CreatingDatabase")]
-    partial class CreatingDatabase
+    [Migration("20241010032118_CreatingTableAgain")]
+    partial class CreatingTableAgain
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

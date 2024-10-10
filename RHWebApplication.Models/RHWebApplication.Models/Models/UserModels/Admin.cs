@@ -11,8 +11,4 @@ public class Admin : User
     : base(login, password, name, email)
     {
     }
-
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; init; }
 }

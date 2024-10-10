@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RHWebApplication.Shared.Models.UserModels;
 using System.Linq.Expressions;
 
 namespace RHWebApplication.Database;
@@ -34,5 +35,10 @@ public class DAL<T> where T : class
     public async Task<T?> FindByAsync(Expression<Func<T, bool>> e)
     {
         return await _context.Set<T>().FirstOrDefaultAsync(e);
+    }
+    //Retorna dado em uma tabela TPT aonde <T> é a tabela pai e <U> é a tabela filha.
+    public async Task<U?> FindByAsync<U>(Expression<Func<U, bool>> predicate) where U : T
+    {
+        return await _context.Set<T>().OfType<U>().FirstOrDefaultAsync(predicate);
     }
 }

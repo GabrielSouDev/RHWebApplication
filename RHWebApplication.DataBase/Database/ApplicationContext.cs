@@ -24,6 +24,7 @@ public class ApplicationContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        //Configurações para o relacionamento TPT Employee:User e Admin:User
         modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<Employee>().ToTable("Employees");
         modelBuilder.Entity<Admin>().ToTable("Admins");
