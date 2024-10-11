@@ -10,7 +10,7 @@ public class ApplicationContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Admin> Admins { get; set; }
-    public DbSet<Payroll> Payrolls { get; set; }
+    public DbSet<Payroll> PayrollHistory { get; set; }
 
     public string ConnectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=RHDatabase;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
 
@@ -31,6 +31,12 @@ public class ApplicationContext : DbContext
 
         modelBuilder.Entity<Employee>().HasBaseType<User>();
         modelBuilder.Entity<Admin>().HasBaseType<User>();
+
+        modelBuilder.Entity<Employee>().HasOne(e => e.Job).WithMany(j => j.Employees).HasForeignKey(e => e.JobId);
+
+        modelBuilder.Entity<Employee>().HasMany(e => e.PayrollHistory)
+            .WithOne(p => p.Employee).HasForeignKey(p => p.EmployeeId);
+
 
         // Configuração para a entidade Job
         modelBuilder.Entity<Job>()
@@ -60,6 +66,6 @@ public class ApplicationContext : DbContext
 
         modelBuilder.Entity<Payroll>()
             .Property(p => p.OverTime)
-            .HasPrecision(18, 2);
+            .HasColumnType("float");
     }
 }

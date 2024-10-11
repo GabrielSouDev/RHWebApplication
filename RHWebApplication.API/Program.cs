@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using RH_WebApplication.API.EndPoints;
+using RHWebApplication.API.EndPoints;
 using RHWebApplication.Database;
 using RHWebApplication.Shared.Models.JobModels;
 using RHWebApplication.Shared.Models.PayrollModels;
@@ -16,12 +15,13 @@ builder.Services.AddDbContext<ApplicationContext>((options) =>
 
 builder.Services.AddControllers();
 
-builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<DAL<User>>();
+builder.Services.AddTransient<DAL<Admin>>();
 builder.Services.AddTransient<DAL<Employee>>();
 builder.Services.AddTransient<DAL<Payroll>>();
 builder.Services.AddTransient<DAL<Job>>();
@@ -36,6 +36,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.AddEndPointsUsers();
+app.AddEndPointsAdmins();
 app.AddEndPointsEmployees();
 app.AddEndPointsPayrolls();
 app.AddEndPointsJob();

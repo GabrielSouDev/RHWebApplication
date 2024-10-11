@@ -90,15 +90,14 @@ namespace RHWebApplication.Database.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("OverTime")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("OverTime")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Payrolls");
+                    b.ToTable("PayrollHistory");
                 });
 
             modelBuilder.Entity("RHWebApplication.Shared.Models.UserModels.User", b =>
@@ -189,12 +188,17 @@ namespace RHWebApplication.Database.Migrations
                         .IsRequired();
 
                     b.HasOne("RHWebApplication.Shared.Models.JobModels.Job", "Job")
-                        .WithMany()
+                        .WithMany("Employees")
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Job");
+                });
+
+            modelBuilder.Entity("RHWebApplication.Shared.Models.JobModels.Job", b =>
+                {
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("RHWebApplication.Shared.Models.UserModels.Employee", b =>

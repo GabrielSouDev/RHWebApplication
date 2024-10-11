@@ -1,10 +1,10 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
-using RH_WebApplication.API.Requests;
+﻿using Microsoft.AspNetCore.Mvc;
+using RHWebApplication.API.Requests;
+using RHWebApplication.API.Responses;
 using RHWebApplication.Database;
 using RHWebApplication.Shared.Models.JobModels;
 
-namespace RH_WebApplication.API.EndPoints;
+namespace RHWebApplication.API.EndPoints;
 
 public static class JobsExtensions
 {
@@ -14,16 +14,22 @@ public static class JobsExtensions
 
         jobGroup.MapGet("/", async ([FromServices]DAL<Job> dalJobs) =>
         {
-            return Results.Ok(await dalJobs.ToListAsync());
+            var jobs = await dalJobs.ToListAsync();
+            var jobsResponse = new List<JobResponse>();
+            foreach (var job in jobs)
+            {
+                jobsResponse.Add(new JobResponse(job.Id, job.Title, job.Description, job.IsUnhealthy, job.IsPericulosity, job.BaseSalary));
+            }
+            return Results.Ok(jobsResponse);
         });
 
         jobGroup.MapGet("/{Id}", async ([FromServices]DAL<Job> dalJobs, int Id) =>
         {
-            var Job = await dalJobs.FindByAsync(a => a.Id == Id);
-            if(Job is null)
+            var job = await dalJobs.FindByAsync(a => a.Id == Id);
+            if(job is null)
                 return Results.NotFound();
 
-            return Results.Ok(Job);
+            return Results.Ok(new JobResponse(job.Id, job.Title, job.Description, job.IsUnhealthy, job.IsPericulosity, job.BaseSalary));
         });
 
         jobGroup.MapPost("/", async ([FromServices]DAL<Job> dalJobs, [FromBody]JobRequest jobRequest) =>

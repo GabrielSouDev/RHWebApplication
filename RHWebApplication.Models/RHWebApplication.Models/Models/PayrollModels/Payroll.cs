@@ -5,8 +5,9 @@ using RHWebApplication.Shared.Models.UserModels;
 namespace RHWebApplication.Shared.Models.PayrollModels;
 public class Payroll
 {
+    #pragma warning disable CS8618
     public Payroll() {}
-    public Payroll(Employee employee, decimal overTime, decimal commission)
+    public Payroll(Employee employee, float overTime, decimal commission)
     {
         Employee = employee;
         OverTime = overTime;
@@ -16,9 +17,10 @@ public class Payroll
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
+    public int EmployeeId { get; set; }
     public virtual Employee Employee { get; init; }
     public decimal Gross { get; set; } // Salario Bruto
-    public decimal OverTime { get; set; }
+    public float OverTime { get; set; }
     public decimal Commission { get; set; }
     public decimal Additionals { get; set; }
     public decimal Deductions { get; set; }

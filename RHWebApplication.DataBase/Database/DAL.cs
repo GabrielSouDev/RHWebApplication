@@ -17,6 +17,11 @@ public class DAL<T> where T : class
     {
         return await _context.Set<T>().ToListAsync();
     }
+    //Retorna Lista de <U> aonde <T> é a tabela pai e <U> é a tabela filha.
+    public async Task<IEnumerable<U>> ToListAsync<U>() where U : T
+    {
+        return await _context.Set<T>().OfType<U>().ToListAsync();
+    }
     public async Task AddAsync(T t)
     {
         await _context.Set<T>().AddAsync(t);

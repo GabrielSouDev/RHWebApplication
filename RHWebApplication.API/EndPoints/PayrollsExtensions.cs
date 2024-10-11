@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RH_WebApplication.API.Requests;
+using RHWebApplication.API.Requests;
+using RHWebApplication.API.Responses;
 using RHWebApplication.Database;
 using RHWebApplication.Shared.Models.PayrollModels;
 using RHWebApplication.Shared.Models.UserModels;
+using System.Text.RegularExpressions;
 
-namespace RH_WebApplication.API.EndPoints;
+namespace RHWebApplication.API.EndPoints;
 
 public static class PayrollsExtensions
 {
@@ -14,16 +16,31 @@ public static class PayrollsExtensions
 
         payrollGroup.MapGet("/", async ([FromServices]DAL<Payroll> dalPayrolls) =>
         {
-            return Results.Ok(await dalPayrolls.ToListAsync());
+            var payrolls = await dalPayrolls.ToListAsync();
+            var payrollsResponse = new List<PayrollResponse>();
+            foreach (var payroll in payrolls)
+            {
+                payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Title,
+                    payroll.Employee.Job.IsUnhealthy, payroll.Employee.Job.IsPericulosity, payroll.Employee.Job.BaseSalary, 
+                    payroll.Gross, payroll.OverTime, payroll.Commission, payroll.Additionals, payroll.Deductions,
+                    payroll.Net, payroll.CreationDate));
+            }
+            
+            return Results.Ok(payrollsResponse);
         });
 
-        payrollGroup.MapGet("/{Id}", ([FromServices]DAL<Payroll> dalPayrolls, int Id) => 
+        payrollGroup.MapGet("/{Id}", async ([FromServices]DAL<Payroll> dalPayrolls, int Id) => 
         {
-            var payroll = dalPayrolls.FindByAsync(a => a.Id == Id);
+            var payroll = await dalPayrolls.FindByAsync(a => a.Id == Id);
             if (payroll is null)
                 return Results.NotFound("Payroll is not found!");
 
-            return Results.Ok(payroll);
+            var payrollResponse = new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Title, 
+            payroll.Employee.Job.IsUnhealthy, payroll.Employee.Job.IsPericulosity, payroll.Employee.Job.BaseSalary,
+            payroll.Gross, payroll.OverTime, payroll.Commission, payroll.Additionals, payroll.Deductions,
+            payroll.Net, payroll.CreationDate);
+
+            return Results.Ok(payrollResponse);
         });
 
         payrollGroup.MapPost("/", async ([FromServices]DAL<Payroll> dalPayrolls, [FromServices]DAL<User> dalUsers, [FromBody]PayrollRequest payrollRequest) => 

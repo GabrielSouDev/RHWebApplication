@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RHWebApplication.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class CreatingTableAgain : Migration
+    public partial class CreatingTablesAgain : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -69,7 +69,7 @@ namespace RHWebApplication.Database.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
                     JobId = table.Column<int>(type: "int", nullable: false),
-                    TerminationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    TerminationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -89,14 +89,14 @@ namespace RHWebApplication.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payrolls",
+                name: "PayrollHistory",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
                     Gross = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    OverTime = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    OverTime = table.Column<double>(type: "float", nullable: false),
                     Commission = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Additionals = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Deductions = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -105,9 +105,9 @@ namespace RHWebApplication.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Payrolls", x => x.Id);
+                    table.PrimaryKey("PK_PayrollHistory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Payrolls_Employees_EmployeeId",
+                        name: "FK_PayrollHistory_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
                         principalColumn: "Id",
@@ -120,8 +120,8 @@ namespace RHWebApplication.Database.Migrations
                 column: "JobId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payrolls_EmployeeId",
-                table: "Payrolls",
+                name: "IX_PayrollHistory_EmployeeId",
+                table: "PayrollHistory",
                 column: "EmployeeId");
         }
 
@@ -132,7 +132,7 @@ namespace RHWebApplication.Database.Migrations
                 name: "Admins");
 
             migrationBuilder.DropTable(
-                name: "Payrolls");
+                name: "PayrollHistory");
 
             migrationBuilder.DropTable(
                 name: "Employees");
