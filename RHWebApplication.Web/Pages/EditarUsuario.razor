@@ -1,0 +1,17 @@
+﻿@inject NavigationManager NavigationManager
+@page "/EditarUsuario"
+
+<AuthorizeView>
+    <Authorized>
+        <PageTitle>Editar Usuario</PageTitle>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/NotAuthorized");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+}

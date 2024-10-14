@@ -1,0 +1,17 @@
+﻿@inject NavigationManager NavigationManager
+@page "/ExibirPagamentos"
+
+<AuthorizeView>
+    <Authorized>
+        <PageTitle>Exibir Pagamentos</PageTitle>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/NotAuthorized");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+}

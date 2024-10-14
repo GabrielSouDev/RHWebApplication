@@ -1,0 +1,12 @@
+﻿@inject NavigationManager NavigationManager
+@page "/NotAuthorized"
+<MudPaper>
+    <MudText Typo="Typo.h4" Style="height:10vh;">Não autorizado, faça o login para prosseguir.</MudText>
+    <MudButton OnClick="GoToLogin">Login</MudButton>
+</MudPaper>
+@code {
+    private void GoToLogin()
+    {
+        NavigationManager.NavigateTo("/Login");
+    }
+}

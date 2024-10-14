@@ -1,0 +1,26 @@
+﻿@page "/login"
+@using RHWebApplication.Shared.Models.UserModels
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+        <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh;">
+            <MudCard Style="width: 60%;">
+                <MudCardContent>
+                    <MudForm>
+                        <MudText Typo="Typo.h5">Login</MudText>
+                        <MudTextField @bind-Value="user.Login" Label="Username" Required="true" />
+                        <MudTextField @bind-Value="user.Password" Label="Password" InputType="InputType.Password" Required="true" />
+                <MudButton Type="Submit" Color="Color.Primary" OnClick="HandleValidSubmitAsync">Login</MudButton>
+                    </MudForm>
+                </MudCardContent>
+            </MudCard>
+        </MudContainer>
+
+@code {
+    private User user = new User();
+
+    private async Task HandleValidSubmitAsync()
+    {
+        await AuthStateProvider.Login(user);
+        NavigationManager.NavigateTo("/Home");
+    }
+}

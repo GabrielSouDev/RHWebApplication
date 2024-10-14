@@ -14,6 +14,13 @@ builder.Services.AddDbContext<ApplicationContext>((options) =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazor", 
+        builder => builder.WithOrigins("https://localhost:7184")
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+});
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 
@@ -34,16 +41,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowBlazor");
+app.UseHttpsRedirection();
+app.UseAuthorization();
 
 app.AddEndPointsUsers();
 app.AddEndPointsAdmins();
 app.AddEndPointsEmployees();
 app.AddEndPointsPayrolls();
 app.AddEndPointsJob();
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
