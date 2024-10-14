@@ -7,14 +7,14 @@
 <MudDialogProvider />
 <MudSnackbarProvider /> 
      <MudLayout>
-            <MudAppBar Class="d-flex align-items-center" Color="Color.Primary" Fixed="true" Elevation="2">
+            <MudAppBar Class="d-flex align-items-center" Color="Color.Primary" Fixed="true" Elevation="25">
                 <MudIconButton Disabled="@_disableOpenButtom" Icon="@arrowMenu" Color="Color.Inherit" Class="white-icon" OnClick="DrawerToggle" />
                 <MudText Typo="Typo.h4">RH APPLICATION</MudText>
                 <MudSpacer />
                 <MudText Class="dropend" Typo="Typo.h6">@username</MudText>
-        <MudButton Disabled="@_notLogged" OnClick="LogoutAsync" Color="Color.Secondary">Logout</MudButton>
+                <MudButton Disabled="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
             </MudAppBar>
-            <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="25">
                 <NavMenu></NavMenu>
             </MudDrawer>
             <MudMainContent Class="menu-content">

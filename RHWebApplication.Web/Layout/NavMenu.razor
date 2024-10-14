@@ -1,13 +1,17 @@
 ﻿<MudNavMenu Color="Color.Primary" Class="mud-width-full mt-4">
 
-    <MudNavLink Href="/Home" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavGroup Title="Usuarios" Icon="@Icons.Material.Filled.People" Expanded="true">
-        <MudNavLink Href="/EmployeeRegister">Register a Employee</MudNavLink>
-        <MudNavLink Href="/EditarUsuario">Editar Usuario</MudNavLink>
+    <MudNavLink IconColor="Color.Tertiary" Href="/Home" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <MudNavGroup IconColor="Color.Tertiary" Title="Users" Icon="@Icons.Material.Filled.People" Expanded="true">
+        <MudNavLink IconColor="Color.Tertiary" Href="/EmployeeRegister">Register a Employee</MudNavLink>
+        <MudNavLink IconColor="Color.Tertiary" Href="/EditarUsuario">Edit User</MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Folha de Pagamento" Icon="@Icons.Material.Filled.Money" Expanded="true">
-        <MudNavLink Href="/CadastrarFolha">Cadastrar Folha</MudNavLink>
-        <MudNavLink Href="/ExibirPagamentos">Exibir Pagamentos</MudNavLink>
+    <MudNavGroup IconColor="Color.Tertiary" Title="Payrolls" Icon="@Icons.Material.Filled.Money" Expanded="true">
+        <MudNavLink IconColor="Color.Tertiary" Href="/CadastrarFolha">Register a payroll</MudNavLink>
+        <MudNavLink IconColor="Color.Tertiary" Href="/ExibirPagamentos">List Payrolls</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup IconColor="Color.Tertiary" Title="Job Titles" Icon="@Icons.Material.Filled.Anchor" Expanded="true">
+        <MudNavLink IconColor="Color.Tertiary" Href="/JobRegister">Register a job title</MudNavLink>
+        <MudNavLink IconColor="Color.Tertiary" Href="/JobEdit">Edit job</MudNavLink>
     </MudNavGroup>
 
 </MudNavMenu>

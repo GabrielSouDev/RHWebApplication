@@ -103,24 +103,23 @@ code {
     color: #c02d76;
 }
 .mud-nav-group > .mud-nav-link > .mud-nav-link-text {
-    color: var(--mud-palette-textprimary);
+    color: white;
     font-size: 16px;
     font-weight: 600;
 }
 .mud-nav-link-text {
-    color: var(--mud-palette-textprimary);
+    color: white;
     font-size: 14px;
     font-weight: 600;
 }
 
 .white-icon .mud-icon-root {
-    color: var(--mud-palette-surface);
+    color: white);
     width: 40px;
     height: 40px;
 }
 .menu-section {
-    background: linear-gradient(to top, lightblue, lightblue, white);
-    border-right: 2px solid black;
+    background: var(--mud-palette-secondary);
 }
 
 .menu-content {
@@ -128,7 +127,7 @@ code {
 }
 
 body {
-    background: linear-gradient(to top, var(--mud-palette-tertiary), var(--mud-palette-tertiary), white);
+    background: var(--mud-palette-tertiary);
     justify-content: center;
     align-items: center;
     text-align: center;

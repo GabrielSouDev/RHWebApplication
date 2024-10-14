@@ -1,10 +1,9 @@
 ﻿@inject NavigationManager NavigationManager
-@page "/Home"
-@attribute [Authorize]
-<PageTitle>Home</PageTitle>
+@page "/EditarUsuario"
+<PageTitle>Editar Usuario</PageTitle>
 <AuthorizeView>
     <Authorized>
-        <MudText Class="d-flex justify-center align-center">Bem-vindo, @context.User.Identity.Name!</MudText>
+        
     </Authorized>
     <NotAuthorized>
         @{
@@ -12,3 +11,7 @@
         }
     </NotAuthorized>
 </AuthorizeView>
+
+@code {
+
+}

@@ -9,9 +9,9 @@ public sealed class RHApplicationPalette : PaletteLight
 {
     private RHApplicationPalette()
     {
-        Primary = new MudColor("#003366");
-        Secondary = new MudColor("#007BFF");
-        Tertiary = new MudColor("#66B2FF");
+        Primary = new MudColor("#232c83");
+        Secondary = new MudColor("#646aa7");
+        Tertiary = new MudColor("#e5e6f0");
         Background = new MudColor("#F2F2F2");
         AppbarBackground = new MudColor("#003366");
         DrawerBackground = new MudColor("#FFFFFF");
