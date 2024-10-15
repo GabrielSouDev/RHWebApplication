@@ -1,0 +1,18 @@
+﻿@inject NavigationManager NavigationManager
+@page "/JobRegister"
+
+<PageTitle>Register a Job</PageTitle>
+<AuthorizeView>
+    <Authorized>
+
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/NotAuthorized");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+}

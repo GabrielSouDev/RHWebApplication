@@ -1,17 +1,45 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using RHWebApplication.API.EndPoints;
 using RHWebApplication.Database;
 using RHWebApplication.Shared.Models.JobModels;
 using RHWebApplication.Shared.Models.PayrollModels;
 using RHWebApplication.Shared.Models.UserModels;
+using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<ApplicationContext>((options) =>
+
+
+builder.Services.AddCors(options =>
 {
-    options.UseSqlServer(builder.Configuration["ConnectionStrings:RHDatabase"])
-    .UseLazyLoadingProxies();
+options.AddPolicy("AllowAll",
+    builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "https://localhost:7019",
+            ValidAudience = "https://localhost:7029",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("its-my-secret-key"))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
 
 builder.Services.AddControllers();
 
@@ -26,7 +54,17 @@ builder.Services.AddTransient<DAL<Employee>>();
 builder.Services.AddTransient<DAL<Payroll>>();
 builder.Services.AddTransient<DAL<Job>>();
 
+builder.Services.AddDbContext<ApplicationContext>((options) =>
+{
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:RHDatabase"])
+    .UseLazyLoadingProxies();
+});
+
 var app = builder.Build();
+app.UseCors("AllowAll");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -40,10 +78,6 @@ app.AddEndPointsAdmins();
 app.AddEndPointsEmployees();
 app.AddEndPointsPayrolls();
 app.AddEndPointsJob();
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

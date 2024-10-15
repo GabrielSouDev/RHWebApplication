@@ -1,0 +1,14 @@
+﻿@inject NavigationManager NavigationManager
+@page "/Home"
+@attribute [Authorize]
+<PageTitle>Home</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        <MudText Class="d-flex justify-center align-center">Bem-vindo, @context.User.Identity.Name!</MudText>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/NotAuthorized");
+        }
+    </NotAuthorized>
+</AuthorizeView>

@@ -1,0 +1,64 @@
+﻿@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="@currentTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider /> 
+     <MudLayout>
+            <MudAppBar Class="d-flex align-items-center" Color="Color.Primary" Fixed="true" Elevation="25">
+                <MudIconButton Disabled="@_disableOpenButtom" Icon="@arrowMenu" Color="Color.Inherit" Class="white-icon" OnClick="DrawerToggle" />
+                <MudText Typo="Typo.h4">RH APPLICATION</MudText>
+                <MudSpacer />
+                <MudText Class="dropend" Typo="Typo.h6">@username</MudText>
+                <MudButton Disabled="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
+            </MudAppBar>
+    <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="25">
+                <NavMenu></NavMenu>
+            </MudDrawer>
+            <MudMainContent Class="menu-content">
+                @Body
+            </MudMainContent>
+      </MudLayout>
+@code {
+    bool _drawerOpen;
+    bool _notLogged;
+    bool _disableOpenButtom;
+    string arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
+    string? username = string.Empty;
+
+    private MudTheme currentTheme = new MudTheme()
+        {
+            PaletteLight = RHApplicationPalette.CreatePallete
+        };
+
+    protected override void OnParametersSet()
+    {
+        //username = await AuthStateProvider.GetUserNameFromTokenAsync();
+        _notLogged = false;
+        _disableOpenButtom = false;
+        _drawerOpen = true;
+        arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
+        if (username is null)
+        {
+            arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowRight;
+            _drawerOpen = false;
+            _notLogged = true;
+            _disableOpenButtom = true;
+        }
+    }
+
+
+    async Task LogoutAsync()
+    {
+        _notLogged = true;
+        await AuthStateProvider.Logout();
+        NavigationManager.NavigateTo("/Login");
+    }
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+        arrowMenu = _drawerOpen ? Icons.Material.Filled.KeyboardDoubleArrowLeft : Icons.Material.Filled.KeyboardDoubleArrowRight;
+    }
+}

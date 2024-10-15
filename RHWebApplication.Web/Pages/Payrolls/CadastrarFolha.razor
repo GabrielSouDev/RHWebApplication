@@ -1,0 +1,17 @@
+﻿@inject NavigationManager NavigationManager
+@page "/CadastrarFolha"
+<PageTitle>Cadastrar Folha</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/NotAuthorized");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+}
