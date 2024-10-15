@@ -1,8 +1,5 @@
 ﻿using MudBlazor;
 using MudBlazor.Utilities;
-using static MudBlazor.CategoryTypes;
-using static MudBlazor.Colors;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RHWebApplication.Web.Layout;
 public sealed class RHApplicationPalette : PaletteLight

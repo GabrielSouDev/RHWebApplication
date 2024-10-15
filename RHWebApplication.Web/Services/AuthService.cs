@@ -1,23 +1,26 @@
-﻿using RHWebApplication.Shared.Models.UserModels;
-using System.Net.Http.Json;
+﻿//using RHWebApplication.Web.Requests;
+//using System.Net.Http.Json;
 
-namespace RHWebApplication.Web.Services;
+//public class AuthService
+//{
+//    private readonly HttpClient _httpClient;
 
-public class AuthService
-{
-    private readonly HttpClient _httpClient;
+//    public AuthService(HttpClient httpClient)
+//    {
+//        _httpClient = httpClient;
+//    }
 
-    public AuthService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
-    public async Task<string> LoginAsync(User user)
-    {
-        var response = await _httpClient.PostAsJsonAsync("api/auth/login", user);
-        response.EnsureSuccessStatusCode();
+//    public async Task<string> LoginAsync(LoginRequest loginRequest)
+//    {
+//        var response = await _httpClient.PostAsJsonAsync("login", loginRequest);
+//        response.EnsureSuccessStatusCode();
 
-        var token = await response.Content.ReadAsStringAsync();
-        return token;
-    }
+//        var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+//        return result.Token;
+//    }
+//}
 
-}
+//public class LoginResponse
+//{
+//    public string Token { get; set; }
+//}

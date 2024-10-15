@@ -7,34 +7,39 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Authorization;
 
-public class AuthenticationExtensions
+public static class AuthenticationExtensions
 {
-
-    [HttpPost("login")]
-    public async Task<IResult> Login([FromServices] DAL<User> dalUser, [FromBody] LoginRequest loginRequest)
+    public static void AddEndPointsAuthentication(this WebApplication app)
     {
-        var user = await dalUser.FindByAsync<User>(u => u.Login == loginRequest.Login && u.Password == loginRequest.Password);
+        app.MapPost("/login", async Task<IResult> ([FromServices] DAL<User> dalUser, [FromBody] LoginRequest loginRequest) =>
+        {
+            var user = await dalUser.FindByAsync(u => u.Login == loginRequest.Login);
 
-        if (user == null)
-            return Unauthorized;
-
-        // Gera o token JWT
-        var token = GenerateJwtToken(user);
-        return Results.Ok(new { Token = token });
+            if (user is null)
+                return Results.Unauthorized();
+            if( user.Password.Equals(loginRequest.Password))
+            {
+                // Gera o token JWT
+                var token = GenerateJwtToken(user);
+                return Results.Ok(new { Token = token });
+            }
+            return Results.Unauthorized();
+        });
     }
-
-    private string GenerateJwtToken(User user)
+    private static string GenerateJwtToken(User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes("its-my-secret-key");
+        var key = Encoding.ASCII.GetBytes("this-is-my-super-secret-mistery-key-to-create-the-token");
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, user.Login),
-                new Claim(ClaimTypes.Role, "Admin") // ou o papel adequado
+                new Claim(ClaimTypes.Role, "user") // ou o papel adequado
             }),
             Expires = DateTime.UtcNow.AddHours(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

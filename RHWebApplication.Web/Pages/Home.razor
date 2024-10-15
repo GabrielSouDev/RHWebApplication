@@ -1,4 +1,5 @@
 ﻿@inject NavigationManager NavigationManager
+@inject CustomAuthStateProvider AuthStateProvider
 @page "/Home"
 @attribute [Authorize]
 <PageTitle>Home</PageTitle>
@@ -12,3 +13,7 @@
         }
     </NotAuthorized>
 </AuthorizeView>
+
+@code{
+
+}

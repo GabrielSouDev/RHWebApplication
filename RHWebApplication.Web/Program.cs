@@ -15,17 +15,10 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
-<<<<<<< HEAD
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7019") });
-=======
->>>>>>> 10dc2d2a6f97b77b35e997c3ba77477cbc4998b1
+
 builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
-builder.Services.AddScoped<AuthenticationState>();
 
-<<<<<<< HEAD
-=======
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7019") });
->>>>>>> 10dc2d2a6f97b77b35e997c3ba77477cbc4998b1
 
 await builder.Build().RunAsync();

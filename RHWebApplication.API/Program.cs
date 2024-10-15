@@ -11,7 +11,6 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddCors(options =>
 {
 options.AddPolicy("AllowAll",
@@ -34,21 +33,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = "https://localhost:7019",
             ValidAudience = "https://localhost:7029",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("its-my-secret-key"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this-is-my-super-secret-mistery-key-to-create-the-token"))
         };
     });
 
 builder.Services.AddAuthorization();
 
-
 builder.Services.AddControllers();
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowBlazor", 
-        builder => builder.WithOrigins("https://localhost:7184")
-        .AllowAnyMethod()
-        .AllowAnyHeader());
-});
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 
@@ -79,10 +70,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("AllowBlazor");
 app.UseHttpsRedirection();
-app.UseAuthorization();
 
+app.AddEndPointsAuthentication();
 app.AddEndPointsUsers();
 app.AddEndPointsAdmins();
 app.AddEndPointsEmployees();
