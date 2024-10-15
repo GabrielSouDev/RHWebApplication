@@ -28,6 +28,7 @@
     string arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
     string? username = string.Empty;
 
+<<<<<<< HEAD
     private MudTheme currentTheme = new MudTheme()
         {
             PaletteLight = RHApplicationPalette.CreatePallete
@@ -36,6 +37,11 @@
     protected override void OnParametersSet()
     {
         //username = await AuthStateProvider.GetUserNameFromTokenAsync();
+=======
+    protected override async Task OnParametersSetAsync()
+    {
+        username = await AuthStateProvider.GetUsernameAsync();
+>>>>>>> 10dc2d2a6f97b77b35e997c3ba77477cbc4998b1
         _notLogged = false;
         _disableOpenButtom = false;
         _drawerOpen = true;
@@ -49,6 +55,13 @@
         }
     }
 
+<<<<<<< HEAD
+=======
+    private MudTheme currentTheme = new MudTheme()
+        {
+            PaletteLight = RHApplicationPalette.CreatePallete
+        };
+>>>>>>> 10dc2d2a6f97b77b35e997c3ba77477cbc4998b1
 
     async Task LogoutAsync()
     {

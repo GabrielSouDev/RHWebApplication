@@ -32,8 +32,10 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Employee>().HasBaseType<User>();
         modelBuilder.Entity<Admin>().HasBaseType<User>();
 
+        //configuraççao da rela~ção entre employee e job(employee tem um job, job tem muitos employees)
         modelBuilder.Entity<Employee>().HasOne(e => e.Job).WithMany(j => j.Employees).HasForeignKey(e => e.JobId);
 
+        //Configuração da relação entre employe e payroll, um para muitos.
         modelBuilder.Entity<Employee>().HasMany(e => e.PayrollHistory)
             .WithOne(p => p.Employee).HasForeignKey(p => p.EmployeeId);
 
@@ -41,7 +43,7 @@ public class ApplicationContext : DbContext
         // Configuração para a entidade Job
         modelBuilder.Entity<Job>()
             .Property(j => j.BaseSalary)
-            .HasPrecision(18, 2); // 18 é a precisão, 2 é a escala
+            .HasPrecision(18, 2); // 18 é a precisão, 2 é a escala = decimal
 
         // Configuração para a entidade Payroll
         modelBuilder.Entity<Payroll>()

@@ -41,7 +41,7 @@ public class DAL<T> where T : class
     {
         return await _context.Set<T>().FirstOrDefaultAsync(e);
     }
-    //Retorna dado em uma tabela TPT aonde <T> é a tabela pai e <U> é a tabela filha.
+    //Retorna <U> aonde <T> é a tabela pai e <U> é a tabela filha.
     public async Task<U?> FindByAsync<U>(Expression<Func<U, bool>> e) where U : T
     {
         return await _context.Set<T>().OfType<U>().FirstOrDefaultAsync(e);
