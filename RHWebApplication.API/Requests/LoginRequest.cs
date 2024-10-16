@@ -1,2 +1,2 @@
-﻿namespace RHWebApplication.API.Requests;
-public record LoginRequest( string Login, string Password);
+﻿namespace RHWebApplication.Web.Requests;
+public record LoginRequest(string Login, string Password);

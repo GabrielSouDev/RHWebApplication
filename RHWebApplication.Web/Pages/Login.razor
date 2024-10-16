@@ -1,9 +1,8 @@
-﻿@page "/login"
-@attribute [AllowAnonymous]
+﻿@attribute [AllowAnonymous]
 @inject HttpClient Http
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
-
+@page "/Login"
 
 <PageTitle>Login</PageTitle>
 <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh;">
@@ -11,9 +10,9 @@
         <MudCardContent>
             <MudForm>
                 <MudText Typo="Typo.h5">Login</MudText>
-                <MudTextField @bind-Value="user.Login" Label="Username" Required="true" />
-                <MudTextField @bind-Value="user.Password" Label="Password" InputType="InputType.Password" Required="true" />
-                <MudButton Type="Submit" Color="Color.Primary" OnClick="HandleLogin">Login</MudButton>
+                <MudTextField @bind-Value="loginRequest.Login" Label="Username" Required="true" />
+                <MudTextField @bind-Value="loginRequest.Password" Label="Password" InputType="InputType.Password" Required="true" />
+                <MudButton Type="Submit" Color="Color.Primary" OnClick="HandleLoginAsync">Login</MudButton>
             </MudForm>
         </MudCardContent>
     </MudCard>
@@ -21,23 +20,19 @@
 
 @code {
 
-    private LoginRequest user = new();
-    private async Task HandleLogin()
+    private LoginRequest loginRequest = new();
+    public async Task HandleLoginAsync()
     {
-        var response = await Http.PostAsJsonAsync("/login", user);
-        //response.EnsureSuccessStatusCode();
-        if (response.IsSuccessStatusCode)
-        {
-            // Lê o token da resposta
-            var token = await response.Content.ReadAsStringAsync();
-            await AuthStateProvider.Login(token);
-            NavigationManager.NavigateTo("/Home"); // Redireciona para a página inicial após o login
-        }
-        else
-        {
-            // Aqui você pode exibir uma mensagem de erro
-
-            Console.WriteLine("Login falhou! Verifique suas credenciais.");
-        }
+         var response = await Http.PostAsJsonAsync("/login", loginRequest);
+         if (response.IsSuccessStatusCode)
+         {
+             var token = await response.Content.ReadAsStringAsync();
+             await AuthStateProvider.Login(token);
+             NavigationManager.NavigateTo("/Home");
+         }
+         else
+         {
+             Console.WriteLine("Login falhou! Verifique suas credenciais.");
+         }
     }
 }

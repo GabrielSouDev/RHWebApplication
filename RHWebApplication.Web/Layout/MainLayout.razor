@@ -37,20 +37,18 @@
         userName = string.Empty;
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        Console.WriteLine(user.Identity.IsAuthenticated);
-        Console.WriteLine(user.Identity.Name);
-        if(user.Identity.IsAuthenticated)
-            userName = user.Identity.Name;
-
+        //if(user.Identity.IsAuthenticated)
+        userName = user.Identity.Name;
+        
         _notLogged = false;
         _drawerOpen = true;
-        arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowRight;
-        if (userName is null)
-        {
-            arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
-            _notLogged = true;
-            _drawerOpen = false;
-        }
+        arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
+       //if (userName is null)
+       // {
+       //     arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowRight;
+       //     _notLogged = true;
+       //     _drawerOpen = false;
+       // }
     }
 
     async Task LogoutAsync()
