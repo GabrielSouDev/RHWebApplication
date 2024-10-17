@@ -4,7 +4,18 @@
 <PageTitle>Register a Job</PageTitle>
 <AuthorizeView>
     <Authorized>
-
+        <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh;">
+            <MudCard>
+                <MudForm>
+                    <MudField @bind-Value="jobRequest.Title">Job Title</MudField>
+                    <MudField @bind-Value="jobRequest.Description">Description</MudField>
+                    <MudSwitch @bind-Value="jobRequest.IsUnhealthy">IsUnhealthy</MudSwitch>
+                    <MudSwitch @bind-Value="jobRequest.IsPericulosity">IsPericulosity</MudSwitch>
+                    <MudField @bind-Value="jobRequest.BaseSalary" AdornmentIcon="@Icons.Material.Filled.AttachMoney">Base Salary</MudField>
+                    <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Submit</MudButton>
+                </MudForm>
+            </MudCard>
+        </MudContainer>
     </Authorized>
     <NotAuthorized>
         @{
@@ -14,5 +25,7 @@
 </AuthorizeView>
 
 @code {
+    private JobRequest jobRequest;
+
 
 }

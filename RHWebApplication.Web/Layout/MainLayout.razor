@@ -6,28 +6,29 @@
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider /> 
-     <MudLayout>
-            <MudAppBar Class="d-flex align-items-center" Color="Color.Primary" Fixed="true" Elevation="25">
-            <MudIconButton Disabled="@_notLogged" Icon="@arrowMenu" Color="Color.Inherit" Class="white-icon" OnClick="DrawerToggle" />
-                <MudText Typo="Typo.h4">RH APPLICATION</MudText>
-                <MudSpacer />
-                <MudText Class="dropend" Typo="Typo.h6">@userName</MudText>
-                <MudButton Disabled="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
-                <MudButton Disabled="@_logged" OnClick="GoToLogin" Color="Color.Warning">Login</MudButton>
-            </MudAppBar>
-    <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="25">
-                <NavMenu></NavMenu>
-            </MudDrawer>
-            <MudMainContent Class="menu-content">
-                @Body
-            </MudMainContent>
-      </MudLayout>
+
+<MudLayout>
+       <MudAppBar Class="d-flex align-items-center" Color="Color.Primary" Fixed="true" Elevation="25">
+       <MudIconButton Disabled="@_notLogged" Icon="@arrowMenu" Color="Color.Inherit" Class="white-icon" OnClick="DrawerToggle" />
+           <MudText Typo="Typo.h4">RH APPLICATION</MudText>
+           <MudSpacer />
+           <MudText Class="dropend" Typo="Typo.h6">@userName</MudText>
+           <MudButton Disabled="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
+           <MudButton Disabled="@_logged" OnClick="GoToLogin" Color="Color.Warning">Login</MudButton>
+       </MudAppBar>
+       <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="10">
+           <NavMenu></NavMenu>
+       </MudDrawer>
+       <MudMainContent Class="menu-content">
+           @Body
+       </MudMainContent>
+</MudLayout>
 @code {
+    string? userName = string.Empty;
     bool _drawerOpen = false;
     bool _notLogged = true;
     bool _logged = false;
     string arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
-    string? userName = string.Empty;
 
     private MudTheme currentTheme = new MudTheme()
         {

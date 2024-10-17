@@ -12,7 +12,7 @@
                 <MudText Typo="Typo.h5">Login</MudText>
                 <MudTextField @bind-Value="loginRequest.Login" Label="Username" Required="true" />
                 <MudTextField @bind-Value="loginRequest.Password" Label="Password" InputType="InputType.Password" Required="true" />
-                <MudButton Type="Submit" Color="Color.Primary" OnClick="HandleLoginAsync">Login</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary" OnClick="HandleLoginAsync">Login</MudButton>
             </MudForm>
         </MudCardContent>
     </MudCard>

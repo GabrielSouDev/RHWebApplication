@@ -20,4 +20,8 @@
     <ProjectReference Include="..\RHWebApplication.Models\RHWebApplication.Models\RHWebApplication.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\sample-data\" />
+  </ItemGroup>
+
 </Project>
