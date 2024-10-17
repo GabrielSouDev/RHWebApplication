@@ -11,8 +11,9 @@
             <MudIconButton Disabled="@_notLogged" Icon="@arrowMenu" Color="Color.Inherit" Class="white-icon" OnClick="DrawerToggle" />
                 <MudText Typo="Typo.h4">RH APPLICATION</MudText>
                 <MudSpacer />
-        <MudText Class="dropend" Typo="Typo.h6">@userName</MudText>
-        <MudButton Disabled="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
+                <MudText Class="dropend" Typo="Typo.h6">@userName</MudText>
+                <MudButton Disabled="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
+                <MudButton Disabled="@_logged" OnClick="GoToLogin" Color="Color.Warning">Login</MudButton>
             </MudAppBar>
     <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="25">
                 <NavMenu></NavMenu>
@@ -22,8 +23,9 @@
             </MudMainContent>
       </MudLayout>
 @code {
-    bool _drawerOpen;
-    bool _notLogged;
+    bool _drawerOpen = false;
+    bool _notLogged = true;
+    bool _logged = false;
     string arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
     string? userName = string.Empty;
 
@@ -34,26 +36,27 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        userName = string.Empty;
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        //if(user.Identity.IsAuthenticated)
-        userName = user.Identity.Name;
-        
-        _notLogged = false;
-        _drawerOpen = true;
-        arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
-       //if (userName is null)
-       // {
-       //     arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowRight;
-       //     _notLogged = true;
-       //     _drawerOpen = false;
-       // }
+        if(user.Identity.IsAuthenticated)
+        {
+            arrowMenu = _drawerOpen ? Icons.Material.Filled.KeyboardDoubleArrowLeft : Icons.Material.Filled.KeyboardDoubleArrowRight;
+            userName = user.Identity.Name;
+            _logged = true;
+            _notLogged = false;
+            _drawerOpen = true;  
+        }
     }
-
+    void GoToLogin()
+    {
+        NavigationManager.NavigateTo("/Login");
+    }
     async Task LogoutAsync()
     {
+        userName = string.Empty;
+        _logged = false;
         _notLogged = true;
+        _drawerOpen = false;
         await AuthStateProvider.Logout();
         NavigationManager.NavigateTo("/Login");
     }

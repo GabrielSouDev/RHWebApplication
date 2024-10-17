@@ -23,12 +23,12 @@
     private LoginRequest loginRequest = new();
     public async Task HandleLoginAsync()
     {
-         var response = await Http.PostAsJsonAsync("/login", loginRequest);
-         if (response.IsSuccessStatusCode)
-         {
-             var token = await response.Content.ReadAsStringAsync();
-             await AuthStateProvider.Login(token);
-             NavigationManager.NavigateTo("/Home");
+        var response = await Http.PostAsJsonAsync("/login", loginRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            string? token = await response.Content.ReadAsStringAsync();
+            await AuthStateProvider.Login(token);
+            NavigationManager.NavigateTo("/Home");
          }
          else
          {

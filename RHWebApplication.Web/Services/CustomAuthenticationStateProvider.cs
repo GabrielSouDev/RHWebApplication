@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using RHWebApplication.Shared.Models.UserModels;
 using System.IdentityModel.Tokens.Jwt;
@@ -22,8 +23,7 @@ namespace RHWebApplication.Web.Services
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var token = await _localStorage.GetItemAsync<string>("jwt_token");
-
+            var token = await _localStorage.GetItemAsStringAsync("jwt_token");
             if (string.IsNullOrEmpty(token))
                 return _anonymous;
 
@@ -34,17 +34,21 @@ namespace RHWebApplication.Web.Services
 
         public async Task Login(string token)
         {
-            await _localStorage.SetItemAsync("jwt_token", token);
+            Console.WriteLine($"Saving Token: {token}");
+            await _localStorage.SetItemAsStringAsync("jwt_token", token);
 
             var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt_token");
             var user = new ClaimsPrincipal(identity);
 
-            // Armazenar o nome de usuário
+            //foreach (var claim in identity.Claims)
+            //{
+            //    Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            //}
             var userName = identity.FindFirst(ClaimTypes.Name)?.Value;
 
             if (!string.IsNullOrEmpty(userName))
             {
-                await _localStorage.SetItemAsync("userName", userName);
+                await _localStorage.SetItemAsStringAsync("userName", userName);
             }
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
@@ -53,7 +57,6 @@ namespace RHWebApplication.Web.Services
         public async Task Logout()
         {
             await _localStorage.RemoveItemAsync("jwt_token");
-            await _localStorage.RemoveItemAsync("userName");
 
             NotifyAuthenticationStateChanged(Task.FromResult(_anonymous));
         }
@@ -64,8 +67,18 @@ namespace RHWebApplication.Web.Services
             var jsonBytes = ParseBase64WithoutPadding(payload);
             var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
 
-            return keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
+            var claims = keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())).ToList();
+
+            // Adicionar a reivindicação de nome de usuário se `unique_name` estiver presente
+            if (!claims.Any(c => c.Type == ClaimTypes.Name) && keyValuePairs.ContainsKey("unique_name"))
+            {
+                claims.Add(new Claim(ClaimTypes.Name, keyValuePairs["unique_name"].ToString()));
+
+            }
+
+            return claims;
         }
+
 
         private byte[] ParseBase64WithoutPadding(string base64)
         {
