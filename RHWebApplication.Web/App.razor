@@ -19,10 +19,12 @@
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
-        if (!user.Identity.IsAuthenticated)
-        {
-            NavigationManager.NavigateTo("/Home");
+        if(user.Identity is not null)
+        {    
+            if (!user.Identity.IsAuthenticated)
+            {
+                NavigationManager.NavigateTo("/Home");
+            }
         }
     }
 }

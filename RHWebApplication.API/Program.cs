@@ -41,7 +41,20 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 
-builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options => options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    // Preserva as referências, evitando erros de ciclo de referência
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+
+    // Define que propriedades nulas sejam incluídas no JSON
+    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+
+    // Mantém a nomeação das propriedades como está no modelo, sem aplicar camelCase
+    options.SerializerOptions.PropertyNamingPolicy = null;
+
+    // Permite enum serem serializados/deserializados como strings
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

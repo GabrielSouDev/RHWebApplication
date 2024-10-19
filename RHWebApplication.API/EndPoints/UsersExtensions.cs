@@ -10,7 +10,7 @@ public static class UsersExtensions
 {
     public static void AddEndPointsUsers(this WebApplication app)
     {
-        var userGroup = app.MapGroup("/Users").WithTags("User EndPoints");
+        var userGroup = app.MapGroup("/User").WithTags("User EndPoints");
         userGroup.MapGet("/", async ([FromServices]DAL<User> dalUsers) =>
         {
             var users = await dalUsers.ToListAsync();

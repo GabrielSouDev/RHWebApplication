@@ -12,7 +12,7 @@ public static class PayrollsExtensions
 {
     public static void AddEndPointsPayrolls(this WebApplication app)
     {
-        var payrollGroup = app.MapGroup("/Payrolls").WithTags("Payroll EndPoints");
+        var payrollGroup = app.MapGroup("/Payroll").WithTags("Payroll EndPoints");
 
         payrollGroup.MapGet("/", async ([FromServices]DAL<Payroll> dalPayrolls) =>
         {

@@ -1,0 +1,41 @@
+﻿@namespace RHWebApplication.Web.Dialogs.Job
+
+<MudDialog>
+	<TitleContent>Editing JobTitle</TitleContent>
+	<DialogContent>
+		<MudTextField @bind-Value="job.Title" Label="Title" />
+		<MudTextField @bind-Value="job.Description" Label="Description" />
+
+		<MudTextField @bind-Value="job.BaseSalary" Label="BaseSalary" />
+		<MudPaper Class="d-flex align-center">
+			<MudNumericField Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+							 Style="width:70%;" @bind-Value="job.BaseSalary"
+							 HideSpinButtons="true" T="decimal" Label="Base Salary" Required="true" />
+			<MudSwipeArea>
+				<MudSwitch Color="Color.Primary" @bind-Value="job.IsUnhealthy" Label="IsUnhealthy" />
+				<MudSwitch Color="Color.Primary" @bind-Value="job.IsPericulosity" Label="IsPericulosity" />
+			</MudSwipeArea>
+		</MudPaper>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+		<MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code{
+	[CascadingParameter]
+	MudDialogInstance MudDialog { get; set; }
+	[Parameter] 
+	public JobResponse job { get; set; }
+
+	private void Save()
+	{
+		MudDialog.Close(DialogResult.Ok(job));
+	}
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}

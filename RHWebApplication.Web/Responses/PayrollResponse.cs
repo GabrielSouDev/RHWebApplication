@@ -1,4 +1,4 @@
-﻿namespace RHWebApplication.API.Responses;
+﻿namespace RHWebApplication.Web.Responses;
 
 public record PayrollResponse(int Id, string EmployeeName, string JobTitle, bool IsUnhealthy, 
     bool IsPericulosity, decimal BaseSalary, decimal Gross, float OverTime, decimal Commission,

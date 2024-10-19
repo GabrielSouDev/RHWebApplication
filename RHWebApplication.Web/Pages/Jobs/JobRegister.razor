@@ -1,31 +1,58 @@
 ﻿@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject ISnackbar Snackbar
 @page "/JobRegister"
 
 <PageTitle>Register a Job</PageTitle>
 <AuthorizeView>
-    <Authorized>
-        <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh;">
-            <MudCard>
-                <MudForm>
-                    <MudField @bind-Value="jobRequest.Title">Job Title</MudField>
-                    <MudField @bind-Value="jobRequest.Description">Description</MudField>
-                    <MudSwitch @bind-Value="jobRequest.IsUnhealthy">IsUnhealthy</MudSwitch>
-                    <MudSwitch @bind-Value="jobRequest.IsPericulosity">IsPericulosity</MudSwitch>
-                    <MudField @bind-Value="jobRequest.BaseSalary" AdornmentIcon="@Icons.Material.Filled.AttachMoney">Base Salary</MudField>
-                    <MudButton ButtonType="ButtonType.Submit" Color="Color.Primary">Submit</MudButton>
-                </MudForm>
+    <Authorized Context="authContext">
+        <MudContainer Class="d-flex justify-center">
+            <MudCard Style="width: 50%;">
+                <MudCardContent>
+                    <MudForm>
+                        <MudText Class="align-center" Typo="Typo.h5">Register a Job Tittle</MudText>
+                        <MudTextField @bind-Value="jobRequest.Title" Label="Title" Required="true" />
+                        <MudTextField @bind-Value="jobRequest.Description" Label="Description" />
+                        <MudPaper Class="d-flex align-center">
+                            <MudNumericField Adornment="Adornment.Start"  AdornmentIcon="@Icons.Material.Filled.AttachMoney" 
+                              Style="width:80%;" @bind-Value="jobRequest.BaseSalary"
+                              HideSpinButtons="true" T="decimal" Label="Base Salary" Required="true" />
+                            <MudSwipeArea>
+                                <MudSwitch Color="Color.Primary" @bind-Value="jobRequest.IsUnhealthy" Label="IsUnhealthy" />
+                                <MudSwitch Color="Color.Primary" @bind-Value="jobRequest.IsPericulosity" Label="IsPericulosity" />
+                            </MudSwipeArea>
+                        </MudPaper>
+                        <MudButton Type="Submit" OnClick="SubmitJobAsync" Color="Color.Primary">Submit</MudButton>
+                    </MudForm>
+                    <MudText Color="Color.Error">@errorMenssage</MudText>
+                </MudCardContent>
             </MudCard>
         </MudContainer>
     </Authorized>
     <NotAuthorized>
         @{
-            NavigationManager.NavigateTo("/NotAuthorized");
+            NavigationManager.NavigateTo("/Login");
         }
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
-    private JobRequest jobRequest;
+    private JobRequest jobRequest = new();
+    private string errorMenssage = string.Empty;
 
-
+    public async Task SubmitJobAsync()
+    {
+        errorMenssage = string.Empty;
+        var response = await Http.PostAsJsonAsync("/Job", jobRequest);
+        if (!response.IsSuccessStatusCode)
+        {
+            if (response.RequestMessage is not null)
+                errorMenssage = await response.Content.ReadAsStringAsync();
+        }
+        else 
+        {
+            Snackbar.Add("JobTitle has been successfully Registered!", Severity.Success);
+            jobRequest = new JobRequest();
+        }
+    }
 }

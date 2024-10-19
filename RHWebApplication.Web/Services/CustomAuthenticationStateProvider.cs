@@ -34,7 +34,6 @@ namespace RHWebApplication.Web.Services
 
         public async Task Login(string token)
         {
-            Console.WriteLine($"Saving Token: {token}");
             await _localStorage.SetItemAsStringAsync("jwt_token", token);
 
             var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt_token");
@@ -68,7 +67,6 @@ namespace RHWebApplication.Web.Services
             var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
 
             var claims = keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())).ToList();
-
             // Adicionar a reivindicação de nome de usuário se `unique_name` estiver presente
             if (!claims.Any(c => c.Type == ClaimTypes.Name) && keyValuePairs.ContainsKey("unique_name"))
             {

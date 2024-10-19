@@ -1,0 +1,26 @@
+﻿@namespace RHWebApplication.Web.Dialogs.Job
+
+<MudDialog>
+	<TitleContent>Are you sure to delete @jobTitle?</TitleContent>
+	<DialogActions>
+		<MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+		<MudButton OnClick="Save" Color="Color.Primary">Yes</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code{
+	[CascadingParameter]
+	MudDialogInstance MudDialog { get; set; }
+	[Parameter] 
+	public string jobTitle { get; set; }
+
+	private void Save()
+	{
+		MudDialog.Close(DialogResult.Ok(jobTitle));
+	}
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}

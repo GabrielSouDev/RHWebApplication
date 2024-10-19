@@ -20,6 +20,7 @@ public static class JobsExtensions
             {
                 jobsResponse.Add(new JobResponse(job.Id, job.Title, job.Description, job.IsUnhealthy, job.IsPericulosity, job.BaseSalary));
             }
+
             return Results.Ok(jobsResponse);
         });
 
@@ -34,9 +35,16 @@ public static class JobsExtensions
 
         jobGroup.MapPost("/", async ([FromServices]DAL<Job> dalJobs, [FromBody]JobRequest jobRequest) =>
         {
-            await dalJobs.AddAsync(new Job(jobRequest.Title, jobRequest.Description, jobRequest.IsUnhealthy,
-                jobRequest.IsPericulosity,jobRequest.BaseSalary));
-            return Results.Created();
+            
+            var job = await dalJobs.FindByAsync( j => j.Title == jobRequest.Title);
+
+            if(job is null)
+            { 
+                await dalJobs.AddAsync(new Job(jobRequest.Title, jobRequest.Description, jobRequest.IsUnhealthy,
+                    jobRequest.IsPericulosity,jobRequest.BaseSalary));
+                return Results.Created();
+            }
+            return Results.Conflict("Job title is is already created!");
         });
 
         jobGroup.MapPut("/", async ([FromServices]DAL<Job> dalJobs, [FromBody]JobEditRequest jobEditRequest) => 

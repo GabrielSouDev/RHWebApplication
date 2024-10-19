@@ -5,15 +5,16 @@
 <PageTitle>Home</PageTitle>
 <AuthorizeView>
     <Authorized>
-        <MudText Class="d-flex justify-center align-center">Bem-vindo, @context.User.Identity.Name!</MudText>
+        <MudText Class="d-flex justify-center align-center">Bem-vindo, @UserName!</MudText>
     </Authorized>
     <NotAuthorized>
         @{
-            NavigationManager.NavigateTo("/NotAuthorized");
+            NavigationManager.NavigateTo("/Login");
         }
     </NotAuthorized>
 </AuthorizeView>
 
 @code{
-
+    [CascadingParameter]
+    public string? UserName { get; set; }
 }

@@ -9,26 +9,28 @@
 
 <MudLayout>
        <MudAppBar Class="d-flex align-items-center" Color="Color.Primary" Fixed="true" Elevation="25">
-       <MudIconButton Disabled="@_notLogged" Icon="@arrowMenu" Color="Color.Inherit" Class="white-icon" OnClick="DrawerToggle" />
+        <MudIconButton Disabled="@_notLogged" hidden="@_notLogged" Icon="@arrowMenu" Color="Color.Inherit" Class="white-icon" OnClick="DrawerToggle" />
            <MudText Typo="Typo.h4">RH APPLICATION</MudText>
            <MudSpacer />
            <MudText Class="dropend" Typo="Typo.h6">@userName</MudText>
-           <MudButton Disabled="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
-           <MudButton Disabled="@_logged" OnClick="GoToLogin" Color="Color.Warning">Login</MudButton>
+        <MudButton Disabled="@_logged" hidden="@_logged" OnClick="GoToLogin" Color="Color.Warning">Login</MudButton>
+        <MudButton Disabled="@_notLogged" hidden="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
        </MudAppBar>
        <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="10">
            <NavMenu></NavMenu>
        </MudDrawer>
        <MudMainContent Class="menu-content">
-           @Body
+            <CascadingValue Value="userName">
+                @Body
+            </CascadingValue>
        </MudMainContent>
 </MudLayout>
 @code {
-    string? userName = string.Empty;
-    bool _drawerOpen = false;
-    bool _notLogged = true;
-    bool _logged = false;
-    string arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
+    private string? userName;
+    private bool _drawerOpen = false;
+    private bool _notLogged = true;
+    private bool _logged = false;
+    private string arrowMenu = Icons.Material.Filled.KeyboardDoubleArrowLeft;
 
     private MudTheme currentTheme = new MudTheme()
         {
@@ -39,13 +41,16 @@
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        if(user.Identity.IsAuthenticated)
+        if(user.Identity is not null)
         {
-            arrowMenu = _drawerOpen ? Icons.Material.Filled.KeyboardDoubleArrowLeft : Icons.Material.Filled.KeyboardDoubleArrowRight;
-            userName = user.Identity.Name;
-            _logged = true;
-            _notLogged = false;
-            _drawerOpen = true;  
+            if(user.Identity.IsAuthenticated)
+            {
+                arrowMenu = _drawerOpen ? Icons.Material.Filled.KeyboardDoubleArrowLeft : Icons.Material.Filled.KeyboardDoubleArrowRight;
+                userName = user.Identity.Name;
+                _logged = true;
+                _notLogged = false;
+                _drawerOpen = true;  
+            }    
         }
     }
     void GoToLogin()
