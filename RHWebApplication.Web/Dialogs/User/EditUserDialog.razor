@@ -1,0 +1,32 @@
+﻿@namespace RHWebApplication.Web.Dialogs
+
+<MudDialog>
+	<TitleContent>Editing User</TitleContent>
+	<DialogContent>
+		<MudTextField @bind-Value="user.Name" Label="Name" />
+		<MudTextField @bind-Value="user.Login" Label="Login" />
+		<MudTextField @bind-Value="user.Password" InputType="InputType.Password" Label="Password" />
+		<MudTextField @bind-Value="user.Email" Label="Email" />
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+		<MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter]
+	MudDialogInstance MudDialog { get; set; }
+	[Parameter]
+	public UserRequest user { get; set; }
+
+	private void Save()
+	{
+		MudDialog.Close(DialogResult.Ok(user));
+	}
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}

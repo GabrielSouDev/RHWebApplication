@@ -44,9 +44,12 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Job>()
             .Property(j => j.BaseSalary)
             .HasPrecision(18, 2); // 18 é a precisão, 2 é a escala = decimal
+		modelBuilder.Entity<Job>()
+			.Property(j => j.OverTimeValue)
+			.HasPrecision(18, 2);
 
-        // Configuração para a entidade Payroll
-        modelBuilder.Entity<Payroll>()
+		// Configuração para a entidade Payroll
+		modelBuilder.Entity<Payroll>()
             .Property(p => p.Additionals)
             .HasPrecision(18, 2);
 
@@ -69,5 +72,33 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Payroll>()
             .Property(p => p.OverTime)
             .HasColumnType("float");
-    }
+		modelBuilder.Entity<Payroll>()
+	.Property(p => p.INSSDeduction)
+	.HasPrecision(18, 2);
+		modelBuilder.Entity<Payroll>()
+	.Property(p => p.IRRFDeduction)
+	.HasPrecision(18, 2);
+		modelBuilder.Entity<Payroll>()
+	.Property(p => p.OverTimeAditionals)
+	.HasPrecision(18, 2);
+		modelBuilder.Entity<Payroll>()
+	.Property(p => p.PericulosityValue)
+	.HasPrecision(18, 2);
+		modelBuilder.Entity<Payroll>()
+	.Property(p => p.UnhealthyValue)
+	.HasPrecision(18, 2);
+		modelBuilder.Entity<Payroll>()
+	.Property(p => p.Net)
+	.HasPrecision(18, 2);
+		modelBuilder.Entity<Payroll>()
+	.Property(p => p.Net)
+	.HasPrecision(18, 2);
+		modelBuilder.Entity<Payroll>()
+	.Property(p => p.Net)
+	.HasPrecision(18, 2);
+		modelBuilder.Entity<Payroll>()
+	.Property(p => p.Net)
+	.HasPrecision(18, 2);
+
+	}
 }

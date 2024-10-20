@@ -1,0 +1,128 @@
+﻿@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@page "/JobList"
+
+
+<PageTitle>JobTitle List</PageTitle>
+<AuthorizeView>
+    <Authorized Context="authContext">
+        <MudContainer>
+            @if (_isLoading)
+            {
+                <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                </MudContainer>
+            }
+            else
+            {
+                <MudDataGrid Dense="true" T="JobResponse" Items="_jobs" Striped="true" Bordered="true" QuickFilter="@_quickFilter" Elevation="25">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Edit a JobTitle</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn Editable="false" Property="x => x.Id" />
+                        <PropertyColumn Property="x => x.Title" />
+                        <PropertyColumn Property="x => x.Description" />
+                        <PropertyColumn Property="x => x.UnhealthyLevel" />
+                        <PropertyColumn Property="x => x.IsPericulosity" />
+                        <PropertyColumn Property="x => x.OverTimeValue" />
+                        <PropertyColumn Property="x => x.BaseSalary" />
+                        <TemplateColumn Title="Options" StickyRight="true">
+                            <CellTemplate Context="cellContext">
+                                <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Edit" IconColor="Color.Surface" Size="@Size.Small" OnClick="() => EditJobDialogAsync(cellContext.Item)" />
+                                <MudFab Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Surface" Size="@Size.Small" OnClick="() => DeleteJobAsync(cellContext.Item)" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="JobResponse" />
+                    </PagerContent>
+                </MudDataGrid>
+            }
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/Login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private List<JobResponse>? _jobs;
+    private string? _searchString;
+    private List<string> _events = new();
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var jobList = await Http.GetFromJsonAsync<List<JobResponse>>("/Job");
+        if(jobList is not null)
+        {
+            _jobs = jobList;
+            _isLoading = false;
+        }
+    }
+
+    private Func<JobResponse, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Title.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Description.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
+
+    private async Task EditJobDialogAsync(JobResponse job)
+    {
+        var parameters = new DialogParameters { ["job"] = job };
+        var dialog = DialogService.Show<EditJobDialog>(null, parameters);
+        var result = await dialog.Result;
+        var updatedJob = (JobResponse)result.Data;
+
+        if (!result.Canceled && updatedJob != null)
+        {
+            var response = await Http.PutAsJsonAsync("/job", updatedJob);
+
+            if(response.IsSuccessStatusCode)
+            {
+                var index = _jobs.FindIndex(j => j.Id == updatedJob.Id);
+                if (index != -1)
+                {
+                    _jobs[index] = updatedJob;
+                }
+                Snackbar.Add("JobTitle has been Updated!", Severity.Success);
+            }
+            else Snackbar.Add("JobTitle has not altered!", Severity.Error);
+        }
+        else Snackbar.Add("JobTitle has not altered!", Severity.Error);
+    }
+
+    private async Task DeleteJobAsync(JobResponse job)
+    {
+        var parameters = new DialogParameters { ["jobTitle"] = job.Title };
+        var dialog = DialogService.Show<DeleteJobDialog>(null, parameters);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var response = await Http.DeleteAsync($"/job/{job.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                _jobs.Remove(job);
+
+                Snackbar.Add("JobTitle has been Deleted!", Severity.Success);
+            }
+            else Snackbar.Add("JobTitle has not altered!", Severity.Error);
+        }
+        else Snackbar.Add("JobTitle has not altered!", Severity.Error);
+    }
+}

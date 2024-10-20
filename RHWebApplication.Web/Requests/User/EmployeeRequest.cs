@@ -2,22 +2,25 @@
 using System.ComponentModel.Design;
 
 namespace RHWebApplication.Web.Responses;
-public class EmployeeResponse
+public class EmployeeRequest
 {
-    public EmployeeResponse(int id, string login, string password, string name, string email, int dependents, string jobTitle, DateTime creationDate, DateTime terminationDate, bool isActive)
+    public EmployeeRequest() { }
+    public EmployeeRequest(int id, string login, string password, string name, string email, int dependents, string jobTitle, DateTime creationDate, DateTime terminationDate, bool isActive)
     {
         Id = id;
         Login = login;
+        Password = password;
         Name = name;
         Email = email;
         Dependents = dependents;
-        JobTitle = jobTitle;
+		JobTitle = jobTitle;
         CreationDate = creationDate;
         TerminationDate = terminationDate;
         IsActive = isActive;
     }
     public int Id { get; set; }
     public string Login { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     [EmailAddress]
     public string Email { get; set; } = string.Empty;

@@ -1,22 +1,22 @@
-﻿@namespace RHWebApplication.Web.Dialogs.Job
+﻿@namespace RHWebApplication.Web.Dialogs
 
 <MudDialog>
-	<TitleContent>Are you sure to delete @jobTitle?</TitleContent>
+	<TitleContent>Are you sure to delete @login?</TitleContent>
 	<DialogActions>
 		<MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
 		<MudButton OnClick="Save" Color="Color.Primary">Yes</MudButton>
 	</DialogActions>
 </MudDialog>
 
-@code{
+@code {
 	[CascadingParameter]
 	MudDialogInstance MudDialog { get; set; }
-	[Parameter] 
-	public string jobTitle { get; set; }
+	[Parameter]
+	public string login { get; set; }
 
 	private void Save()
 	{
-		MudDialog.Close(DialogResult.Ok(jobTitle));
+		MudDialog.Close(DialogResult.Ok(login));
 	}
 
 	private void Cancel()

@@ -1,0 +1,130 @@
+﻿@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@page "/UserList"
+
+<PageTitle>User List</PageTitle>
+<AuthorizeView>
+    <Authorized Context="authContext">
+        <MudContainer>
+            @if (_isLoading)
+            {
+                <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                </MudContainer>
+            }
+            else
+            {
+                <MudDataGrid Dense="true" T="UserResponse" Items="_users" Striped="true" Bordered="true" QuickFilter="@_quickFilter" Elevation="25">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">User List</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" Immediate="true" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn Editable="false" Property="x => x.Id" />
+                        <PropertyColumn Property="x => x.Name" />
+                        <PropertyColumn Property="x => x.Login" />
+                        <PropertyColumn Property="x => x.Email" />
+                        <PropertyColumn Property="x => x.CreationDate" />
+                        <PropertyColumn Property="x => x.IsActive" />
+                        <TemplateColumn Title="Options" StickyRight="true">
+                            <CellTemplate Context="cellContext">
+                                <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Edit" IconColor="Color.Surface" Size="@Size.Small" OnClick="() => EditUserDialogAsync(cellContext.Item)" />
+                                <MudFab Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Surface" Size="@Size.Small" OnClick="() => DeleteUserAsync(cellContext.Item)" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="UserResponse" />
+                    </PagerContent>
+                </MudDataGrid>
+            }
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/Login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private List<UserResponse>? _users = new();
+    private string? _searchString;
+    private List<string> _events = new();
+    private bool _isLoading = true;
+    protected override async Task OnInitializedAsync()
+    {
+        var userList = await Http.GetFromJsonAsync<List<UserResponse>>("User");
+        if (userList is not null)
+        {
+            _users = userList;
+            _isLoading = false;
+        }
+    }
+
+    private Func<UserResponse, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Login.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.Email.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    };
+
+    private async Task EditUserDialogAsync(UserResponse user)
+    {
+        UserRequest userRequest = new(user.Id, user.Login, string.Empty, user.Name,user.Email);
+        var parameters = new DialogParameters { ["user"] = userRequest };
+        var dialog = DialogService.Show<EditUserDialog>(null, parameters);
+        var result = await dialog.Result;
+        var updatedUser = (UserRequest)result.Data;
+
+        //talvez precise converter para request
+        if (!result.Canceled && updatedUser != null)
+        {
+            var response = await Http.PutAsJsonAsync("/User", updatedUser);
+
+            if(response.IsSuccessStatusCode)
+            {
+                var index = _users.FindIndex(j => j.Id == updatedUser.Id);
+                if (index != -1)
+                {
+                    _users[index] = new UserResponse(updatedUser.Id, updatedUser.Login, updatedUser.Name, updatedUser.Email, user.CreationDate, user.IsActive);
+                }
+                Snackbar.Add("User has been Updated!", Severity.Success);
+            }
+            else Snackbar.Add("User has not altered!", Severity.Error);
+        }
+        else Snackbar.Add("User has not altered!", Severity.Error);
+    }
+
+    private async Task DeleteUserAsync(UserResponse user)
+    {
+        var parameters = new DialogParameters { ["login"] = user.Name };
+        var dialog = DialogService.Show<DeleteUserDialog>(null, parameters);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            var response = await Http.DeleteAsync($"/User/{user.Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                _users.Remove(user);
+
+                Snackbar.Add("User has been Deleted!", Severity.Success);
+            }
+            else Snackbar.Add("User has not altered!", Severity.Error);
+        }
+        else Snackbar.Add("User has not altered!", Severity.Error);
+    }
+}

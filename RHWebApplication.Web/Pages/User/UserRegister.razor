@@ -1,0 +1,85 @@
+﻿@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@page "/UserRegister"
+
+<PageTitle> Register a User</PageTitle>
+<AuthorizeView>
+    <Authorized Context="authContext">
+        <MudContainer Class="d-flex justify-center">
+            <MudCard Style="width: 50%;">
+                <MudCardContent>
+                    <MudForm Model="@_userRequest">
+                        <MudText Class="align-center" Typo="Typo.h5">Register a User</MudText>
+                        <MudTextField @bind-Value="_userRequest.Name" Label="Name" Required="true" />
+                        <MudTextField @bind-Value="_userRequest.Login" Label="Login" Required="true" />
+                        <MudTextField @bind-Value="_userRequest.Password" Label="Password" InputType="InputType.Password" Required="true" />
+                        <MudTextField @bind-Value="_userRequest.Email" Label="Email" For="@(()=> _userRequest.Email)"  Required="true" />
+                        <MudTextField T="int" @bind-Value="_userRequest.Dependents" Label="Dependents" Required="true" />
+                        <MudSwipeArea Class="pt-6 d-flex justify-center flex-grow-1 gap-4 align-center">
+                            <MudText Align="Align.Center">Employee</MudText>
+                            <MudSwitch Color="Color.Primary" @bind-Value="_IsAdmin" />
+                            <MudText Align="Align.Center">Admin</MudText>
+                        </MudSwipeArea>
+                        <MudSelect Disabled="@(_IsAdmin)" @bind-Value="_userRequest.JobTitle" Label="Job Title" Required="@(!_IsAdmin)">
+                            @{
+                                foreach(var job in _jobList)
+                                {
+                                    if(job is not null)
+                                    {
+                                        <MudSelectItem Value="@job">@job</MudSelectItem>
+                                    }
+                                }
+                            }
+                        </MudSelect>
+                        <MudButton Type="Submit" OnClick="SubmitUserAsync" Color="Color.Primary">Submit</MudButton>
+                    </MudForm>
+                    <MudText Color="Color.Error">@_errorMenssage</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/Login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private EmployeeRequest _userRequest = new();
+    private bool _IsAdmin = false;
+    private string _errorMenssage = string.Empty;
+    private List<string> _jobList = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _jobList = await Http.GetFromJsonAsync<List<String>>("/Job/Title");
+        
+    }
+
+    public async Task SubmitUserAsync()
+    {
+        _errorMenssage = string.Empty;
+        HttpResponseMessage? response;
+        if (_IsAdmin) //admin
+        {
+            AdminRequest adminRequest = new(_userRequest.Login, _userRequest.Password, _userRequest.Name, _userRequest.Email);
+            response = await Http.PostAsJsonAsync("/Admin", adminRequest);
+        }
+        else //employee
+        {
+            response = await Http.PostAsJsonAsync("/Employee", _userRequest);
+        }
+        if (!response.IsSuccessStatusCode)
+        {
+            if (response.RequestMessage is not null)
+                _errorMenssage = await response.Content.ReadAsStringAsync();
+        }
+        else 
+        {
+            Snackbar.Add("User has been successfully Registered!", Severity.Success);
+            _userRequest = new EmployeeRequest();
+        }
+    }
+}

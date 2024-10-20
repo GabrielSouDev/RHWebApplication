@@ -21,7 +21,7 @@ public static class PayrollsExtensions
             foreach (var payroll in payrolls)
             {
                 payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Title,
-                    payroll.Employee.Job.IsUnhealthy, payroll.Employee.Job.IsPericulosity, payroll.Employee.Job.BaseSalary, 
+                    payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity, payroll.Employee.Job.BaseSalary, 
                     payroll.Gross, payroll.OverTime, payroll.Commission, payroll.Additionals, payroll.Deductions,
                     payroll.Net, payroll.CreationDate));
             }
@@ -36,7 +36,7 @@ public static class PayrollsExtensions
                 return Results.NotFound("Payroll is not found!");
 
             var payrollResponse = new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Title, 
-            payroll.Employee.Job.IsUnhealthy, payroll.Employee.Job.IsPericulosity, payroll.Employee.Job.BaseSalary,
+            payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity, payroll.Employee.Job.BaseSalary,
             payroll.Gross, payroll.OverTime, payroll.Commission, payroll.Additionals, payroll.Deductions,
             payroll.Net, payroll.CreationDate);
 

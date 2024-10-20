@@ -19,7 +19,7 @@ public static class EmployeesExtensions
             var employeesResponse = new List<EmployeeResponse>();
             foreach(var employee in employees)
             {
-                employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Name, employee.Job.Title, employee.Login, employee.Email, 
+                employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Name, employee.Dependents, employee.Job.Title, employee.Login, employee.Email, 
                     employee.CreationDate, employee.TerminationDate, employee.IsActive));
             }
             return Results.Ok(employeesResponse);
@@ -30,7 +30,7 @@ public static class EmployeesExtensions
             var employee = await dalUsers.FindByAsync<Employee>(a => a.Id == Id);
             if (employee is null)
                 return Results.NotFound("Employee ID is not found!");
-            var employeeResponse = new EmployeeResponse(employee.Id, employee.Name, employee.Job.Title, employee.Login, employee.Email,
+            var employeeResponse = new EmployeeResponse(employee.Id, employee.Name, employee.Dependents, employee.Job.Title, employee.Login, employee.Email,
                     employee.CreationDate, employee.TerminationDate, employee.IsActive);
         return Results.Ok(employeeResponse);
         });
@@ -41,7 +41,7 @@ public static class EmployeesExtensions
             if (job is null)
                 return Results.NotFound(employeeRequest.JobTitle + " Job Title is not found!");
 
-            var employee = new Employee(employeeRequest.Login, employeeRequest.Password, employeeRequest.Name, employeeRequest.Email, job);
+            var employee = new Employee(employeeRequest.Login, employeeRequest.Password, employeeRequest.Name, employeeRequest.Email, job, employeeRequest.Dependents);
             await dalEmployees.AddAsync(employee);
             return Results.Created();
         });

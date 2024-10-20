@@ -1,3 +1,3 @@
 ﻿namespace RHWebApplication.API.Requests;
 
-public record PayrollRequest(string EmployeeName, float OverTime, decimal Commission);
+public record PayrollRequest(int Id, string EmployeeName, float OverTime, decimal Commission);

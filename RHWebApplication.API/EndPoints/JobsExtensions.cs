@@ -18,10 +18,23 @@ public static class JobsExtensions
             var jobsResponse = new List<JobResponse>();
             foreach (var job in jobs)
             {
-                jobsResponse.Add(new JobResponse(job.Id, job.Title, job.Description, job.IsUnhealthy, job.IsPericulosity, job.BaseSalary));
+                jobsResponse.Add(new JobResponse(job.Id, job.Title, job.Description, job.UnhealthyLevel, job.IsPericulosity, job.OverTimeValue, job.BaseSalary));
             }
 
             return Results.Ok(jobsResponse);
+        });
+
+        jobGroup.MapGet("/Title", async ([FromServices] DAL<Job> dalJobs) =>
+        {
+            var jobs = await dalJobs.ToListAsync();
+            List<string> titleList = new List<string>();
+            foreach (var job in jobs)
+            {
+                if(job.Title is not null)
+                    titleList.Add(job.Title);
+            }
+
+            return Results.Ok(titleList);
         });
 
         jobGroup.MapGet("/{Id}", async ([FromServices]DAL<Job> dalJobs, int Id) =>
@@ -30,7 +43,7 @@ public static class JobsExtensions
             if(job is null)
                 return Results.NotFound();
 
-            return Results.Ok(new JobResponse(job.Id, job.Title, job.Description, job.IsUnhealthy, job.IsPericulosity, job.BaseSalary));
+            return Results.Ok(new JobResponse(job.Id, job.Title, job.Description, job.UnhealthyLevel, job.IsPericulosity, job.OverTimeValue, job.BaseSalary));
         });
 
         jobGroup.MapPost("/", async ([FromServices]DAL<Job> dalJobs, [FromBody]JobRequest jobRequest) =>
@@ -40,11 +53,11 @@ public static class JobsExtensions
 
             if(job is null)
             { 
-                await dalJobs.AddAsync(new Job(jobRequest.Title, jobRequest.Description, jobRequest.IsUnhealthy,
-                    jobRequest.IsPericulosity,jobRequest.BaseSalary));
+                await dalJobs.AddAsync(new Job(jobRequest.Title, jobRequest.Description, jobRequest.UnhealthyLevel,
+                    jobRequest.IsPericulosity, job.OverTimeValue, jobRequest.BaseSalary));
                 return Results.Created();
             }
-            return Results.Conflict("Job title is is already created!");
+            return Results.Conflict("Job title is already created!");
         });
 
         jobGroup.MapPut("/", async ([FromServices]DAL<Job> dalJobs, [FromBody]JobEditRequest jobEditRequest) => 
@@ -55,8 +68,9 @@ public static class JobsExtensions
 
             job.Title = jobEditRequest.Title;
             job.Description = jobEditRequest.Description;
-            job.IsUnhealthy = jobEditRequest.IsUnhealthy;
+            job.UnhealthyLevel = jobEditRequest.UnhealthyLevel;
             job.IsPericulosity = jobEditRequest.IsPericulosity;
+            job.OverTimeValue = jobEditRequest.OverTimeValue;
             job.BaseSalary = jobEditRequest.BaseSalary;
             await dalJobs.UpdateAsync(job);
             return Results.NoContent();

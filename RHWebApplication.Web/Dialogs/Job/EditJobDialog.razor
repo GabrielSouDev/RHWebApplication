@@ -1,4 +1,4 @@
-﻿@namespace RHWebApplication.Web.Dialogs.Job
+﻿@namespace RHWebApplication.Web.Dialogs
 
 <MudDialog>
 	<TitleContent>Editing JobTitle</TitleContent>
@@ -12,9 +12,17 @@
 							 Style="width:70%;" @bind-Value="job.BaseSalary"
 							 HideSpinButtons="true" T="decimal" Label="Base Salary" Required="true" />
 			<MudSwipeArea>
-				<MudSwitch Color="Color.Primary" @bind-Value="job.IsUnhealthy" Label="IsUnhealthy" />
+				<MudSelect @bind-Value="job.UnhealthyLevel" Label="Unhealthy Level">
+					<MudSelectItem Value="0">None</MudSelectItem>
+					<MudSelectItem Value="1">Minimum </MudSelectItem>
+					<MudSelectItem Value="2">Medium </MudSelectItem>
+					<MudSelectItem Value="3">Maximum</MudSelectItem>
+				</MudSelect>
 				<MudSwitch Color="Color.Primary" @bind-Value="job.IsPericulosity" Label="IsPericulosity" />
 			</MudSwipeArea>
+			<MudNumericField Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+							 Style="width:80%;" @bind-Value="job.OverTimeValue"
+							 HideSpinButtons="true" T="decimal" Label="OverTimeValue" Required="true" />
 		</MudPaper>
 	</DialogContent>
 	<DialogActions>
