@@ -1,5 +1,5 @@
 ﻿@inject NavigationManager NavigationManager
-@inject HttpClient Http
+@inject JobService JobService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @page "/JobList"
@@ -60,7 +60,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var jobList = await Http.GetFromJsonAsync<List<JobResponse>>("/Job");
+        var jobList = await JobService.GetJobList();
         if(jobList is not null)
         {
             _jobs = jobList;
@@ -91,7 +91,8 @@
 
         if (!result.Canceled && updatedJob != null)
         {
-            var response = await Http.PutAsJsonAsync("/job", updatedJob);
+            var requestJob = new JobRequest(updatedJob.Id, updatedJob.Title, updatedJob.Description, updatedJob.UnhealthyLevel, updatedJob.IsPericulosity, updatedJob.OverTimeValue, updatedJob.BaseSalary);
+            var response = await JobService.PutJob(requestJob);
 
             if(response.IsSuccessStatusCode)
             {
@@ -114,7 +115,7 @@
         var result = await dialog.Result;
         if (!result.Canceled)
         {
-            var response = await Http.DeleteAsync($"/job/{job.Id}");
+            var response = await JobService.DeleteJob(job.Id);
             if (response.IsSuccessStatusCode)
             {
                 _jobs.Remove(job);

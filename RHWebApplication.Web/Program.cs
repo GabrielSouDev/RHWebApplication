@@ -20,5 +20,9 @@ builder.Services.AddScoped<CustomAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthStateProvider>());
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7019") });
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<EmployeeService>();
+builder.Services.AddScoped<JobService>();
 
 await builder.Build().RunAsync();

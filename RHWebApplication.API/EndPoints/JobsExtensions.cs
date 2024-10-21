@@ -54,7 +54,7 @@ public static class JobsExtensions
             if(job is null)
             { 
                 await dalJobs.AddAsync(new Job(jobRequest.Title, jobRequest.Description, jobRequest.UnhealthyLevel,
-                    jobRequest.IsPericulosity, job.OverTimeValue, jobRequest.BaseSalary));
+                    jobRequest.IsPericulosity, jobRequest.OverTimeValue, jobRequest.BaseSalary));
                 return Results.Created();
             }
             return Results.Conflict("Job title is already created!");

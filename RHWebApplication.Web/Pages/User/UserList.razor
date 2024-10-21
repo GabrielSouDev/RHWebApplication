@@ -1,5 +1,5 @@
 ﻿@inject NavigationManager NavigationManager
-@inject HttpClient Http
+@inject UserService UserService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @page "/UserList"
@@ -57,7 +57,7 @@
     private bool _isLoading = true;
     protected override async Task OnInitializedAsync()
     {
-        var userList = await Http.GetFromJsonAsync<List<UserResponse>>("User");
+        var userList = await UserService.GetUsers();
         if (userList is not null)
         {
             _users = userList;
@@ -93,14 +93,15 @@
         //talvez precise converter para request
         if (!result.Canceled && updatedUser != null)
         {
-            var response = await Http.PutAsJsonAsync("/User", updatedUser);
-
+            var response = await UserService.PutUser(updatedUser);
             if(response.IsSuccessStatusCode)
             {
                 var index = _users.FindIndex(j => j.Id == updatedUser.Id);
+
                 if (index != -1)
                 {
-                    _users[index] = new UserResponse(updatedUser.Id, updatedUser.Login, updatedUser.Name, updatedUser.Email, user.CreationDate, user.IsActive);
+                    var updatedUserTableElement = new UserResponse(updatedUser.Id, updatedUser.Login, updatedUser.Name, updatedUser.Email, user.CreationDate, user.IsActive); ;
+                    _users[index] = updatedUserTableElement;
                 }
                 Snackbar.Add("User has been Updated!", Severity.Success);
             }
@@ -114,13 +115,13 @@
         var parameters = new DialogParameters { ["login"] = user.Name };
         var dialog = DialogService.Show<DeleteUserDialog>(null, parameters);
         var result = await dialog.Result;
+
         if (!result.Canceled)
         {
-            var response = await Http.DeleteAsync($"/User/{user.Id}");
+            var response = await UserService.DeleteUser(user.Id);
             if (response.IsSuccessStatusCode)
             {
                 _users.Remove(user);
-
                 Snackbar.Add("User has been Deleted!", Severity.Success);
             }
             else Snackbar.Add("User has not altered!", Severity.Error);

@@ -1,5 +1,5 @@
 ﻿@inject NavigationManager NavigationManager
-@inject HttpClient Http
+@inject JobService JobService
 @inject ISnackbar Snackbar
 @page "/JobRegister"
 
@@ -51,7 +51,7 @@
     public async Task SubmitJobAsync()
     {
         _errorMenssage = string.Empty;
-        var response = await Http.PostAsJsonAsync("/Job", _jobRequest);
+        var response = await JobService.PostJob(_jobRequest);
         if (!response.IsSuccessStatusCode)
         {
             if (response.RequestMessage is not null)

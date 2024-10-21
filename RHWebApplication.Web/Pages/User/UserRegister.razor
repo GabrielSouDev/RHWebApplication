@@ -1,5 +1,7 @@
 ﻿@inject NavigationManager NavigationManager
-@inject HttpClient Http
+@inject JobService JobService
+@inject AdminService AdminService
+@inject EmployeeService EmployeeService
 @inject ISnackbar Snackbar
 @page "/UserRegister"
 
@@ -54,8 +56,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _jobList = await Http.GetFromJsonAsync<List<String>>("/Job/Title");
-        
+        _jobList = await JobService.GetJobTitles();
     }
 
     public async Task SubmitUserAsync()
@@ -65,11 +66,11 @@
         if (_IsAdmin) //admin
         {
             AdminRequest adminRequest = new(_userRequest.Login, _userRequest.Password, _userRequest.Name, _userRequest.Email);
-            response = await Http.PostAsJsonAsync("/Admin", adminRequest);
+            response = await AdminService.PostAdmin(adminRequest);
         }
         else //employee
         {
-            response = await Http.PostAsJsonAsync("/Employee", _userRequest);
+            response = await EmployeeService.PostEmployee(_userRequest);
         }
         if (!response.IsSuccessStatusCode)
         {

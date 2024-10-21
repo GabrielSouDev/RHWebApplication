@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RHWebApplication.API.EndPoints;
@@ -11,15 +11,21 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<ApplicationContext>((options) =>
+{
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:RHDatabase"])
+    .UseLazyLoadingProxies();
+});
+
 builder.Services.AddCors(options =>
 {
-options.AddPolicy("AllowAll",
-    builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -65,13 +71,8 @@ builder.Services.AddTransient<DAL<Employee>>();
 builder.Services.AddTransient<DAL<Payroll>>();
 builder.Services.AddTransient<DAL<Job>>();
 
-builder.Services.AddDbContext<ApplicationContext>((options) =>
-{
-    options.UseSqlServer(builder.Configuration["ConnectionStrings:RHDatabase"])
-    .UseLazyLoadingProxies();
-});
-
 var app = builder.Build();
+
 app.UseCors("AllowAll");
 
 app.UseAuthentication();
