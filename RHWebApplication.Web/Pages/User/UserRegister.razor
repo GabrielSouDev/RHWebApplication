@@ -70,17 +70,29 @@
         }
         else //employee
         {
-            response = await EmployeeService.PostEmployee(_userRequest);
+            if (_userRequest.JobTitle is not null)
+            {
+                response = await EmployeeService.PostEmployee(_userRequest);
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (response.RequestMessage is not null)
+                    {
+                        _errorMenssage = await response.Content.ReadAsStringAsync();
+                        Snackbar.Add("User has not Registred!", Severity.Error);
+                    }
+                }
+                else
+                {
+                    Snackbar.Add("User has been successfully Registered!", Severity.Success);
+                    _userRequest = new EmployeeRequest();
+                }
+            }
+            else
+            {
+                _errorMenssage = "Necessary choice a Job Title to register a employee!";
+                Snackbar.Add("Necessary choice a Job Title to register a employee!", Severity.Error);
+            }
         }
-        if (!response.IsSuccessStatusCode)
-        {
-            if (response.RequestMessage is not null)
-                _errorMenssage = await response.Content.ReadAsStringAsync();
-        }
-        else 
-        {
-            Snackbar.Add("User has been successfully Registered!", Severity.Success);
-            _userRequest = new EmployeeRequest();
-        }
+        
     }
 }

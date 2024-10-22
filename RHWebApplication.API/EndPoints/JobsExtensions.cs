@@ -24,7 +24,7 @@ public static class JobsExtensions
             return Results.Ok(jobsResponse);
         });
 
-        jobGroup.MapGet("/Title", async ([FromServices] DAL<Job> dalJobs) =>
+        jobGroup.MapGet("/Titles", async ([FromServices] DAL<Job> dalJobs) =>
         {
             var jobs = await dalJobs.ToListAsync();
             List<string> titleList = new List<string>();

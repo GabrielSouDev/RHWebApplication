@@ -45,9 +45,9 @@ public static class PayrollsExtensions
 
         payrollGroup.MapPost("/", async ([FromServices]DAL<Payroll> dalPayrolls, [FromServices]DAL<User> dalUsers, [FromBody]PayrollRequest payrollRequest) => 
         {
-            var employee = await dalUsers.FindByAsync<Employee>(a => a.Name.Equals(payrollRequest.EmployeeName));
+            var employee = await dalUsers.FindByAsync<Employee>(a => a.Id.Equals(payrollRequest.EmployeeId));
             if (employee is null)
-                return Results.NotFound("Employee name is not found!");
+                return Results.NotFound("Employee is not found!");
 
             await dalPayrolls.AddAsync(new Payroll(employee, payrollRequest.OverTime, payrollRequest.Commission));
             return Results.Created();

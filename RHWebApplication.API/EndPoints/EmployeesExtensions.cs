@@ -19,8 +19,7 @@ public static class EmployeesExtensions
             var employeesResponse = new List<EmployeeResponse>();
             foreach(var employee in employees)
             {
-                employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Name, employee.Dependents, employee.Job.Title, employee.Login, employee.Email, 
-                    employee.CreationDate, employee.TerminationDate, employee.IsActive));
+                employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Title, employee.CreationDate, employee.TerminationDate, employee.IsActive));
             }
             return Results.Ok(employeesResponse);
         });
@@ -30,9 +29,21 @@ public static class EmployeesExtensions
             var employee = await dalUsers.FindByAsync<Employee>(a => a.Id == Id);
             if (employee is null)
                 return Results.NotFound("Employee ID is not found!");
-            var employeeResponse = new EmployeeResponse(employee.Id, employee.Name, employee.Dependents, employee.Job.Title, employee.Login, employee.Email,
-                    employee.CreationDate, employee.TerminationDate, employee.IsActive);
+            var employeeResponse = new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Title, employee.CreationDate, employee.TerminationDate, employee.IsActive);
         return Results.Ok(employeeResponse);
+        });
+
+        employeeGroup.MapGet("/Names", async ([FromServices] DAL<Employee> dalEmployee) =>
+        {
+            var employees = await dalEmployee.ToListAsync();
+            List<string> nameList = new List<string>();
+            foreach (var employee in employees)
+            {
+                if (employee.Name is not null)
+                    nameList.Add(employee.Name);
+            }
+
+            return Results.Ok(nameList);
         });
 
         employeeGroup.MapPost("/", async ([FromServices]DAL<Employee> dalEmployees, [FromServices]DAL<Job> dalJobs, [FromBody]EmployeeRequest employeeRequest) =>

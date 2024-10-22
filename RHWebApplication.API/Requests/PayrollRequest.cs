@@ -1,3 +1,5 @@
-﻿namespace RHWebApplication.API.Requests;
+﻿using RHWebApplication.Shared.Models.UserModels;
 
-public record PayrollRequest(int Id, string EmployeeName, float OverTime, decimal Commission);
+namespace RHWebApplication.API.Requests;
+
+public record PayrollRequest(int EmployeeId, float OverTime, decimal Commission);

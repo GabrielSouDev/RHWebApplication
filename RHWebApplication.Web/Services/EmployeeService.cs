@@ -17,10 +17,21 @@ public class EmployeeService
     {
         _httpClient = httpClient;
     }
+    public async Task<List<EmployeeResponse>> GetEmployees()
+    {
+        var response = await _httpClient.GetFromJsonAsync<List<EmployeeResponse>>("/Employee");
+        return response;
+    }
+
     public async Task<HttpResponseMessage> PostEmployee(EmployeeRequest employee)
     {
         var response = await _httpClient.PostAsJsonAsync("/Employee", employee);
         return response;
     }
 
+    public async Task<List<string>?> GetEmployeeNames()
+    {
+        var response = await _httpClient.GetFromJsonAsync<List<String>>("/Employee/Names");
+        return response;
+    }
 }

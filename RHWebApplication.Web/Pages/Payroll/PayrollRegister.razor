@@ -1,0 +1,134 @@
+﻿@page "/PayrollRegister"
+@inject NavigationManager NavigationManager
+@inject EmployeeService EmployeeService
+@inject PayrollService PayrollService
+@inject ISnackbar Snackbar
+
+<PageTitle> Register a Payroll</PageTitle>
+<AuthorizeView>
+    <Authorized Context="authContext">
+        <MudContainer Class="d-flex justify-center">
+            <MudCard Style="width: 50%;">
+                <MudCardContent>
+                    <MudForm Model="@_payrollRequest">
+                        <MudText Class="align-center" Typo="Typo.h5">Register a Payroll</MudText>
+                        <MudSelect @bind-Value="_employeeSelectedName" Label="Employee Name">
+                            @{
+                                foreach (var employee in _employeeList)
+                                {
+                                    if (employee is not null)
+                                    {
+                                        <MudSelectItem Value="@employee">@employee</MudSelectItem>
+                                    }
+                                }
+                            }
+                        </MudSelect>
+                        <MudPaper Class="d-flex grow-1 gap-4">
+                            <MudText Class="flex-initial">OverTime:   </MudText>
+                            <MudNumericField Class="flex-initial" HideSpinButtons="true"
+                                             Style="width:30px;" T="float"
+                                             @bind-Value="_overTimeHours"
+                                             Placeholder="HH"
+                                             Format="N0" 
+                                             MaxLength="2"/>
+                            <MudText Class="flex-initial"> : </MudText>
+                            <MudNumericField Class="flex-initial" HideSpinButtons="true"
+                                             Style="width:30px;" T="float"
+                                             @bind-Value="_overTimeMinutes"
+                                             Placeholder="MM"
+                                             Format="N0"
+                                             MaxLength="2" />
+                        </MudPaper>
+                        <MudTextField Adornment="Adornment.Start" 
+                                      AdornmentIcon="@Icons.Material.Filled.AttachMoney" 
+                                      @bind-Value="_payrollRequest.Commission" 
+                                      Label="Commission" 
+                                      Required="true" />
+                        <MudButton Type="Submit" OnClick="SubmitPayrollAsync" Color="Color.Primary">Submit</MudButton>
+                    </MudForm>
+                    <MudText Color="Color.Error">@_errorMenssage</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/Login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+    private PayrollRequest _payrollRequest = new();
+    private string _employeeSelectedName;
+    private List<string> _employeeList = new();
+    private float _overTimeHours;
+    private float _overTimeMinutes;
+    private string _errorMenssage = string.Empty;
+    List<EmployeeResponse> _employees = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _employees = await EmployeeService.GetEmployees();
+        _employeeList = _employees.Select(e => e.Name).ToList();
+    }
+
+    public async Task SubmitPayrollAsync()
+    {
+        _errorMenssage = string.Empty;
+        var employee = _employees.FirstOrDefault(e => e.Name == _employeeSelectedName);
+        if (employee is not null)
+        {
+            _payrollRequest.EmployeeId = employee.Id;
+            if (ValidateOverTime())
+            {
+                HttpResponseMessage? response;
+                response = await PayrollService.PostPayroll(_payrollRequest);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (response.RequestMessage is not null)
+                        _errorMenssage = await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    Snackbar.Add("Payroll has been successfully Registered!", Severity.Success);
+                    _payrollRequest = new();
+                    _employeeSelectedName = string.Empty;
+                    _overTimeHours = 0;
+                    _overTimeMinutes = 0;
+                }
+            }
+        }
+        else
+        {
+            _errorMenssage = "Necessary choice a employee name to register a payroll!";
+            Snackbar.Add("Necessary choice a employee name to register a payroll!", Severity.Error);
+        }
+    }
+    public bool ValidateOverTime()
+    {
+        if (_overTimeHours == null)
+            _overTimeHours = 0;
+
+        if (_overTimeMinutes == null)
+            _overTimeMinutes = 0;
+
+        if (_overTimeHours >= 0 && _overTimeHours <= 99)
+        {
+            if (_overTimeMinutes >= 0 && _overTimeMinutes <= 59)
+            {
+                _payrollRequest.OverTime = _overTimeHours + _overTimeMinutes;
+                return true;
+            }
+            _errorMenssage = "Minutes needs be inferior 59!";
+            Snackbar.Add("Minutes needs be inferior 59!", Severity.Error);
+            return false;
+        }
+        else
+        {
+            _errorMenssage = "Hours needs be inferior 99!";
+            Snackbar.Add("Hours needs be inferior 99!", Severity.Error);
+            return false;
+        }
+    }
+}

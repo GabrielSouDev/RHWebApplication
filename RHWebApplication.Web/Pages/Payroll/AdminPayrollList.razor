@@ -1,0 +1,134 @@
+﻿@page "/AdminPayrollList"
+
+@inject NavigationManager NavigationManager
+@inject EmployeeService EmployeeService
+@inject PayrollService PayrollService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Admin Payrolls List</PageTitle>
+<AuthorizeView>
+    <Authorized Context="authContext">
+        <MudContainer>
+            @if (_isLoading)
+            {
+                <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                </MudContainer>
+            }
+            else
+            {
+                <MudDataGrid Dense="true" T="PayrollResponse" Items="_payrollsSelected" QuickFilter="@_quickFilter" Striped="true" Bordered="true" Elevation="25">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Admin Payroll List</MudText>
+                        <MudSpacer />
+                        <MudSelect @bind-Value="_employeeSelectedName" Label="Employee Name">
+                            @{
+                                foreach (var employee in _employeeList)
+                                {
+                                    if (employee is not null)
+                                    {
+                                        if(employee != "")
+                                        {
+                                            <MudSelectItem Value="@employee">@employee</MudSelectItem>
+
+                                        }
+                                        else
+                                        {
+                                            <MudSelectItem Value="@employee">Show All</MudSelectItem>
+                                        }
+                                    }
+                                }
+                            }
+                        </MudSelect>
+                    </ToolBarContent>
+                    <Columns>
+                        <PropertyColumn Editable="false" Property="x => x.Id" />
+                        <PropertyColumn Property="x => x.EmployeeName" />
+                        <PropertyColumn Property="x => x.JobTitle" />
+                        <PropertyColumn Property="x => x.CreationDate" />
+                        <TemplateColumn Title="Options" StickyRight="true">
+                            <CellTemplate Context="cellContext">
+                                <MudButton Color="Color.Warning" Variant="Variant.Filled" OnClick="() => DetailsPayroll(cellContext.Item)" >Details</MudButton>
+                                <MudFab Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Surface" Size="@Size.Small" OnClick="() => DeleteUserAsync(cellContext.Item)" />
+                            </CellTemplate> 
+                        </TemplateColumn>
+                    </Columns>
+                    <PagerContent>
+                        <MudDataGridPager T="PayrollResponse" />
+                    </PagerContent>
+                </MudDataGrid>
+            }
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/Login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private List<PayrollResponse>? _payrolls = new();
+    private List<PayrollResponse>? _payrollsSelected = new();
+
+    List<EmployeeResponse> _employees = new();
+    private List<string> _employeeList = new();
+    private string _employeeSelectedName = string.Empty;
+
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _employees = await EmployeeService.GetEmployees();
+        _employeeList.Add("");
+        _employeeList.AddRange(_employees.Select(e => e.Name).ToList());
+
+        _payrolls = await PayrollService.GetPayrolls();
+        if (_payrolls is not null)
+        {
+            _payrollsSelected = _payrolls;
+            _isLoading = false;
+        }
+    }
+
+    private Func<PayrollResponse, bool> _quickFilter => x =>
+    {
+
+        if (string.IsNullOrWhiteSpace(_employeeSelectedName))
+        return true;
+            
+
+
+        if (x.EmployeeName.Contains(_employeeSelectedName, StringComparison.OrdinalIgnoreCase))
+        return true;
+
+
+    return false;
+    };
+
+    private void DetailsPayroll(PayrollResponse payroll)
+    {
+
+    }
+
+    private async Task DeleteUserAsync(PayrollResponse payroll)
+    {
+        var parameters = new DialogParameters { ["Payroll"] = payroll };
+        var dialog = DialogService.Show<DeletePayrollDialog>(null, parameters); // criar dialog para deletar Payroll
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var response = await PayrollService.DeletePayroll(payroll.Id);
+            if (response.IsSuccessStatusCode)
+            {
+                _payrolls.Remove(payroll);
+                _payrollsSelected.Remove(payroll);
+                Snackbar.Add("Payroll has been Deleted!", Severity.Success);
+            }
+            else Snackbar.Add("Payroll has not altered!", Severity.Error);
+        }
+        else Snackbar.Add("Payroll has not altered!", Severity.Error);
+    }
+}

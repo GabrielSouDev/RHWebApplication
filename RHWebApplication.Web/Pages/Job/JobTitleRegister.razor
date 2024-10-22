@@ -56,9 +56,11 @@
         {
             if (response.RequestMessage is not null)
                 _errorMenssage = await response.Content.ReadAsStringAsync();
+                Snackbar.Add("Job has not Registred!", Severity.Error);
         }
         else 
         {
+            _errorMenssage = "JobTitle has been successfully Registered!";
             Snackbar.Add("JobTitle has been successfully Registered!", Severity.Success);
             _jobRequest = new JobRequest();
         }
