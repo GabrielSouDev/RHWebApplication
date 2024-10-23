@@ -18,11 +18,17 @@
             }
             else
             {
-                <MudDataGrid Dense="true" T="PayrollResponse" Items="_payrollsSelected" QuickFilter="@_quickFilter" Striped="true" Bordered="true" Elevation="25">
+                <MudDataGrid Dense="true" T="PayrollResponse" 
+                             Items="_payrollsSelected" 
+                             QuickFilter="@_quickFilter" 
+                             Striped="true" 
+                             Bordered="true" 
+                             Elevation="25">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Admin Payroll List</MudText>
                         <MudSpacer />
-                        <MudSelect @bind-Value="_employeeSelectedName" Label="Employee Name">
+                        <MudSelect @bind-Value="_employeeSelectedName" >
+                            <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
                             @{
                                 foreach (var employee in _employeeList)
                                 {
@@ -35,7 +41,7 @@
                                         }
                                         else
                                         {
-                                            <MudSelectItem Value="@employee">Show All</MudSelectItem>
+
                                         }
                                     }
                                 }
@@ -49,8 +55,13 @@
                         <PropertyColumn Property="x => x.CreationDate" />
                         <TemplateColumn Title="Options" StickyRight="true">
                             <CellTemplate Context="cellContext">
-                                <MudButton Color="Color.Warning" Variant="Variant.Filled" OnClick="() => DetailsPayroll(cellContext.Item)" >Details</MudButton>
-                                <MudFab Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Surface" Size="@Size.Small" OnClick="() => DeleteUserAsync(cellContext.Item)" />
+                                <MudButton Color="Color.Warning" 
+                                           Variant="Variant.Filled" 
+                                           OnClick="() => DetailsPayroll(cellContext.Item)" >Details</MudButton>
+                                <MudFab Color="Color.Error" 
+                                        StartIcon="@Icons.Material.Outlined.Delete" 
+                                        IconColor="Color.Surface" Size="@Size.Small" 
+                                        OnClick="() => DeleteUserAsync(cellContext.Item)" />
                             </CellTemplate> 
                         </TemplateColumn>
                     </Columns>
@@ -81,8 +92,7 @@
     protected override async Task OnInitializedAsync()
     {
         _employees = await EmployeeService.GetEmployees();
-        _employeeList.Add("");
-        _employeeList.AddRange(_employees.Select(e => e.Name).ToList());
+        _employeeList = _employees.Select(e => e.Name).ToList();
 
         _payrolls = await PayrollService.GetPayrolls();
         if (_payrolls is not null)
@@ -109,7 +119,8 @@
 
     private void DetailsPayroll(PayrollResponse payroll)
     {
-
+        var parameters = new DialogParameters { ["Payroll"] = payroll };
+        var dialog = DialogService.Show<DetailsPayrollDialog>(null, parameters); // criar dialog para deletar Payroll
     }
 
     private async Task DeleteUserAsync(PayrollResponse payroll)

@@ -1,0 +1,29 @@
+﻿@namespace RHWebApplication.Web.Dialogs
+
+<MudDialog>
+	<TitleContent>Recibo de Pagamento de Salário</TitleContent>
+	<DialogContent>
+		<MudGrid>
+			<MudText Typo="Typo.body1">Nome: @Payroll.EmployeeName</MudText>
+			<MudItem>C.N.P.J: cnpj..</MudItem>
+	
+			<MudItem>lorem</MudItem>
+		</MudGrid>
+	</DialogContent>
+	
+	<DialogActions>
+		<MudButton OnClick="Close" Color="Color.Primary">Fechar</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter]
+	MudDialogInstance MudDialog { get; set; }
+	[Parameter]
+	public PayrollResponse Payroll { get; set; }
+
+	private void Close()
+	{
+		MudDialog.Close(DialogResult.Ok(Payroll));
+	}
+}
