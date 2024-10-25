@@ -89,3 +89,8 @@ body {
     height: 100vh;
     margin: 0;
 }
+
+.MudItemBorder
+{
+    border: 2px solid black;
+}

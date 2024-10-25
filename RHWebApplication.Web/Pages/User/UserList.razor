@@ -5,7 +5,7 @@
 @page "/UserList"
 
 <PageTitle>User List</PageTitle>
-<AuthorizeView>
+<AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
         <MudContainer>
             @if (_isLoading)
@@ -28,6 +28,7 @@
                         <PropertyColumn Property="x => x.Login" />
                         <PropertyColumn Property="x => x.Email" />
                         <PropertyColumn Property="x => x.CreationDate" />
+                        <PropertyColumn Property="x => x.UserType" />
                         <PropertyColumn Property="x => x.IsActive" />
                         <TemplateColumn Title="Options" StickyRight="true">
                             <CellTemplate Context="cellContext">
@@ -82,7 +83,7 @@
         return false;
     };
 
-    private async Task EditUserDialogAsync(UserResponse user)
+    private async Task EditUserDialogAsync(UserResponse user) // dividir edição de employee e admin
     {
         UserRequest userRequest = new(user.Id, user.Login, string.Empty, user.Name,user.Email);
         var parameters = new DialogParameters { ["user"] = userRequest };
@@ -100,7 +101,7 @@
 
                 if (index != -1)
                 {
-                    var updatedUserTableElement = new UserResponse(updatedUser.Id, updatedUser.Login, updatedUser.Name, updatedUser.Email, user.CreationDate, user.IsActive); ;
+                    var updatedUserTableElement = new UserResponse(updatedUser.Id, updatedUser.Login, updatedUser.Name, updatedUser.Email, user.CreationDate, user.UserType, user.IsActive); ;
                     _users[index] = updatedUserTableElement;
                 }
                 Snackbar.Add("User has been Updated!", Severity.Success);

@@ -7,13 +7,16 @@
 @inject ISnackbar Snackbar
 
 <PageTitle>Admin Payrolls List</PageTitle>
-<AuthorizeView>
+<AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
         <MudContainer>
             @if (_isLoading)
             {
                 <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
-                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                    <MudProgressCircular 
+                        Color="Color.Primary" 
+                        Indeterminate="true" 
+                        Size="Size.Large" />
                 </MudContainer>
             }
             else
@@ -119,8 +122,9 @@
 
     private void DetailsPayroll(PayrollResponse payroll)
     {
+        DialogOptions maxWidth = new() { MaxWidth = MaxWidth.Large, FullWidth = true };
         var parameters = new DialogParameters { ["Payroll"] = payroll };
-        var dialog = DialogService.Show<DetailsPayrollDialog>(null, parameters); // criar dialog para deletar Payroll
+        var dialog = DialogService.Show<DetailsPayrollDialog>(null, parameters, maxWidth); // criar dialog para deletar Payroll
     }
 
     private async Task DeleteUserAsync(PayrollResponse payroll)

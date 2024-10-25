@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 @page "/Login"
 
 <PageTitle>Login</PageTitle>
@@ -14,6 +15,7 @@
                 <MudTextField @bind-Value="_loginRequest.Password" Label="Password" InputType="InputType.Password" Required="true" />
                 <MudButton Type="Submit" Color="Color.Primary" OnClick="HandleLoginAsync">Login</MudButton>
             </MudForm>
+            <MudText Color="Color.Error">@_errorMenssage</MudText>
         </MudCardContent>
     </MudCard>
 </MudContainer>
@@ -21,6 +23,8 @@
 @code {
 
     private LoginRequest _loginRequest = new();
+    private string _errorMenssage = string.Empty;
+
     public async Task HandleLoginAsync()
     {
         var response = await Http.PostAsJsonAsync("/login", _loginRequest);
@@ -32,7 +36,9 @@
          }
          else
          {
-             Console.WriteLine("Login falhou! Verifique suas credenciais.");
+            _errorMenssage = "Login falhou! Verifique suas credenciais.";
+            Snackbar.Add("Login falhou! Verifique suas credenciais.", Severity.Error);
+
          }
     }
 }

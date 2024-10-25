@@ -10,18 +10,16 @@ public class Payroll
     public Payroll() { }
     public Payroll(Employee employee, float overTime, decimal commission)
     {
-        EmployeeId = employee.Id;
         Employee = employee;
         OverTime = overTime;
         Commission = commission;
-        Gross = employee.Job.BaseSalary;
         OverTimeAditionals = CalcOverTimeValue();
         PericulosityValue = CalcPericulosityValue();
         UnhealthyValue = CalcUnhealthyValue();
-        Additionals = CalcAdditionals();
         INSSDeduction = CalcINSS();
         IRRFDeduction = CalcularIRRF();
         Deductions = CalcDeductions();
+        Gross = CalcGross();
         Net = CalcNet();
         CreationDate = DateTime.Now;
 
@@ -32,21 +30,21 @@ public class Payroll
     public int EmployeeId { get; set; }
     public virtual Employee Employee { get; init; }
     public float OverTime { get; set; }
-    public decimal Gross { get; set; }
     public decimal OverTimeAditionals { get; set; }
     public decimal PericulosityValue { get; set; }
     public decimal UnhealthyValue { get; set; }
     public decimal Commission { get; set; }
-    public decimal Additionals { get; set; }
     public decimal INSSDeduction { get; set; }
     public decimal IRRFDeduction { get; set; }
     public decimal Deductions { get; set; }
     public decimal Net { get; set; } // Salario Liquido
+    public decimal Gross { get; set; }
     public DateTime CreationDate { get; init; }
+
     private decimal CalcPericulosityValue()
     {
         if (Employee.Job.IsPericulosity)
-            return Gross * (decimal)0.3f;
+            return CalcGross() * (decimal)0.3f;
 
         return 0;
     }
@@ -68,11 +66,11 @@ public class Payroll
         else
             UnhealthyPorcent = 0;
 
-        return Gross * (decimal)UnhealthyPorcent;
+        return CalcGross() * (decimal)UnhealthyPorcent;
     }
-    private decimal CalcAdditionals()
+    private decimal CalcGross()
     {
-        return Commission + CalcOverTimeValue() + CalcPericulosityValue() + CalcUnhealthyValue(); //alterar
+        return Employee.Job.BaseSalary + Commission + CalcOverTimeValue() + PericulosityValue + UnhealthyValue;
     }
     private decimal CalcOverTimeValue()
     {
@@ -80,26 +78,26 @@ public class Payroll
     }
     private decimal CalcDeductions()
     {
-        return CalcINSS() + CalcularIRRF(); // adicionar restante
+        return CalcINSS() + CalcularIRRF();
     }
     private decimal CalcNet()
     {
-        return Gross + CalcAdditionals() - CalcDeductions();
+        return CalcGross() - CalcDeductions();
     }
     private decimal CalcINSS()
     {
-        decimal inss = Gross switch
+        decimal inss = CalcGross() switch
         {
-            <= PayrollConstants.INSSFirstRange => Gross * PayrollConstants.INSSFirstRate,
+            <= PayrollConstants.INSSFirstRange => CalcGross() * PayrollConstants.INSSFirstRate,
             <= PayrollConstants.INSSSecondRange => (PayrollConstants.INSSFirstRange * PayrollConstants.INSSFirstRate) +
-                                                    ((Gross - PayrollConstants.INSSFirstRange) * PayrollConstants.INSSSecondRate),
+                                                    ((CalcGross() - PayrollConstants.INSSFirstRange) * PayrollConstants.INSSSecondRate),
             <= PayrollConstants.INSSThirdRange => (PayrollConstants.INSSFirstRange * PayrollConstants.INSSFirstRate) +
                                                    ((PayrollConstants.INSSSecondRange - PayrollConstants.INSSFirstRange) * PayrollConstants.INSSSecondRate) +
-                                                   ((Gross - PayrollConstants.INSSSecondRange) * PayrollConstants.INSSThirdRate),
+                                                   ((CalcGross() - PayrollConstants.INSSSecondRange) * PayrollConstants.INSSThirdRate),
             <= PayrollConstants.INSSFourthRange => (PayrollConstants.INSSFirstRange * PayrollConstants.INSSFirstRate) +
                                                     ((PayrollConstants.INSSSecondRange - PayrollConstants.INSSFirstRange) * PayrollConstants.INSSSecondRate) +
                                                     ((PayrollConstants.INSSThirdRange - PayrollConstants.INSSSecondRange) * PayrollConstants.INSSThirdRate) +
-                                                    ((Gross - PayrollConstants.INSSThirdRange) * PayrollConstants.INSSFourthRate),
+                                                    ((CalcGross() - PayrollConstants.INSSThirdRange) * PayrollConstants.INSSFourthRate),
             _ => (PayrollConstants.INSSFirstRange * PayrollConstants.INSSFirstRate) +
                  ((PayrollConstants.INSSSecondRange - PayrollConstants.INSSFirstRange) * PayrollConstants.INSSSecondRate) +
                  ((PayrollConstants.INSSThirdRange - PayrollConstants.INSSSecondRange) * PayrollConstants.INSSThirdRate) +
@@ -112,7 +110,7 @@ public class Payroll
     private decimal CalcularIRRF()
     {
         decimal dependentsDeductions = Employee.Dependents * PayrollConstants.IRRFDependentDeduction;
-        decimal baseCalc = Gross - CalcINSS() - dependentsDeductions;
+        decimal baseCalc = CalcGross() - CalcINSS() - dependentsDeductions;
 
         decimal irrf = baseCalc switch
         {

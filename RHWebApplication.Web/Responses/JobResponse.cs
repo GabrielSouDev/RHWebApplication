@@ -1,9 +1,9 @@
-﻿using RHWebApplication.Shared.Models.JobModels;
+﻿using RHWebApplication.Shared.Models.CompanyModels;
 
 namespace RHWebApplication.Web.Responses;
 public class JobResponse
 {
-    public JobResponse(int id, string title, string description, int unhealthyLevel, bool isPericulosity, decimal overTimeValue, decimal baseSalary)
+    public JobResponse(int id, string title, string description, int unhealthyLevel, bool isPericulosity, decimal overTimeValue, decimal baseSalary, string companyName)
     {
         Id = id;
         Title = title;
@@ -12,7 +12,9 @@ public class JobResponse
         IsPericulosity = isPericulosity;
         OverTimeValue = overTimeValue;
         BaseSalary = baseSalary;
-    }
+		CompanyName = companyName;
+
+	}
     public int Id { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
@@ -20,4 +22,5 @@ public class JobResponse
     public bool IsPericulosity { get; set; }
     public decimal OverTimeValue { get; set; }
     public decimal BaseSalary { get; set; }
+    public string CompanyName { get; set; }
 }

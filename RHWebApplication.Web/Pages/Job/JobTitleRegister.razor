@@ -4,7 +4,7 @@
 @page "/JobRegister"
 
 <PageTitle>Register a Job</PageTitle>
-<AuthorizeView>
+<AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
         <MudContainer Class="d-flex justify-center">
             <MudCard Style="width: 50%;">

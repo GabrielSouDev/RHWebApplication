@@ -3,6 +3,7 @@ using RHWebApplication.API.Responses;
 using RHWebApplication.API.Requests;
 using RHWebApplication.Database;
 using RHWebApplication.Shared.Models.UserModels;
+using RHWebApplication.Shared.Models.CompanyModels;
 
 namespace RHWebApplication.API.EndPoints;
 
@@ -34,11 +35,16 @@ public static class AdminsExtensions
             return Results.Ok(adminResponse);
         });
 
-        adminGroup.MapPost("/", async ([FromServices] DAL<Admin> dalAdmins, [FromBody] AdminRequest adminRequest) =>
+        adminGroup.MapPost("/", async ([FromServices] DAL<Admin> dalAdmins, [FromServices] DAL <Company> dalCompanys, [FromBody] AdminRequest adminRequest) =>
         {
-            var admin = new Admin(adminRequest.Login, adminRequest.Password, adminRequest.Name, adminRequest.Email);
-            await dalAdmins.AddAsync(admin);
-            return Results.Created();
+            var company = await dalCompanys.FindByAsync(c => c.CorporateName == adminRequest.CompanyName);
+            if (company is not null)
+            {
+                var admin = new Admin(adminRequest.Login, adminRequest.Password, adminRequest.Name, adminRequest.Email, company);
+                await dalAdmins.AddAsync(admin);
+                return Results.Created();
+            }
+            return Results.NotFound("Company Name is not found!");
         });
 
         adminGroup.MapPut("/", async ([FromServices] DAL<Admin> dalAdmins, [FromBody] AdminEditRequest AdminRequest) =>

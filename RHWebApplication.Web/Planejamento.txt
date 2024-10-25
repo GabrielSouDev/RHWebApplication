@@ -1,0 +1,27 @@
+﻿X   Criar Classe staff: user 
+X   Criar Classe Empresa
+X   relacionar jobTitle(antigo job) com empresa
+    
+    Staff manipulará criação de admin com empresa
+    admin manipulará funcionarios e jobtittles
+    
+    restringir paginas e visualização de menu por roles
+    
+    criar visualização de holerite separado em staff,admin e employee
+    
+    criar edição de dados do user será de acordo com usertype
+    
+    criar grafitos para admin e staff.
+    	admin visualizará apenas graficos da sua empresa e seus jobtitles
+    	staff visualizará empresa que selecionar e jobtitles que selecionar
+    
+    estilizar holerite
+    estilizar todo sistema
+    	tentar colocar as tabelas em fullscreen na listagem de job/user/payroll
+    	alterar cores e design
+    
+    certificar validações
+    
+    autenticar requisiçoes por roles
+    
+	 integrar dockers e subir aplicação

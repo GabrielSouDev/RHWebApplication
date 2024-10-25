@@ -4,14 +4,15 @@ namespace RHWebApplication.Web.Responses;
 
 public class UserResponse
 {
-	public UserResponse(int id, string login, string name, string email, DateTime creationDate, bool isActive)
+	public UserResponse(int id, string login, string name, string email, DateTime creationDate, string userType, bool isActive)
 	{
 		Id = id;
 		Login = login;
 		Name = name;
 		Email = email;
 		CreationDate = creationDate;
-		IsActive = isActive;
+		UserType = userType;
+        IsActive = isActive;
 	}
 	public int Id { get; set; }
 	public string Login { get; set; } = string.Empty;
@@ -19,5 +20,6 @@ public class UserResponse
 	[EmailAddress]
 	public string Email { get; set; } = string.Empty;
 	public DateTime CreationDate { get; init; } = default;
+	public string UserType { get; set; } = string.Empty;
 	public bool IsActive { get; set; } = true;
 }

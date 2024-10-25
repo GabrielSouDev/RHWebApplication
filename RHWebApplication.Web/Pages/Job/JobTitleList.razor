@@ -6,7 +6,7 @@
 
 
 <PageTitle>JobTitle List</PageTitle>
-<AuthorizeView>
+<AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
         <MudContainer>
             @if (_isLoading)
@@ -91,7 +91,8 @@
 
         if (!result.Canceled && updatedJob != null)
         {
-            var requestJob = new JobRequest(updatedJob.Id, updatedJob.Title, updatedJob.Description, updatedJob.UnhealthyLevel, updatedJob.IsPericulosity, updatedJob.OverTimeValue, updatedJob.BaseSalary);
+            var requestJob = new JobRequest(updatedJob.Id, updatedJob.Title, updatedJob.Description, updatedJob.UnhealthyLevel, 
+                updatedJob.IsPericulosity, updatedJob.OverTimeValue, updatedJob.BaseSalary, updatedJob.CompanyName);
             var response = await JobService.PutJob(requestJob);
 
             if(response.IsSuccessStatusCode)

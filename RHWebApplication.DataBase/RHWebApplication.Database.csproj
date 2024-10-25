@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RHWebApplication.Models\RHWebApplication.Models\RHWebApplication.Models.csproj" />
+    <ProjectReference Include="..\RHWebApplication.Shared.Models\RHWebApplication.Models\RHWebApplication.Shared.Models.csproj" />
   </ItemGroup>
 
 </Project>

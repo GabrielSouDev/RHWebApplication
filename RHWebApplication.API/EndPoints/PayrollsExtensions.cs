@@ -2,6 +2,7 @@
 using RHWebApplication.API.Requests;
 using RHWebApplication.API.Responses;
 using RHWebApplication.Database;
+using RHWebApplication.Shared.Models.CompanyModels;
 using RHWebApplication.Shared.Models.PayrollModels;
 using RHWebApplication.Shared.Models.UserModels;
 using System.Text.RegularExpressions;
@@ -20,11 +21,11 @@ public static class PayrollsExtensions
             var payrollsResponse = new List<PayrollResponse>();
             foreach (var payroll in payrolls)
             {
-                payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Title,
-                    payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity, payroll.Employee.Job.BaseSalary, 
-                    payroll.Gross, payroll.OverTime, payroll.Commission, payroll.Additionals, payroll.Deductions,
-                    payroll.Net, payroll.CreationDate));
-            }
+                payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
+	payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
+	payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
+	payroll.Gross, payroll.CreationDate));
+			}
             
             return Results.Ok(payrollsResponse);
         });
@@ -35,12 +36,12 @@ public static class PayrollsExtensions
             if (payroll is null)
                 return Results.NotFound("Payroll is not found!");
 
-            var payrollResponse = new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Title, 
-            payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity, payroll.Employee.Job.BaseSalary,
-            payroll.Gross, payroll.OverTime, payroll.Commission, payroll.Additionals, payroll.Deductions,
-            payroll.Net, payroll.CreationDate);
+            var payrollResponse = new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
+	payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
+	payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
+	payroll.Gross, payroll.CreationDate);
 
-            return Results.Ok(payrollResponse);
+		return Results.Ok(payrollResponse);
         });
 
         payrollGroup.MapPost("/", async ([FromServices]DAL<Payroll> dalPayrolls, [FromServices]DAL<User> dalUsers, [FromBody]PayrollRequest payrollRequest) => 

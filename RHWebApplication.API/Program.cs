@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RHWebApplication.API.EndPoints;
 using RHWebApplication.Database;
-using RHWebApplication.Shared.Models.JobModels;
+using RHWebApplication.Shared.Models.CompanyModels;
 using RHWebApplication.Shared.Models.PayrollModels;
 using RHWebApplication.Shared.Models.UserModels;
 using System.Text;
@@ -69,7 +69,8 @@ builder.Services.AddTransient<DAL<User>>();
 builder.Services.AddTransient<DAL<Admin>>();
 builder.Services.AddTransient<DAL<Employee>>();
 builder.Services.AddTransient<DAL<Payroll>>();
-builder.Services.AddTransient<DAL<Job>>();
+builder.Services.AddTransient<DAL<JobTitle>>();
+builder.Services.AddTransient<DAL<Company>>();
 
 var app = builder.Build();
 
@@ -91,7 +92,8 @@ app.AddEndPointsUsers();
 app.AddEndPointsAdmins();
 app.AddEndPointsEmployees();
 app.AddEndPointsPayrolls();
-app.AddEndPointsJob();
+app.AddEndPointsJobTitles();
+app.AddEndPointsCompanys();
 
 app.MapControllers();
 

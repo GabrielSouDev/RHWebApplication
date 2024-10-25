@@ -2,24 +2,27 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RHWebApplication.Shared.Models.JobModels;
-public class Job
+namespace RHWebApplication.Shared.Models.CompanyModels;
+public class JobTitle
 {
 #pragma warning disable CS8618
-    public Job() { }
-    public Job(string title, string description, int unhealthyLevel, bool isPericulosity, decimal OverTimeValue, decimal baseSalary)
+    public JobTitle() { }
+    public JobTitle(string name, string description, int unhealthyLevel, bool isPericulosity, decimal OverTimeValue, decimal baseSalary, Company company)
     {
-        Title = title;
+        Name = name;
         Description = description;
         UnhealthyLevel = unhealthyLevel;
         IsPericulosity = isPericulosity;
         BaseSalary = baseSalary;
-    }
+        Company = company;
+	}
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; init; }
     public virtual ICollection<Employee> Employees { get; set; }
-    public string Title { get; set; } = string.Empty;
+    public virtual int CompanyID { get; set; }
+    public virtual Company Company { get; set; }
+    public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public int UnhealthyLevel { get; set; } = 0;
     public bool IsPericulosity { get; set; } = false;

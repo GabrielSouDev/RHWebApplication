@@ -1,7 +1,7 @@
 ﻿namespace RHWebApplication.Web.Services;
 
 using Azure;
-using RHWebApplication.Shared.Models.JobModels;
+using RHWebApplication.Shared.Models.CompanyModels;
 using RHWebApplication.Shared.Models.UserModels;
 using RHWebApplication.Web.Requests;
 using RHWebApplication.Web.Responses;

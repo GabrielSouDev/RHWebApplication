@@ -5,7 +5,7 @@
 @inject ISnackbar Snackbar
 
 <PageTitle> Register a Payroll</PageTitle>
-<AuthorizeView>
+<AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
         <MudContainer Class="d-flex justify-center">
             <MudCard Style="width: 50%;">
@@ -82,6 +82,7 @@
             if (ValidateOverTime())
             {
                 HttpResponseMessage? response;
+                Console.WriteLine(_payrollRequest);
                 response = await PayrollService.PostPayroll(_payrollRequest);
 
                 if (!response.IsSuccessStatusCode)

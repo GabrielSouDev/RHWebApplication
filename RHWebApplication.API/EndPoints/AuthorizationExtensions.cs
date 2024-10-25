@@ -7,6 +7,8 @@ using RHWebApplication.Database;
 using RHWebApplication.Shared.Models.UserModels;
 using RHWebApplication.Web.Requests;
 using System.Security.Principal;
+using RHWebApplication.API.Extensions;
+using System.Linq;
 
 public static class AuthenticationExtensions
 {
@@ -20,13 +22,24 @@ public static class AuthenticationExtensions
             {
                 var key = Encoding.ASCII.GetBytes("this-is-my-super-secret-mistery-key-to-create-the-token");
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var claims = new[]
+				var claims = new List<Claim>
+				{
+				    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+				    new Claim(ClaimTypes.Name, user.Login),
+				    new Claim(ClaimTypes.Role, user.UserType)
+				 };
+                if(user.UserType == "Admin")
                 {
-                    new Claim(ClaimTypes.Name, user.Login),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-                };
+                    var userAdmin = await dalUser.FindByAsync<Admin>(a => a.Id == user.Id);
+                    claims.Add(new Claim("Company", userAdmin.Company.CorporateName));
+                }
+				if (user.UserType == "Employee")
+				{
+					var userAdmin = await dalUser.FindByAsync<Employee>(a => a.Id == user.Id);
+					claims.Add(new Claim("JobTitle", userAdmin.Job.Name));
+				}
 
-                var tokenDescriptor = new SecurityTokenDescriptor
+				var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(claims),
                     Expires = DateTime.UtcNow.AddHours(1),

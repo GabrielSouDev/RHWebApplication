@@ -17,11 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RHWebApplication.Models\RHWebApplication.Models\RHWebApplication.Models.csproj" />
+    <Folder Include="wwwroot\sample-data\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\sample-data\" />
+    <ProjectReference Include="..\RHWebApplication.Shared.Models\RHWebApplication.Models\RHWebApplication.Shared.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@
 @page "/UserRegister"
 
 <PageTitle> Register a User</PageTitle>
-<AuthorizeView>
+<AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
         <MudContainer Class="d-flex justify-center">
             <MudCard Style="width: 50%;">
@@ -17,12 +17,12 @@
                         <MudTextField @bind-Value="_userRequest.Login" Label="Login" Required="true" />
                         <MudTextField @bind-Value="_userRequest.Password" Label="Password" InputType="InputType.Password" Required="true" />
                         <MudTextField @bind-Value="_userRequest.Email" Label="Email" For="@(()=> _userRequest.Email)"  Required="true" />
-                        <MudTextField T="int" @bind-Value="_userRequest.Dependents" Label="Dependents" Required="true" />
                         <MudSwipeArea Class="pt-6 d-flex justify-center flex-grow-1 gap-4 align-center">
                             <MudText Align="Align.Center">Employee</MudText>
                             <MudSwitch Color="Color.Primary" @bind-Value="_IsAdmin" />
                             <MudText Align="Align.Center">Admin</MudText>
                         </MudSwipeArea>
+                        <MudTextField Disabled="@(_IsAdmin)" T="int" @bind-Value="_userRequest.Dependents" Label="Dependents" Required="@(!_IsAdmin)" />
                         <MudSelect Disabled="@(_IsAdmin)" @bind-Value="_userRequest.JobTitle" Label="Job Title" Required="@(!_IsAdmin)">
                             @{
                                 foreach(var job in _jobList)
@@ -67,6 +67,19 @@
         {
             AdminRequest adminRequest = new(_userRequest.Login, _userRequest.Password, _userRequest.Name, _userRequest.Email);
             response = await AdminService.PostAdmin(adminRequest);
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.RequestMessage is not null)
+                {
+                    _errorMenssage = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add("User has not Registred!", Severity.Error);
+                }
+            }
+            else
+            {
+                Snackbar.Add("User has been successfully Registered!", Severity.Success);
+                _userRequest = new EmployeeRequest();
+            }
         }
         else //employee
         {

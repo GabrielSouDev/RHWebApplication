@@ -40,7 +40,7 @@ namespace RHWebApplication.Web.Services
             var user = new ClaimsPrincipal(identity);
 
             //foreach (var claim in identity.Claims)
-            //{
+            //{ 
             //    Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
             //}
             var userName = identity.FindFirst(ClaimTypes.Name)?.Value;
@@ -70,8 +70,9 @@ namespace RHWebApplication.Web.Services
             // Adicionar a reivindicação de nome de usuário se `unique_name` estiver presente
             if (!claims.Any(c => c.Type == ClaimTypes.Name) && keyValuePairs.ContainsKey("unique_name"))
             {
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, keyValuePairs["nameid"].ToString()));
                 claims.Add(new Claim(ClaimTypes.Name, keyValuePairs["unique_name"].ToString()));
-
+                claims.Add(new Claim(ClaimTypes.Role, keyValuePairs["role"].ToString()));
             }
 
             return claims;

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RHWebApplication.DataBase\RHWebApplication.Database.csproj" />
+    <ProjectReference Include="..\RHWebApplication.Shared.Models\RHWebApplication.Models\RHWebApplication.Shared.Models.csproj" />
   </ItemGroup>
 	
 </Project>

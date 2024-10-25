@@ -4,12 +4,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RHWebApplication.API", "RHWebApplication.API\RHWebApplication.API.csproj", "{9790E793-F834-43E2-8811-69717A8DD612}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A6282B1-D3D5-4E2D-BEA3-09EAAB34A768} = {7A6282B1-D3D5-4E2D-BEA3-09EAAB34A768}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RHWebApplication.Database", "RHWebApplication.DataBase\RHWebApplication.Database.csproj", "{55555CAF-7931-480C-A105-F44F40054219}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A6282B1-D3D5-4E2D-BEA3-09EAAB34A768} = {7A6282B1-D3D5-4E2D-BEA3-09EAAB34A768}
+	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RHWebApplication.Models", "RHWebApplication.Models\RHWebApplication.Models\RHWebApplication.Models.csproj", "{7A6282B1-D3D5-4E2D-BEA3-09EAAB34A768}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RHWebApplication.Shared.Models", "RHWebApplication.Shared.Models\RHWebApplication.Models\RHWebApplication.Shared.Models.csproj", "{7A6282B1-D3D5-4E2D-BEA3-09EAAB34A768}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RHWebApplication.Web", "RHWebApplication.Web\RHWebApplication.Web.csproj", "{7742C873-9FBC-4FF3-87BF-D61B618A3F7A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A6282B1-D3D5-4E2D-BEA3-09EAAB34A768} = {7A6282B1-D3D5-4E2D-BEA3-09EAAB34A768}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
