@@ -1,19 +1,27 @@
 ﻿<MudNavMenu Color="Color.Primary" Class="mud-width-full mt-4">
 
     <MudNavLink IconColor="Color.Tertiary" Href="/Home" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+
+    <MudNavGroup IconColor="Color.Tertiary" Title="Company" Icon="@Icons.Material.Filled.PeopleOutline" Expanded="false">
+        <MudNavLink IconColor="Color.Tertiary" Href="/CompanyRegister">Register a Company</MudNavLink>
+    </MudNavGroup>
+
     <MudNavGroup IconColor="Color.Tertiary" Title="Users" Icon="@Icons.Material.Filled.People" Expanded="false">
         <MudNavLink IconColor="Color.Tertiary" Href="/UserRegister">Register a User</MudNavLink>
         <MudNavLink IconColor="Color.Tertiary" Href="/UserList">User List</MudNavLink>
     </MudNavGroup>
+
     <MudNavGroup IconColor="Color.Tertiary" Title="Job Titles" Icon="@Icons.Material.Filled.Anchor" Expanded="false">
         <MudNavLink IconColor="Color.Tertiary" Href="/JobRegister">Register a job title</MudNavLink>
         <MudNavLink IconColor="Color.Tertiary" Href="/JobList">jobTitle List</MudNavLink>
     </MudNavGroup>
+
     <MudNavGroup IconColor="Color.Tertiary" Title="Payrolls" Icon="@Icons.Material.Filled.Payments" Expanded="false">
         <MudNavLink IconColor="Color.Tertiary" Href="/PayrollRegister">Register a payroll</MudNavLink>
         <MudNavLink IconColor="Color.Tertiary" Href="/AdminPayrollList">Admin Payroll List</MudNavLink>
         <MudNavLink IconColor="Color.Tertiary" Href="/Payroll List">Payroll List</MudNavLink>
     </MudNavGroup>
+
     <MudNavGroup IconColor="Color.Tertiary" Title="Charts" Icon="@Icons.Material.Filled.AreaChart" Expanded="false">
         <MudNavLink IconColor="Color.Tertiary" Href="/">Chart1</MudNavLink>
         <MudNavLink IconColor="Color.Tertiary" Href="/">Chart1</MudNavLink>

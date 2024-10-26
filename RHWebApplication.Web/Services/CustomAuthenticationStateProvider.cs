@@ -31,7 +31,21 @@ namespace RHWebApplication.Web.Services
             var user = new ClaimsPrincipal(identity);
             return new AuthenticationState(user);
         }
+        public async Task<string> GetClaim(string ClaimType)
+        {
+            var token = await _localStorage.GetItemAsync<string>("jwt_token");
+            if (string.IsNullOrEmpty(token))
+            {
+                return string.Empty;
+            }
 
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+
+            var claimValue = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimType)?.Value;
+
+            return claimValue;
+        }
         public async Task Login(string token)
         {
             await _localStorage.SetItemAsStringAsync("jwt_token", token);
@@ -39,10 +53,10 @@ namespace RHWebApplication.Web.Services
             var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt_token");
             var user = new ClaimsPrincipal(identity);
 
-            //foreach (var claim in identity.Claims)
-            //{ 
-            //    Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
-            //}
+            foreach (var claim in identity.Claims)
+            { 
+                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            }
             var userName = identity.FindFirst(ClaimTypes.Name)?.Value;
 
             if (!string.IsNullOrEmpty(userName))
@@ -75,7 +89,8 @@ namespace RHWebApplication.Web.Services
                 claims.Add(new Claim(ClaimTypes.Role, keyValuePairs["role"].ToString()));
             }
 
-            return claims;
+
+return claims;
         }
 
 

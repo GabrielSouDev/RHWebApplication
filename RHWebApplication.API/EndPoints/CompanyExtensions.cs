@@ -24,7 +24,20 @@ public static class CompanyExtensions
             return Results.Ok(companysResponse);
         });
 
-		CompanyGroup.MapGet("/{Id}", async ([FromServices]DAL<Company> dalCompany, int Id) =>
+        CompanyGroup.MapGet("/Names", async ([FromServices] DAL<Company> dalCompany) =>
+        {
+            var companys = await dalCompany.ToListAsync();
+            List<string> CompanyList = new List<string>();
+            foreach (var company in companys)
+            {
+                if (company.CorporateName is not null)
+                    CompanyList.Add(company.CorporateName);
+            }
+
+            return Results.Ok(CompanyList);
+        });
+
+        CompanyGroup.MapGet("/{Id}", async ([FromServices]DAL<Company> dalCompany, int Id) =>
         {
             var company = await dalCompany.FindByAsync(a => a.Id == Id);
             if(company is null)
@@ -36,11 +49,11 @@ public static class CompanyExtensions
 		CompanyGroup.MapPost("/", async ([FromServices]DAL<Company> dalCompany, [FromBody]CompanyRequest companyRequest) =>
         {
             
-            var company = await dalCompany.FindByAsync( j => j.CNPJ == companyRequest.CNPJ);
+            var company = await dalCompany.FindByAsync( c => c.CNPJ == companyRequest.CNPJ);
 
             if(company is null)
             { 
-                await dalCompany.AddAsync(new Company(company.TradeName, company.CorporateName, company.CNPJ));
+                await dalCompany.AddAsync(new Company(companyRequest.TradeName, companyRequest.CorporateName, companyRequest.CNPJ));
                 return Results.Created();
             }
             return Results.Conflict("Company is already created!");

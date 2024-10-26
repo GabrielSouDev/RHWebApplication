@@ -2,6 +2,8 @@
 @inject JobService JobService
 @inject AdminService AdminService
 @inject EmployeeService EmployeeService
+@inject CompanyService CompanyService
+@inject CustomAuthStateProvider AuthStateProvider
 @inject ISnackbar Snackbar
 @page "/UserRegister"
 
@@ -22,7 +24,8 @@
                             <MudSwitch Color="Color.Primary" @bind-Value="_IsAdmin" />
                             <MudText Align="Align.Center">Admin</MudText>
                         </MudSwipeArea>
-                        <MudTextField Disabled="@(_IsAdmin)" T="int" @bind-Value="_userRequest.Dependents" Label="Dependents" Required="@(!_IsAdmin)" />
+
+                        <MudTextField  Disabled="@(_IsAdmin)" T="int" @bind-Value="_userRequest.Dependents" Label="Dependents" Required="@(!_IsAdmin)" />
                         <MudSelect Disabled="@(_IsAdmin)" @bind-Value="_userRequest.JobTitle" Label="Job Title" Required="@(!_IsAdmin)">
                             @{
                                 foreach(var job in _jobList)
@@ -53,20 +56,45 @@
     private bool _IsAdmin = false;
     private string _errorMenssage = string.Empty;
     private List<string> _jobList = new();
+    private List<string> _companyList = new();
+    private string _companySelected = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         _jobList = await JobService.GetJobTitles();
+        _companyList = await CompanyService.GetCompanyNames();
     }
 
     public async Task SubmitUserAsync()
     {
         _errorMenssage = string.Empty;
-        HttpResponseMessage? response;
+        HttpResponseMessage? response = null;
         if (_IsAdmin) //admin
         {
-            AdminRequest adminRequest = new(_userRequest.Login, _userRequest.Password, _userRequest.Name, _userRequest.Email);
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+            if (user.Identity.IsAuthenticated)
+            {
+                _companySelected = user.FindFirst("company").Value;
+            }
+            AdminRequest adminRequest = new(_userRequest.Login, _userRequest.Password, _userRequest.Name, _userRequest.Email, _companySelected);
             response = await AdminService.PostAdmin(adminRequest);
+        }
+        else //employee
+        {
+            if (_userRequest.JobTitle is not null)
+            {
+                response = await EmployeeService.PostEmployee(_userRequest);
+            }
+            else
+            {
+                _errorMenssage = "Necessary choice a Job Title to register a employee!";
+                Snackbar.Add("Necessary choice a Job Title to register a employee!", Severity.Error);
+            }
+        }
+
+        if(response is not null)
+        {
             if (!response.IsSuccessStatusCode)
             {
                 if (response.RequestMessage is not null)
@@ -81,31 +109,6 @@
                 _userRequest = new EmployeeRequest();
             }
         }
-        else //employee
-        {
-            if (_userRequest.JobTitle is not null)
-            {
-                response = await EmployeeService.PostEmployee(_userRequest);
-                if (!response.IsSuccessStatusCode)
-                {
-                    if (response.RequestMessage is not null)
-                    {
-                        _errorMenssage = await response.Content.ReadAsStringAsync();
-                        Snackbar.Add("User has not Registred!", Severity.Error);
-                    }
-                }
-                else
-                {
-                    Snackbar.Add("User has been successfully Registered!", Severity.Success);
-                    _userRequest = new EmployeeRequest();
-                }
-            }
-            else
-            {
-                _errorMenssage = "Necessary choice a Job Title to register a employee!";
-                Snackbar.Add("Necessary choice a Job Title to register a employee!", Severity.Error);
-            }
-        }
-        
+
     }
 }

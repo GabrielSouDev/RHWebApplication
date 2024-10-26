@@ -1,0 +1,54 @@
+﻿@inject NavigationManager NavigationManager
+@inject CompanyService CompanyService
+@inject ISnackbar Snackbar
+@page "/CompanyRegister"
+
+<PageTitle>Register a Company</PageTitle>
+<AuthorizeView Roles="Staff">
+    <Authorized Context="authContext">
+        <MudContainer Class="d-flex justify-center">
+            <MudCard Style="width: 50%;">
+                <MudCardContent>
+                    <MudForm>
+                        <MudText Class="align-center" Typo="Typo.h5">Register a Company</MudText>
+                        <MudTextField @bind-Value="_companyRequest.CorporateName" Label="Corporate Name" Required="true" />
+                        <MudTextField @bind-Value="_companyRequest.TradeName" Label="Trade Name" Required="true" />
+                        <MudNumericField @bind-Value="_companyRequest.CNPJ" T="int" Label="CNPJ" HideSpinButtons="true" Required="true" />
+                            
+                        <MudButton Type="Submit" OnClick="SubmitJobAsync" Color="Color.Primary">Submit</MudButton>
+                    </MudForm>
+                    <MudText Color="Color.Error">@_errorMenssage</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/Login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CompanyRequest _companyRequest = new();
+    private string _errorMenssage = string.Empty;
+
+    public async Task SubmitJobAsync()
+    {
+        _errorMenssage = string.Empty;
+
+        var response = await CompanyService.PostCompany(_companyRequest);
+        if (!response.IsSuccessStatusCode)
+        {
+            if (response.RequestMessage is not null)
+                _errorMenssage = await response.Content.ReadAsStringAsync();
+            Snackbar.Add("Company has not Registred!", Severity.Error);
+        }
+        else
+        {
+            _errorMenssage = "Company has been successfully Registered!";
+            Snackbar.Add("Company has been successfully Registered!", Severity.Success);
+            _companyRequest = new();
+        }
+    }
+}

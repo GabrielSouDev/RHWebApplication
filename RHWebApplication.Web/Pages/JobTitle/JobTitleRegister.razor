@@ -1,5 +1,6 @@
 ﻿@inject NavigationManager NavigationManager
 @inject JobService JobService
+@inject CustomAuthStateProvider AuthStateProvider
 @inject ISnackbar Snackbar
 @page "/JobRegister"
 
@@ -51,6 +52,17 @@
     public async Task SubmitJobAsync()
     {
         _errorMenssage = string.Empty;
+        var company = string.Empty;
+        var role = await AuthStateProvider.GetClaim("role");
+        if(role == "staff")
+        {
+            company = "test";
+        }
+        else
+        {
+            company = await AuthStateProvider.GetClaim("company");
+        }
+        
         var response = await JobService.PostJob(_jobRequest);
         if (!response.IsSuccessStatusCode)
         {

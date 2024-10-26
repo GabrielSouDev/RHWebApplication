@@ -26,17 +26,18 @@ public static class AuthenticationExtensions
 				{
 				    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 				    new Claim(ClaimTypes.Name, user.Login),
-				    new Claim(ClaimTypes.Role, user.UserType)
-				 };
+				    new Claim(ClaimTypes.Role, user.UserType),
+                 };
                 if(user.UserType == "Admin")
                 {
                     var userAdmin = await dalUser.FindByAsync<Admin>(a => a.Id == user.Id);
-                    claims.Add(new Claim("Company", userAdmin.Company.CorporateName));
+                    claims.Add(new Claim("company", userAdmin.Company.CorporateName));
                 }
 				if (user.UserType == "Employee")
 				{
 					var userAdmin = await dalUser.FindByAsync<Employee>(a => a.Id == user.Id);
-					claims.Add(new Claim("JobTitle", userAdmin.Job.Name));
+                    claims.Add(new Claim("company", userAdmin.Job.Company.CorporateName));
+                    claims.Add(new Claim("jobtitle", userAdmin.Job.Name));
 				}
 
 				var tokenDescriptor = new SecurityTokenDescriptor

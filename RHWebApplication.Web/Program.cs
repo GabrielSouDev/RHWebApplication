@@ -25,5 +25,6 @@ builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<EmployeeService>();
 builder.Services.AddScoped<JobService>();
 builder.Services.AddScoped<PayrollService>();
+builder.Services.AddScoped<CompanyService>();
 
 await builder.Build().RunAsync();
