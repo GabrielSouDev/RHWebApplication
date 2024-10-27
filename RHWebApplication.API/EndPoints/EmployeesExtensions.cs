@@ -24,13 +24,43 @@ public static class EmployeesExtensions
             return Results.Ok(employeesResponse);
         });
 
-        employeeGroup.MapGet("/{Id}", async ([FromServices]DAL<User> dalUsers, int Id) =>
+        employeeGroup.MapGet("/{Id:int}", async ([FromServices]DAL<User> dalUsers, int Id) =>
         {
             var employee = await dalUsers.FindByAsync<Employee>(a => a.Id == Id);
             if (employee is null)
                 return Results.NotFound("Employee ID is not found!");
             var employeeResponse = new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Name, employee.CreationDate, employee.TerminationDate, employee.IsActive);
         return Results.Ok(employeeResponse);
+        });
+
+        employeeGroup.MapGet("/{company}", async ([FromServices] DAL<User> dalUsers, string company) =>
+        {
+            var employees = await dalUsers.ToListAsync<Employee>();
+            var employeesResponse = new List<EmployeeResponse>();
+  
+            foreach (var employee in employees)
+            {
+                if (employee.Job.Company.Equals(company) || company == string.Empty)
+                {
+                    employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Name, employee.CreationDate, employee.TerminationDate, employee.IsActive));
+                }
+            }
+            return Results.Ok(employeesResponse);
+        });
+
+        employeeGroup.MapGet("/Names/{company}", async ([FromServices] DAL<User> dalUsers, string company) =>
+        {
+            var employees = await dalUsers.ToListAsync<Employee>();
+            var employeesResponse = new List<string>();
+
+            foreach (var employee in employees)
+            {
+                if (employee.Job.Company.Equals(company) || company == string.Empty)
+                {
+                    employeesResponse.Add(employee.Name);
+                }
+            }
+            return Results.Ok(employeesResponse);
         });
 
         employeeGroup.MapGet("/Names", async ([FromServices] DAL<Employee> dalEmployee) =>

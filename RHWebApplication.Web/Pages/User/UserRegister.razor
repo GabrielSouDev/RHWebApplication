@@ -6,7 +6,6 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject ISnackbar Snackbar
 @page "/UserRegister"
-
 <PageTitle> Register a User</PageTitle>
 <AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
@@ -37,7 +36,7 @@
                                 }
                             }
                         </MudSelect>
-                        <MudButton Type="Submit" OnClick="SubmitUserAsync" Color="Color.Primary">Submit</MudButton>
+                        <MudButton type="Submit" OnClick="SubmitUserAsync" Color="Color.Primary">Submit</MudButton>
                     </MudForm>
                     <MudText Color="Color.Error">@_errorMenssage</MudText>
                 </MudCardContent>
@@ -52,33 +51,28 @@
 </AuthorizeView>
 
 @code {
+    [CascadingParameter]
+    public UserInfo? UserInfo { get; set; }
     private EmployeeRequest _userRequest = new();
     private bool _IsAdmin = false;
     private string _errorMenssage = string.Empty;
     private List<string> _jobList = new();
-    private List<string> _companyList = new();
-    private string _companySelected = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        _jobList = await JobService.GetJobTitles();
-        _companyList = await CompanyService.GetCompanyNames();
+        var jobs = await JobService.GetJobTitles();
+        if (jobs is not null)
+            _jobList = jobs;
     }
 
     public async Task SubmitUserAsync()
     {
         _errorMenssage = string.Empty;
-        HttpResponseMessage? response = null;
+        HttpResponseMessage? response = null;   
         if (_IsAdmin) //admin
         {
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-            if (user.Identity.IsAuthenticated)
-            {
-                _companySelected = user.FindFirst("company").Value;
-            }
-            AdminRequest adminRequest = new(_userRequest.Login, _userRequest.Password, _userRequest.Name, _userRequest.Email, _companySelected);
-            response = await AdminService.PostAdmin(adminRequest);
+            AdminRequest adminRequest = new(_userRequest.Login, _userRequest.Password, _userRequest.Name, _userRequest.Email, UserInfo.Company);
+             response = await AdminService.PostAdmin(adminRequest); 
         }
         else //employee
         {

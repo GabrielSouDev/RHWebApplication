@@ -18,7 +18,7 @@ public static class UsersExtensions
             var usersResponse = new List<UserResponse>();
             foreach (var user in users)
             {
-                usersResponse.Add(new UserResponse(user.Id, user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.IsActive));
+                usersResponse.Add(new UserResponse(user.Id, user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.CompanyName, user.IsActive));
             }
             
             return Results.Ok(usersResponse);
@@ -30,22 +30,21 @@ public static class UsersExtensions
             if (user is null)
                 return Results.NotFound("User ID is not found!");
 
-            var usersResponse = new UserResponse(user.Id,user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.IsActive);
+            var usersResponse = new UserResponse(user.Id,user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.CompanyName, user.IsActive);
             return Results.Ok(usersResponse);
         });
 
         userGroup.MapPut("/", async ([FromServices] DAL<User> dalUsers, [FromBody] UserRequest userRequest) =>
         {
-            var admin = await dalUsers.FindByAsync(a => a.Id == userRequest.Id);
-            if (admin is null)
+            var user = await dalUsers.FindByAsync(a => a.Id == userRequest.Id);
+            if (user is null)
                 return Results.NotFound("Admin ID is not found!");
+            user.Login = userRequest.Login;
+            user.Password = userRequest.Password;
+            user.Name = userRequest.Name;
+            user.Email = userRequest.Email;
 
-            admin.Login = userRequest.Login;
-            admin.Password = userRequest.Password;
-            admin.Name = userRequest.Name;
-            admin.Email = userRequest.Email;
-
-            await dalUsers.UpdateAsync(admin);
+            await dalUsers.UpdateAsync(user);
             return Results.NoContent();
         });
         userGroup.MapDelete("/{Id}", async ([FromServices] DAL<User> dalUsers, int Id) =>

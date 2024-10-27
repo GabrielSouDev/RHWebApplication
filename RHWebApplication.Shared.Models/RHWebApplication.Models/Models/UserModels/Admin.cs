@@ -12,7 +12,8 @@ public class Admin : User
     {
         Company = company;
         UserType = "Admin";
+        CompanyName = company.CorporateName;
     }
     public virtual int CompanyId { get; set; }
-	public virtual Company Company { get; set; }
+	public virtual Company Company { get; set; } = new Company();
 }

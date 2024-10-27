@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RHWebApplication.Database;
 
@@ -11,9 +12,11 @@ using RHWebApplication.Database;
 namespace RHWebApplication.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20241027011919_CreatingTable")]
+    partial class CreatingTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,10 +160,6 @@ namespace RHWebApplication.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
@@ -210,6 +209,10 @@ namespace RHWebApplication.Database.Migrations
                 {
                     b.HasBaseType("RHWebApplication.Shared.Models.UserModels.User");
 
+                    b.Property<string>("Company")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Dependents")
                         .HasColumnType("int");
 
@@ -228,20 +231,24 @@ namespace RHWebApplication.Database.Migrations
                 {
                     b.HasBaseType("RHWebApplication.Shared.Models.UserModels.User");
 
+                    b.Property<string>("Company")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.ToTable("Staffs", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            CompanyName = "Staff",
-                            CreationDate = new DateTime(2024, 10, 27, 1, 13, 0, 862, DateTimeKind.Local).AddTicks(5293),
+                            CreationDate = new DateTime(2024, 10, 26, 22, 19, 18, 839, DateTimeKind.Local).AddTicks(7448),
                             Email = "staf@email.com",
                             IsActive = true,
                             Login = "staff",
                             Name = "Staff",
                             Password = "staff",
-                            UserType = "Staff"
+                            UserType = "Staff",
+                            Company = "Staff"
                         });
                 });
 

@@ -8,7 +8,7 @@
 			<MudItem xs="4">
 				<MudText Align="Align.End" Typo="Typo.h6">Folha de Pagamento</MudText>
 			</MudItem>
-
+			
 			<MudItem Style="@_gridStyle" xs="12">
 				<MudText>Razão social: razão social..</MudText>
 				<MudText>CNPJ: cnpj..</MudText>
@@ -101,9 +101,9 @@
 
 @code {
 	[CascadingParameter]
-	MudDialogInstance MudDialog { get; set; }
+	MudDialogInstance MudDialog { get; set; } = new();
 	[Parameter]
-	public PayrollResponse Payroll { get; set; }
+	public PayrollResponse Payroll { get; set; } = new();
 
 	private Dictionary
 	<int, string> UnhealthyLevel = new()
@@ -112,9 +112,8 @@
 													 { 2, "20%" },
 													 { 3, "40%" }};
 
-	private string _descriptionStyle = "font-weight:bold; border-bottom: 2px solid black;";
+	private string _descriptionStyle = "font-weight: bold; border-bottom: 2px solid black;";
 	private string _gridStyle = "padding-left: 0; padding-top: 0; border: 2px solid black;";
-	private string _lorem = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard.";
 
 	private void Close()
 	{

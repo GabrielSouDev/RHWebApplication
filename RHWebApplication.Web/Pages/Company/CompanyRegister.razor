@@ -15,7 +15,7 @@
                         <MudTextField @bind-Value="_companyRequest.TradeName" Label="Trade Name" Required="true" />
                         <MudNumericField @bind-Value="_companyRequest.CNPJ" T="int" Label="CNPJ" HideSpinButtons="true" Required="true" />
                             
-                        <MudButton Type="Submit" OnClick="SubmitJobAsync" Color="Color.Primary">Submit</MudButton>
+                        <MudButton type="Submit" OnClick="SubmitJobAsync" Color="Color.Primary">Submit</MudButton>
                     </MudForm>
                     <MudText Color="Color.Error">@_errorMenssage</MudText>
                 </MudCardContent>

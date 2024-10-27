@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace RHWebApplication.Database.Migrations
 {
     /// <inheritdoc />
-    public partial class CreatingTableAgain : Migration
+    public partial class CreatingTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -98,7 +98,8 @@ namespace RHWebApplication.Database.Migrations
                 name: "Staffs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Company = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -116,6 +117,7 @@ namespace RHWebApplication.Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
+                    Company = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Dependents = table.Column<int>(type: "int", nullable: false),
                     JobId = table.Column<int>(type: "int", nullable: false),
                     TerminationDate = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -170,12 +172,12 @@ namespace RHWebApplication.Database.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreationDate", "Email", "IsActive", "Login", "Name", "Password", "UserType" },
-                values: new object[] { 1, new DateTime(2024, 10, 24, 22, 44, 37, 421, DateTimeKind.Local).AddTicks(9928), "staf@email.com", true, "staff", "Staff", "staff", "Staff" });
+                values: new object[] { 1, new DateTime(2024, 10, 26, 22, 19, 18, 839, DateTimeKind.Local).AddTicks(7448), "staf@email.com", true, "staff", "Staff", "staff", "Staff" });
 
             migrationBuilder.InsertData(
                 table: "Staffs",
-                column: "Id",
-                value: 1);
+                columns: new[] { "Id", "Company" },
+                values: new object[] { 1, "Staff" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Admins_CompanyId",

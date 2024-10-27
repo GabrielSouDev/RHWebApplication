@@ -31,7 +31,7 @@
                                              Style="width:80%;" @bind-Value="_jobRequest.OverTimeValue"
                                              HideSpinButtons="true" T="decimal" Label="Over Time Value" Required="true" />
                         </MudPaper>
-                        <MudButton Type="Submit" OnClick="SubmitJobAsync" Color="Color.Primary">Submit</MudButton>
+                        <MudButton type="Submit" OnClick="SubmitJobAsync" Color="Color.Primary">Submit</MudButton>
                     </MudForm>
                     <MudText Color="Color.Error">@_errorMenssage</MudText>
                 </MudCardContent>
@@ -46,23 +46,17 @@
 </AuthorizeView>
 
 @code {
+    [CascadingParameter]
+    public UserInfo UserInfo { get; set; } = new();
+
     private JobRequest _jobRequest = new();
     private string _errorMenssage = string.Empty;
 
     public async Task SubmitJobAsync()
     {
         _errorMenssage = string.Empty;
-        var company = string.Empty;
-        var role = await AuthStateProvider.GetClaim("role");
-        if(role == "staff")
-        {
-            company = "test";
-        }
-        else
-        {
-            company = await AuthStateProvider.GetClaim("company");
-        }
-        
+        _jobRequest.CompanyName = UserInfo.Company;
+
         var response = await JobService.PostJob(_jobRequest);
         if (!response.IsSuccessStatusCode)
         {

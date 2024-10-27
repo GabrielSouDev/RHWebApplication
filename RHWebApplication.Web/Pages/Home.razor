@@ -5,7 +5,7 @@
 <PageTitle>Home</PageTitle>
 <AuthorizeView>
     <Authorized>
-        <MudText Typo="Typo.h6" Class="d-flex justify-center align-center">Bem-vindo, @UserName!</MudText>
+        <MudText Typo="Typo.h6" Class="d-flex justify-center align-center">Bem-vindo, @UserInfo.UserName!</MudText>
     </Authorized>
     <NotAuthorized>
         @{
@@ -16,5 +16,5 @@
 
 @code{
     [CascadingParameter]
-    public string? UserName { get; set; }
+    public UserInfo? UserInfo { get; set; }
 }

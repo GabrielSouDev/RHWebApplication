@@ -4,7 +4,7 @@ namespace RHWebApplication.API.Extensions
 {
 	public class CustomClaimTypes
 	{
-		public const string JobTitle = "JobTitle";
-		public const string Company = "Company";
+		public const string JobTitle = "jobtitle";
+		public const string Company = "company";
 	}
 }

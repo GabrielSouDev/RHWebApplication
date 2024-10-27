@@ -4,7 +4,6 @@
 @inject ISnackbar Snackbar
 @page "/JobList"
 
-
 <PageTitle>JobTitle List</PageTitle>
 <AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
@@ -53,14 +52,16 @@
 </AuthorizeView>
 
 @code {
-    private List<JobResponse>? _jobs;
+    [CascadingParameter]
+    public UserInfo UserInfo { get; set; } = new();
+    private List<JobResponse> _jobs = new();
     private string? _searchString;
     private List<string> _events = new();
     private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        var jobList = await JobService.GetJobList();
+        var jobList = await JobService.GetJobListByCorpany(UserInfo.Company);
         if(jobList is not null)
         {
             _jobs = jobList;
@@ -87,24 +88,27 @@
         var parameters = new DialogParameters { ["job"] = job };
         var dialog = DialogService.Show<EditJobDialog>(null, parameters);
         var result = await dialog.Result;
-        var updatedJob = (JobResponse)result.Data;
-
-        if (!result.Canceled && updatedJob != null)
+        if (result != null && result.Data != null)
         {
-            var requestJob = new JobRequest(updatedJob.Id, updatedJob.Title, updatedJob.Description, updatedJob.UnhealthyLevel, 
-                updatedJob.IsPericulosity, updatedJob.OverTimeValue, updatedJob.BaseSalary, updatedJob.CompanyName);
-            var response = await JobService.PutJob(requestJob);
+            var updatedJob = (JobResponse)result.Data;
 
-            if(response.IsSuccessStatusCode)
+            if (!result.Canceled && updatedJob != null)
             {
-                var index = _jobs.FindIndex(j => j.Id == updatedJob.Id);
-                if (index != -1)
+                var requestJob = new JobRequest(updatedJob.Id, updatedJob.Title, updatedJob.Description, updatedJob.UnhealthyLevel,
+                    updatedJob.IsPericulosity, updatedJob.OverTimeValue, updatedJob.BaseSalary, updatedJob.CompanyName);
+                var response = await JobService.PutJob(requestJob);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    _jobs[index] = updatedJob;
+                    var index = _jobs.FindIndex(j => j.Id == updatedJob.Id);
+                    if (index != -1)
+                    {
+                        _jobs[index] = updatedJob;
+                    }
+                    Snackbar.Add("JobTitle has been Updated!", Severity.Success);
                 }
-                Snackbar.Add("JobTitle has been Updated!", Severity.Success);
+                else Snackbar.Add("JobTitle has not altered!", Severity.Error);
             }
-            else Snackbar.Add("JobTitle has not altered!", Severity.Error);
         }
         else Snackbar.Add("JobTitle has not altered!", Severity.Error);
     }
@@ -114,16 +118,19 @@
         var parameters = new DialogParameters { ["jobTitle"] = job.Title };
         var dialog = DialogService.Show<DeleteJobDialog>(null, parameters);
         var result = await dialog.Result;
-        if (!result.Canceled)
+        if(result is not null)
         {
-            var response = await JobService.DeleteJob(job.Id);
-            if (response.IsSuccessStatusCode)
+            if (!result.Canceled)
             {
-                _jobs.Remove(job);
+                var response = await JobService.DeleteJob(job.Id);
+                if (response.IsSuccessStatusCode)
+                {
+                    _jobs.Remove(job);
 
-                Snackbar.Add("JobTitle has been Deleted!", Severity.Success);
-            }
-            else Snackbar.Add("JobTitle has not altered!", Severity.Error);
+                    Snackbar.Add("JobTitle has been Deleted!", Severity.Success);
+                }
+                else Snackbar.Add("JobTitle has not altered!", Severity.Error);
+            }  
         }
         else Snackbar.Add("JobTitle has not altered!", Severity.Error);
     }

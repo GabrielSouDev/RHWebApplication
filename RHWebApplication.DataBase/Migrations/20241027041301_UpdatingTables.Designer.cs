@@ -12,8 +12,8 @@ using RHWebApplication.Database;
 namespace RHWebApplication.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20241025014438_CreatingTableAgain")]
-    partial class CreatingTableAgain
+    [Migration("20241027041301_UpdatingTables")]
+    partial class UpdatingTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,6 +160,10 @@ namespace RHWebApplication.Database.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
@@ -233,7 +237,8 @@ namespace RHWebApplication.Database.Migrations
                         new
                         {
                             Id = 1,
-                            CreationDate = new DateTime(2024, 10, 24, 22, 44, 37, 421, DateTimeKind.Local).AddTicks(9928),
+                            CompanyName = "Staff",
+                            CreationDate = new DateTime(2024, 10, 27, 1, 13, 0, 862, DateTimeKind.Local).AddTicks(5293),
                             Email = "staf@email.com",
                             IsActive = true,
                             Login = "staff",

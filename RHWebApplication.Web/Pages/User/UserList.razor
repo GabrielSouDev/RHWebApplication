@@ -29,6 +29,7 @@
                         <PropertyColumn Property="x => x.Email" />
                         <PropertyColumn Property="x => x.CreationDate" />
                         <PropertyColumn Property="x => x.UserType" />
+                        <PropertyColumn Property="x => x.CompanyName" />
                         <PropertyColumn Property="x => x.IsActive" />
                         <TemplateColumn Title="Options" StickyRight="true">
                             <CellTemplate Context="cellContext">
@@ -52,7 +53,7 @@
 </AuthorizeView>
 
 @code {
-    private List<UserResponse>? _users = new();
+    private List<UserResponse> _users = new();
     private string? _searchString;
     private List<string> _events = new();
     private bool _isLoading = true;
@@ -89,26 +90,32 @@
         var parameters = new DialogParameters { ["user"] = userRequest };
         var dialog = DialogService.Show<EditUserDialog>(null, parameters);
         var result = await dialog.Result;
-        var updatedUser = (UserRequest)result.Data;
-
-        //talvez precise converter para request
-        if (!result.Canceled && updatedUser != null)
+        if(result is not null)
         {
-            var response = await UserService.PutUser(updatedUser);
-            if(response.IsSuccessStatusCode)
-            {
-                var index = _users.FindIndex(j => j.Id == updatedUser.Id);
+            var updatedUser = (UserRequest?)result.Data;
 
-                if (index != -1)
+            //talvez precise converter para request
+            if (!result.Canceled && updatedUser != null)
+            {
+                var response = await UserService.PutUser(updatedUser);
+                if (response is not null)
                 {
-                    var updatedUserTableElement = new UserResponse(updatedUser.Id, updatedUser.Login, updatedUser.Name, updatedUser.Email, user.CreationDate, user.UserType, user.IsActive); ;
-                    _users[index] = updatedUserTableElement;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var index = _users.FindIndex(j => j.Id == updatedUser.Id);
+
+                        if (index != -1)
+                        {
+                            var updatedUserTableElement = new UserResponse(updatedUser.Id, updatedUser.Login, updatedUser.Name, updatedUser.Email, user.CreationDate, user.UserType, user.CompanyName, user.IsActive); ;
+                            _users[index] = updatedUserTableElement;
+                        }
+                        Snackbar.Add("User has been Updated!", Severity.Success);
+                    }
                 }
-                Snackbar.Add("User has been Updated!", Severity.Success);
+                else Snackbar.Add("User has not altered!", Severity.Error);
             }
             else Snackbar.Add("User has not altered!", Severity.Error);
-        }
-        else Snackbar.Add("User has not altered!", Severity.Error);
+        }   
     }
 
     private async Task DeleteUserAsync(UserResponse user)
@@ -116,17 +123,22 @@
         var parameters = new DialogParameters { ["login"] = user.Name };
         var dialog = DialogService.Show<DeleteUserDialog>(null, parameters);
         var result = await dialog.Result;
-
-        if (!result.Canceled)
+        if(result is not null)
         {
-            var response = await UserService.DeleteUser(user.Id);
-            if (response.IsSuccessStatusCode)
+            if (!result.Canceled)
             {
-                _users.Remove(user);
-                Snackbar.Add("User has been Deleted!", Severity.Success);
+                var response = await UserService.DeleteUser(user.Id);
+                if (response.IsSuccessStatusCode)
+                {
+                    if(_users.Contains(user))
+                    {
+                        _users.Remove(user);
+                        Snackbar.Add("User has been Deleted!", Severity.Success);
+                    }
+                }
+                else Snackbar.Add("User has not altered!", Severity.Error);
             }
             else Snackbar.Add("User has not altered!", Severity.Error);
         }
-        else Snackbar.Add("User has not altered!", Severity.Error);
     }
 }

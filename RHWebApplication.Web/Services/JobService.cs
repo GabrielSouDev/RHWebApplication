@@ -24,9 +24,9 @@ public class JobService
         var response = await _httpClient.GetFromJsonAsync<List<String>>("/Job/Titles");
         return response;
     }
-    public async Task<List<JobResponse>?> GetJobList()
+    public async Task<List<JobResponse>?> GetJobListByCorpany(string company)
     {
-        var response = await _httpClient.GetFromJsonAsync<List<JobResponse>>("/Job");
+        var response = await _httpClient.GetFromJsonAsync<List<JobResponse>>($"/Job/{company}");
         return response;
     }
     public async Task<HttpResponseMessage> PutJob(JobRequest job)

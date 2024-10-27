@@ -16,9 +16,9 @@
 
 @code {
 	[CascadingParameter]
-	MudDialogInstance MudDialog { get; set; }
+	MudDialogInstance MudDialog { get; set; } = new();
 	[Parameter]
-	public UserRequest user { get; set; }
+	public UserRequest user { get; set; } = new();
 
 	private void Save()
 	{

@@ -48,7 +48,6 @@ public static class CompanyExtensions
 
 		CompanyGroup.MapPost("/", async ([FromServices]DAL<Company> dalCompany, [FromBody]CompanyRequest companyRequest) =>
         {
-            
             var company = await dalCompany.FindByAsync( c => c.CNPJ == companyRequest.CNPJ);
 
             if(company is null)

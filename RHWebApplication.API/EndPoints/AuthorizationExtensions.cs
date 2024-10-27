@@ -9,6 +9,7 @@ using RHWebApplication.Web.Requests;
 using System.Security.Principal;
 using RHWebApplication.API.Extensions;
 using System.Linq;
+using RHWebApplication.Shared.Models.CompanyModels;
 
 public static class AuthenticationExtensions
 {
@@ -28,16 +29,29 @@ public static class AuthenticationExtensions
 				    new Claim(ClaimTypes.Name, user.Login),
 				    new Claim(ClaimTypes.Role, user.UserType),
                  };
-                if(user.UserType == "Admin")
+                if (user.UserType == "Staff")
+                {
+                    var userStaff = await dalUser.FindByAsync<Staff>(a => a.Id == user.Id);
+                    if(userStaff is not null)
+                        claims.Add(new Claim("company", userStaff.CompanyName));
+                }
+
+                if (user.UserType == "Admin")
                 {
                     var userAdmin = await dalUser.FindByAsync<Admin>(a => a.Id == user.Id);
-                    claims.Add(new Claim("company", userAdmin.Company.CorporateName));
+                    if (userAdmin is not null)
+                    {
+                        claims.Add(new Claim("company", userAdmin.Company.CorporateName));
+                    }
                 }
 				if (user.UserType == "Employee")
 				{
-					var userAdmin = await dalUser.FindByAsync<Employee>(a => a.Id == user.Id);
-                    claims.Add(new Claim("company", userAdmin.Job.Company.CorporateName));
-                    claims.Add(new Claim("jobtitle", userAdmin.Job.Name));
+					var userEmployee = await dalUser.FindByAsync<Employee>(a => a.Id == user.Id);
+                    if(userEmployee is not null)
+                    {
+                        claims.Add(new Claim("company", userEmployee.Job.Company.CorporateName));
+                        claims.Add(new Claim("jobtitle", userEmployee.Job.Name));
+                    }
 				}
 
 				var tokenDescriptor = new SecurityTokenDescriptor

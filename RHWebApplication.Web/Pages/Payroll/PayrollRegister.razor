@@ -44,7 +44,7 @@
                                       @bind-Value="_payrollRequest.Commission" 
                                       Label="Commission" 
                                       Required="true" />
-                        <MudButton Type="Submit" OnClick="SubmitPayrollAsync" Color="Color.Primary">Submit</MudButton>
+                        <MudButton type="Submit" OnClick="SubmitPayrollAsync" Color="Color.Primary">Submit</MudButton>
                     </MudForm>
                     <MudText Color="Color.Error">@_errorMenssage</MudText>
                 </MudCardContent>
@@ -59,17 +59,21 @@
 </AuthorizeView>
 @code {
     private PayrollRequest _payrollRequest = new();
-    private string _employeeSelectedName;
+    private string _employeeSelectedName = string.Empty;
     private List<string> _employeeList = new();
-    private float _overTimeHours;
-    private float _overTimeMinutes;
+    private float _overTimeHours = 0;
+    private float _overTimeMinutes = 0;
     private string _errorMenssage = string.Empty;
     List<EmployeeResponse> _employees = new();
 
     protected override async Task OnInitializedAsync()
     {
-        _employees = await EmployeeService.GetEmployees();
-        _employeeList = _employees.Select(e => e.Name).ToList();
+        var employees = await EmployeeService.GetEmployees();
+        if (employees is not null)
+        {
+            _employees = employees;
+            _employeeList = _employees.Select(e => e.Name).ToList();
+        }
     }
 
     public async Task SubmitPayrollAsync()
@@ -108,12 +112,6 @@
     }
     public bool ValidateOverTime()
     {
-        if (_overTimeHours == null)
-            _overTimeHours = 0;
-
-        if (_overTimeMinutes == null)
-            _overTimeMinutes = 0;
-
         if (_overTimeHours >= 0 && _overTimeHours <= 99)
         {
             if (_overTimeMinutes >= 0 && _overTimeMinutes <= 59)

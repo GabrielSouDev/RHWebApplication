@@ -10,9 +10,9 @@
 
 @code {
 	[CascadingParameter]
-	MudDialogInstance MudDialog { get; set; }
+	MudDialogInstance MudDialog { get; set; } = new();
 	[Parameter]
-	public string login { get; set; }
+	public string login { get; set; } = string.Empty;
 
 	private void Save()
 	{

@@ -22,9 +22,9 @@ public class CompanyService
         var response = await _httpClient.PostAsJsonAsync("/Company", company);
         return response;
     }
-    public async Task<List<string>> GetCompanyNames()
+    public async Task<List<string>?> GetCompanyNames()
     {
-        var response = await _httpClient.GetFromJsonAsync<List<String>>("/Company/Names");
+        var response = await _httpClient.GetFromJsonAsync<List<string>>("/Company/Names");
         return response;
     }
 

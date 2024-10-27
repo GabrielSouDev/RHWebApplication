@@ -10,9 +10,9 @@
 
 @code{
 	[CascadingParameter]
-	MudDialogInstance MudDialog { get; set; }
+	MudDialogInstance MudDialog { get; set; } = new();
 	[Parameter] 
-	public PayrollResponse Payroll { get; set; }
+	public PayrollResponse Payroll { get; set; } = new();
 
 	private void Save()
 	{

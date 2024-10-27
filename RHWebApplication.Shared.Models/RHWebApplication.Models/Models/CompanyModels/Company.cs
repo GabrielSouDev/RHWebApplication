@@ -18,9 +18,9 @@ public class Company
 	[Key]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	public int Id { get; set; }
-	public string TradeName { get; set; } //nome fantasia
-	public string CorporateName { get; set; } //razão social
-	public int CNPJ { get; set; }
-	public virtual List<JobTitle> JobTitles { get; set; } 
-	public virtual List<Admin> Admins { get; set; }
+	public string TradeName { get; set; } = string.Empty; //nome fantasia
+	public string CorporateName { get; set; } = string.Empty; //razão social
+    public int CNPJ { get; set; }
+	public virtual List<JobTitle> JobTitles { get; set; } = new();
+	public virtual List<Admin> Admins { get; set; } = new();
 }

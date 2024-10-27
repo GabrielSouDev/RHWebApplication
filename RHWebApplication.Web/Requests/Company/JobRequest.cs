@@ -16,12 +16,12 @@ public class JobRequest
 
 	}
     public int Id { get; set; }
-    public string CompanyName { get; set; }
+    public string CompanyName { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public int UnhealthyLevel { get; set; } = 0;
+    public int UnhealthyLevel { get; set; }
     public bool IsPericulosity { get; set; } = false;
-    public decimal OverTimeValue { get; set; } = 0;
+    public decimal OverTimeValue { get; set; } 
     public decimal BaseSalary { get; set; } = default;
 
 }

@@ -9,7 +9,7 @@ public class CompanyRequest
         CorporateName = corporateName;
         CNPJ = cnpj;
     }
-    public string TradeName { get; set; }
-    public string CorporateName { get; set; }
+    public string TradeName { get; set; } = string.Empty;
+    public string CorporateName { get; set; } = string.Empty;
     public int CNPJ { get; set; }
 }

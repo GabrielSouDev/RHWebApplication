@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
+using RHWebApplication.Shared.Models.CompanyModels;
 using RHWebApplication.Shared.Models.UserModels;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -31,21 +32,32 @@ namespace RHWebApplication.Web.Services
             var user = new ClaimsPrincipal(identity);
             return new AuthenticationState(user);
         }
-        public async Task<string> GetClaim(string ClaimType)
+        public async Task<string?> GetClaim(string claimType)
         {
-            var token = await _localStorage.GetItemAsync<string>("jwt_token");
-            if (string.IsNullOrEmpty(token))
+            var tokenJson = await _localStorage.GetItemAsStringAsync("jwt_token");
+
+            if (string.IsNullOrEmpty(tokenJson))
             {
                 return string.Empty;
             }
 
+            // Deserializar o JSON para obter o token
+            var tokenObj = JsonSerializer.Deserialize<Dictionary<string, string>>(tokenJson);
+            if (tokenObj == null || !tokenObj.TryGetValue("Token", out var token) || string.IsNullOrEmpty(token))
+            {
+                throw new SecurityTokenMalformedException("Token is not well formed or missing.");
+            }
+
             var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadToken(token) as JwtSecurityToken;
+            if (!handler.CanReadToken(token))
+            {
+                throw new SecurityTokenMalformedException("Token is not well formed.");
+            }
 
-            var claimValue = jwtToken?.Claims.FirstOrDefault(c => c.Type == ClaimType)?.Value;
-
-            return claimValue;
+            var jwtToken = handler.ReadJwtToken(token);
+            return jwtToken.Claims.FirstOrDefault(c => c.Type == claimType)?.Value;
         }
+
         public async Task Login(string token)
         {
             await _localStorage.SetItemAsStringAsync("jwt_token", token);
@@ -53,10 +65,10 @@ namespace RHWebApplication.Web.Services
             var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt_token");
             var user = new ClaimsPrincipal(identity);
 
-            foreach (var claim in identity.Claims)
-            { 
-                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
-            }
+            //foreach (var claim in identity.Claims)
+            //{ 
+            //    Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            //}
             var userName = identity.FindFirst(ClaimTypes.Name)?.Value;
 
             if (!string.IsNullOrEmpty(userName))
@@ -79,18 +91,36 @@ namespace RHWebApplication.Web.Services
             var payload = jwt.Split('.')[1];
             var jsonBytes = ParseBase64WithoutPadding(payload);
             var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-
             var claims = keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())).ToList();
+
             // Adicionar a reivindicação de nome de usuário se `unique_name` estiver presente
             if (!claims.Any(c => c.Type == ClaimTypes.Name) && keyValuePairs.ContainsKey("unique_name"))
             {
-                claims.Add(new Claim(ClaimTypes.NameIdentifier, keyValuePairs["nameid"].ToString()));
-                claims.Add(new Claim(ClaimTypes.Name, keyValuePairs["unique_name"].ToString()));
-                claims.Add(new Claim(ClaimTypes.Role, keyValuePairs["role"].ToString()));
-            }
+                var nameid = keyValuePairs["nameid"].ToString();
+                var unique_name = keyValuePairs["unique_name"].ToString();
+                var role = keyValuePairs["role"].ToString();
+                var company = keyValuePairs["company"].ToString();
 
+                if(role == "Employee")
+                {
+                    var jobtitle = keyValuePairs["jobtitle"].ToString();
+                    if (!string.IsNullOrEmpty(jobtitle))
+                        claims.Add(new Claim(ClaimTypes.NameIdentifier, jobtitle));
+                }
 
-return claims;
+                if (!string.IsNullOrEmpty(nameid))
+                    claims.Add(new Claim(ClaimTypes.NameIdentifier, nameid));
+
+                if (!string.IsNullOrEmpty(unique_name))
+                    claims.Add(new Claim(ClaimTypes.Name, unique_name));
+
+                if(!string.IsNullOrEmpty(role))
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+
+				if (!string.IsNullOrEmpty(company))
+					claims.Add(new Claim(ClaimTypes.NameIdentifier, company));
+			}
+            return claims;
         }
 
 

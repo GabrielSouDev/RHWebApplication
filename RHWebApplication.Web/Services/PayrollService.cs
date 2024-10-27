@@ -19,9 +19,14 @@ public class PayrollService
         var response = await _httpClient.PostAsJsonAsync("/Payroll", payroll);
         return response;
     }
-    public async Task<List<PayrollResponse>> GetPayrolls()
+    public async Task<List<PayrollResponse>?> GetPayrolls()
     {
         var response = await _httpClient.GetFromJsonAsync<List<PayrollResponse>>("/Payroll");
+        return response;
+    }
+    public async Task<List<PayrollResponse>?> GetPayrollsByCompany(string company)
+    {
+        var response = await _httpClient.GetFromJsonAsync<List<PayrollResponse>>($"/Payroll/{company}");
         return response;
     }
     public async Task<HttpResponseMessage> DeletePayroll(int id)

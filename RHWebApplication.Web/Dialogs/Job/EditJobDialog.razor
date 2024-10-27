@@ -31,12 +31,12 @@
 
 @code{
 	[CascadingParameter]
-	MudDialogInstance MudDialog { get; set; }
-	[Parameter] 
-	public JobResponse job { get; set; }
+	MudDialogInstance MudDialog { get; set; } = new();
+	[Parameter]
+	public JobResponse job { get; set; } = new();
 
-	private void Save()
-	{
+    private void Save()
+    {
 		MudDialog.Close(DialogResult.Ok(job));
 	}
 

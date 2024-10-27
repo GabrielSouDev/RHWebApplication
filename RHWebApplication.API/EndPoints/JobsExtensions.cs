@@ -24,6 +24,22 @@ public static class JobsExtensions
             return Results.Ok(jobsResponse);
         });
 
+
+        jobGroup.MapGet("/{company}", async ([FromServices] DAL<JobTitle> dalJobs, string company) =>
+        {
+            var jobs = await dalJobs.ToListAsync();
+            var jobsResponse = new List<JobResponse>();
+            foreach (var job in jobs)
+            {
+                if (job.Company.CorporateName.Contains(company) || company == string.Empty)
+                {
+                    jobsResponse.Add(new JobResponse(job.Id, job.Name, job.Description, job.UnhealthyLevel, job.IsPericulosity, job.OverTimeValue, job.BaseSalary, job.Company.CorporateName));
+                }
+            }
+
+            return Results.Ok(jobsResponse);
+        });
+
         jobGroup.MapGet("/Titles", async ([FromServices] DAL<JobTitle> dalJobs) =>
         {
             var jobs = await dalJobs.ToListAsync();
@@ -37,7 +53,7 @@ public static class JobsExtensions
             return Results.Ok(titleList);
         });
 
-        jobGroup.MapGet("/{Id}", async ([FromServices]DAL<JobTitle> dalJobs, int Id) =>
+        jobGroup.MapGet("/{id:int}", async ([FromServices]DAL<JobTitle> dalJobs, int Id) =>
         {
             var job = await dalJobs.FindByAsync(a => a.Id == Id);
             if(job is null)

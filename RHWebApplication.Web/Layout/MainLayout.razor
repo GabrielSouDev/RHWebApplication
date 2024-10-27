@@ -1,5 +1,7 @@
-﻿@inject CustomAuthStateProvider AuthStateProvider
+﻿@using System.Security.Claims
+@inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
+@inject CompanyService CompanyService
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@currentTheme" />
@@ -8,25 +10,52 @@
 <MudSnackbarProvider /> 
 
 <MudLayout>
-       <MudAppBar Class="d-flex align-items-center" Color="Color.Primary" Fixed="true" Elevation="25">
-        <MudIconButton Disabled="@_notLogged" hidden="@_notLogged" Icon="@arrowMenu" Color="Color.Inherit" Class="white-icon" OnClick="DrawerToggle" />
-           <MudText Typo="Typo.h4">TEST APPLICATION</MudText>
-           <MudSpacer />
-           <MudText Class="dropend" Typo="Typo.h6">@userName</MudText>
+       <MudAppBar Class="d-flex align-items-center" Color="Color.Primary" Fixed="true" Elevation="25" >
+       <MudIconButton Disabled="@_notLogged" hidden="@_notLogged" Icon="@arrowMenu" Color="Color.Inherit" Class="white-icon" OnClick="DrawerToggle" />
+       <MudText Typo="Typo.h4">TEST APPLICATION</MudText>
+       <MudSpacer />
+        @{
+            if (_isStaff)
+            {
+                <MudPaper hidden="@(!_isStaff)" Style="width: 200px; text-align: end; margin-right: 35px;" >
+                    <MudSelect Dense="true" @bind-Value="UserInfo.Company" Label="Company" >
+                        <MudSelectItem Value="string.Empty">Show All</MudSelectItem Elevation="15">
+                        @{
+                            foreach (var company in _companyList)
+                            {
+                                if (company is not null)
+                                {
+                                    <MudSelectItem Value="@company">@company</MudSelectItem>
+                                }
+                            }
+                        }
+                    </MudSelect>
+                </MudPaper>
+            }
+            else
+            {
+                <MudText hidden="@_isStaff" Style="margin-right: 35px;">@UserInfo.Company</MudText>
+            }
+        }
+        <MudText Class="dropend" Typo="Typo.h6">@UserInfo.UserName</MudText>
         <MudButton Disabled="@_logged" hidden="@_logged" OnClick="GoToLogin" Color="Color.Warning">Login</MudButton>
         <MudButton Disabled="@_notLogged" hidden="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
-       </MudAppBar>
-       <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="10">
-           <NavMenu></NavMenu>
-       </MudDrawer>
-       <MudMainContent Class="menu-content">
-            <CascadingValue Value="userName">
+        </MudAppBar>
+        <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="10">
+            <NavMenu></NavMenu>
+        </MudDrawer>
+        <MudMainContent Class="menu-content">
+            <CascadingValue Value="UserInfo">
                 @Body
             </CascadingValue>
-       </MudMainContent>
+
+        </MudMainContent>
 </MudLayout>
+
 @code {
-    private string? userName;
+    private List<string> _companyList = new();
+    private UserInfo UserInfo = new();
+    private bool _isStaff = false;
     private bool _drawerOpen = false;
     private bool _notLogged = true;
     private bool _logged = false;
@@ -41,25 +70,48 @@
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        if(user.Identity is not null)
+        if (user.Identity != null && user.Identity.IsAuthenticated)
         {
-            if(user.Identity.IsAuthenticated)
+            var role = await AuthStateProvider.GetClaim("role");
+            if(role is not null)
             {
-                arrowMenu = _drawerOpen ? Icons.Material.Filled.KeyboardDoubleArrowLeft : Icons.Material.Filled.KeyboardDoubleArrowRight;
-                userName = user.Identity.Name;
-                _logged = true;
-                _notLogged = false;
-                _drawerOpen = true;  
-            }    
+                UserInfo.Role = role;
+                if (role == "Staff")
+                    _isStaff = true;
+            }
+
+            if (_isStaff)
+            {
+                var companys = await CompanyService.GetCompanyNames();
+                if (companys is not null)
+                    _companyList = companys;
+            }
+
+            var company = await AuthStateProvider.GetClaim("company");
+            if (company is not null)
+            {
+                if (!_isStaff)
+                    UserInfo.Company = company;
+            }
+
+            if (user.Identity.Name is not null)
+                UserInfo.UserName = user.Identity.Name;
+
+            arrowMenu = _drawerOpen ? Icons.Material.Filled.KeyboardDoubleArrowLeft : Icons.Material.Filled.KeyboardDoubleArrowRight;
+            _logged = true;
+            _notLogged = false;
+            _drawerOpen = true;
         }
     }
+
     void GoToLogin()
     {
         NavigationManager.NavigateTo("/Login");
     }
     async Task LogoutAsync()
     {
-        userName = string.Empty;
+        _isStaff = false;
+        UserInfo = new();
         _logged = false;
         _notLogged = true;
         _drawerOpen = false;
@@ -71,4 +123,5 @@
         _drawerOpen = !_drawerOpen;
         arrowMenu = _drawerOpen ? Icons.Material.Filled.KeyboardDoubleArrowLeft : Icons.Material.Filled.KeyboardDoubleArrowRight;
     }
+
 }

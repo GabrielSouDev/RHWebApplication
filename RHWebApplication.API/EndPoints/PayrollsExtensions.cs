@@ -30,7 +30,7 @@ public static class PayrollsExtensions
             return Results.Ok(payrollsResponse);
         });
 
-        payrollGroup.MapGet("/{Id}", async ([FromServices]DAL<Payroll> dalPayrolls, int Id) => 
+        payrollGroup.MapGet("/{Id:int}", async ([FromServices]DAL<Payroll> dalPayrolls, int Id) => 
         {
             var payroll = await dalPayrolls.FindByAsync(a => a.Id == Id);
             if (payroll is null)
@@ -42,6 +42,24 @@ public static class PayrollsExtensions
 	payroll.Gross, payroll.CreationDate);
 
 		return Results.Ok(payrollResponse);
+        });
+
+        payrollGroup.MapGet("/{company}", async ([FromServices] DAL<Payroll> dalPayrolls, string company) =>
+        {
+            var payrolls = await dalPayrolls.ToListAsync();
+            var payrollsResponse = new List<PayrollResponse>();
+            foreach (var payroll in payrolls)
+            {
+                if(payroll.Employee.Job.Company.CorporateName.Equals(company) || company == string.Empty)
+                {
+                    payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name,     payroll.Employee.Job.Name,payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
+                    payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
+                    payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions,   payroll.Employee.Job.BaseSalary, payroll.Net,
+                    payroll.Gross, payroll.CreationDate));
+                }
+            }
+
+            return Results.Ok(payrollsResponse);
         });
 
         payrollGroup.MapPost("/", async ([FromServices]DAL<Payroll> dalPayrolls, [FromServices]DAL<User> dalUsers, [FromBody]PayrollRequest payrollRequest) => 

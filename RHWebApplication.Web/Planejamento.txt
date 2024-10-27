@@ -2,8 +2,8 @@
 X   Criar Classe Empresa
 X   relacionar jobTitle(antigo job) com empresa
     
-    Staff manipulará criação de admin com empresa
-    admin manipulará funcionarios e jobtittles
+X   Staff manipulará criação de admin com empresa
+QUASE   admin manipulará funcionarios e jobtittles
     
     restringir paginas e visualização de menu por roles
     
@@ -25,3 +25,5 @@ X   relacionar jobTitle(antigo job) com empresa
     autenticar requisiçoes por roles
     
 	 integrar dockers e subir aplicação
+
+     Separar company em databases separadas. talvez..

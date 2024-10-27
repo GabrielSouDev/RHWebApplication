@@ -7,5 +7,6 @@ public class Staff : User
 	: base(login, password, name, email)
 	{
 		UserType = "Staff";
+        CompanyName = "Staff";
 	}
 }

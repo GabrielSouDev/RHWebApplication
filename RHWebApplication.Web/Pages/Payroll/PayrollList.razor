@@ -1,4 +1,4 @@
-﻿@page "/AdminPayrollList"
+﻿@page "/PayrollList"
 
 @inject NavigationManager NavigationManager
 @inject EmployeeService EmployeeService
@@ -6,8 +6,8 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<PageTitle>Admin Payrolls List</PageTitle>
-<AuthorizeView Roles="Admin, Staff">
+<PageTitle>Payrolls List</PageTitle>
+<AuthorizeView>
     <Authorized Context="authContext">
         <MudContainer>
             @if (_isLoading)
@@ -83,8 +83,10 @@
 </AuthorizeView>
 
 @code {
-    private List<PayrollResponse>? _payrolls = new();
-    private List<PayrollResponse>? _payrollsSelected = new();
+    [CascadingParameter]
+    public UserInfo UserInfo { get; set; } = new();
+    private List<PayrollResponse> _payrolls = new();
+    private List<PayrollResponse> _payrollsSelected = new();
 
     List<EmployeeResponse> _employees = new();
     private List<string> _employeeList = new();
@@ -94,12 +96,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _employees = await EmployeeService.GetEmployees();
-        _employeeList = _employees.Select(e => e.Name).ToList();
+        var employees = await EmployeeService.GetEmployeesNamesByCompany(UserInfo.Company);
+        if (employees is not null)
+            _employeeList = employees;
 
-        _payrolls = await PayrollService.GetPayrolls();
-        if (_payrolls is not null)
+        var payroll = await PayrollService.GetPayrollsByCompany(UserInfo.Company);
+        if (payroll is not null)
         {
+            _payrolls = payroll;
             _payrollsSelected = _payrolls;
             _isLoading = false;
         }
@@ -109,15 +113,15 @@
     {
 
         if (string.IsNullOrWhiteSpace(_employeeSelectedName))
-        return true;
-            
+            return true;
+
 
 
         if (x.EmployeeName.Contains(_employeeSelectedName, StringComparison.OrdinalIgnoreCase))
-        return true;
+            return true;
 
 
-    return false;
+        return false;
     };
 
     private void DetailsPayroll(PayrollResponse payroll)
@@ -132,17 +136,19 @@
         var parameters = new DialogParameters { ["Payroll"] = payroll };
         var dialog = DialogService.Show<DeletePayrollDialog>(null, parameters); // criar dialog para deletar Payroll
         var result = await dialog.Result;
-
-        if (!result.Canceled)
+        if(result is not null)
         {
-            var response = await PayrollService.DeletePayroll(payroll.Id);
-            if (response.IsSuccessStatusCode)
+            if (!result.Canceled)
             {
-                _payrolls.Remove(payroll);
-                _payrollsSelected.Remove(payroll);
-                Snackbar.Add("Payroll has been Deleted!", Severity.Success);
+                var response = await PayrollService.DeletePayroll(payroll.Id);
+                if (response.IsSuccessStatusCode)
+                {
+                    _payrolls.Remove(payroll);
+                    _payrollsSelected.Remove(payroll);
+                    Snackbar.Add("Payroll has been Deleted!", Severity.Success);
+                }
+                else Snackbar.Add("Payroll has not altered!", Severity.Error);
             }
-            else Snackbar.Add("Payroll has not altered!", Severity.Error);
         }
         else Snackbar.Add("Payroll has not altered!", Severity.Error);
     }
