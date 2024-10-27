@@ -40,7 +40,7 @@ public static class EmployeesExtensions
   
             foreach (var employee in employees)
             {
-                if (employee.Job.Company.Equals(company) || company == string.Empty)
+                if (employee.Job.Company.CorporateName == company || company == string.Empty)
                 {
                     employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Name, employee.CreationDate, employee.TerminationDate, employee.IsActive));
                 }
@@ -55,7 +55,7 @@ public static class EmployeesExtensions
 
             foreach (var employee in employees)
             {
-                if (employee.Job.Company.Equals(company) || company == string.Empty)
+                if (employee.Job.Company.CorporateName == company || company == string.Empty)
                 {
                     employeesResponse.Add(employee.Name);
                 }

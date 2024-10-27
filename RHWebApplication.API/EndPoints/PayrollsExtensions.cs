@@ -44,17 +44,35 @@ public static class PayrollsExtensions
 		return Results.Ok(payrollResponse);
         });
 
-        payrollGroup.MapGet("/{company}", async ([FromServices] DAL<Payroll> dalPayrolls, string company) =>
+        payrollGroup.MapGet("/{login}", async ([FromServices] DAL<Payroll> dalPayrolls, string login) =>
         {
             var payrolls = await dalPayrolls.ToListAsync();
             var payrollsResponse = new List<PayrollResponse>();
             foreach (var payroll in payrolls)
             {
-                if(payroll.Employee.Job.Company.CorporateName.Equals(company) || company == string.Empty)
+                if(payroll.Employee.Login == login || login == string.Empty)
                 {
                     payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name,     payroll.Employee.Job.Name,payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
                     payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
                     payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions,   payroll.Employee.Job.BaseSalary, payroll.Net,
+                    payroll.Gross, payroll.CreationDate));
+                }
+            }
+
+            return Results.Ok(payrollsResponse);
+        });
+
+        payrollGroup.MapGet("/Company/{company}", async ([FromServices] DAL<Payroll> dalPayrolls, string company) =>
+        {
+            var payrolls = await dalPayrolls.ToListAsync();
+            var payrollsResponse = new List<PayrollResponse>();
+            foreach (var payroll in payrolls)
+            {
+                if (payroll.Employee.Job.Company.CorporateName == company || company == string.Empty)
+                {
+                    payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
+                    payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
+                    payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
                     payroll.Gross, payroll.CreationDate));
                 }
             }

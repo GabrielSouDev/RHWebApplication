@@ -24,7 +24,20 @@ public static class UsersExtensions
             return Results.Ok(usersResponse);
         });
 
-        userGroup.MapGet("/{Id}", async ([FromServices]DAL<User> dalUsers, int Id) =>
+        userGroup.MapGet("/{company}", async ([FromServices] DAL<User> dalUsers, string company) =>
+        {
+            var users = await dalUsers.ToListAsync();
+            var usersResponse = new List<UserResponse>();
+            foreach (var user in users)
+            {
+                if(user.CompanyName == company || company == string.Empty)
+                    usersResponse.Add(new UserResponse(user.Id, user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.CompanyName, user.IsActive));
+            }
+
+            return Results.Ok(usersResponse);
+        });
+
+        userGroup.MapGet("/{Id:int}", async ([FromServices]DAL<User> dalUsers, int Id) =>
         {
             var user = await dalUsers.FindByAsync(a=>a.Id == Id);
             if (user is null)

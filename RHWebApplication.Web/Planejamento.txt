@@ -1,13 +1,13 @@
 ﻿X   Criar Classe staff: user 
-X   Criar Classe Empresa
-X   relacionar jobTitle(antigo job) com empresa
+X   Criar Classe Company
+X   relacionar jobTitle(antigo job) com Company
     
-X   Staff manipulará criação de admin com empresa
-QUASE   admin manipulará funcionarios e jobtittles
+X   Staff manipulará criação de admin com Company
+X   admin manipulará funcionarios e jobtittles
     
-    restringir paginas e visualização de menu por roles
+X   restringir paginas e visualização de menu por roles
     
-    criar visualização de holerite separado em staff,admin e employee
+X   criar visualização de holerite separado em staff,admin e employee
     
     criar edição de dados do user será de acordo com usertype
     
@@ -27,3 +27,8 @@ QUASE   admin manipulará funcionarios e jobtittles
 	 integrar dockers e subir aplicação
 
      Separar company em databases separadas. talvez..
+
+     tratar exceptions ao enviar requisições http
+
+     implementar /home com boas vindas, funcionalidades
+     implementar visualização de senha staff padrão para testarem

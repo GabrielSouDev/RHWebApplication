@@ -30,7 +30,7 @@
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Admin Payroll List</MudText>
                         <MudSpacer />
-                        <MudSelect @bind-Value="_employeeSelectedName" >
+                        <MudSelect Disabled="@UserInfo.Role.Equals("Employee")" @bind-Value="_employeeSelectedName" >
                             <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
                             @{
                                 foreach (var employee in _employeeList)
@@ -91,22 +91,61 @@
     List<EmployeeResponse> _employees = new();
     private List<string> _employeeList = new();
     private string _employeeSelectedName = string.Empty;
-
     private bool _isLoading = true;
+    private string _previousCompany = string.Empty;
+    private string _previousEmployeeSelectedName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        _previousEmployeeSelectedName = string.Empty;
+        _previousCompany = UserInfo.Company;
+        LoadPayrollsAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (UserInfo.Company != null && UserInfo.Company != _previousCompany || _employeeSelectedName != _previousEmployeeSelectedName)
+        {
+            _previousCompany = UserInfo.Company;
+            _ = LoadPayrollsAsync();
+        }
+    }
+
+    private async Task LoadPayrollsAsync()
+    {
+        _isLoading = true;
         var employees = await EmployeeService.GetEmployeesNamesByCompany(UserInfo.Company);
+        List<PayrollResponse> payrolls;
         if (employees is not null)
             _employeeList = employees;
 
-        var payroll = await PayrollService.GetPayrollsByCompany(UserInfo.Company);
-        if (payroll is not null)
+        if(UserInfo.Role == "Employee")
         {
-            _payrolls = payroll;
-            _payrollsSelected = _payrolls;
-            _isLoading = false;
+            payrolls = await PayrollService.GetPayrollsByEmployee(UserInfo.UserName);
+
         }
+        else
+        {
+            if (UserInfo.Company == string.Empty)
+            {
+                payrolls = await PayrollService.GetPayrolls();
+            }else
+                payrolls = await PayrollService.GetPayrollsByCompany(UserInfo.Company);
+
+            if (_employeeSelectedName != string.Empty)
+            {
+                payrolls = payrolls.Where(p => p.EmployeeName.Contains(_employeeSelectedName)).ToList();
+            }    
+        }
+
+        if (payrolls is not null)
+        {
+            _payrolls = payrolls;
+            _payrollsSelected = _payrolls;
+        }
+
+        _isLoading = false;
+        StateHasChanged();
     }
 
     private Func<PayrollResponse, bool> _quickFilter => x =>

@@ -53,18 +53,39 @@
 </AuthorizeView>
 
 @code {
+    [CascadingParameter]
+    public UserInfo UserInfo { get; set; } = new();
     private List<UserResponse> _users = new();
     private string? _searchString;
     private List<string> _events = new();
     private bool _isLoading = true;
+    private string _previousCompany = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
-        var userList = await UserService.GetUsers();
+        _previousCompany = UserInfo.Company;
+        LoadUsersAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (UserInfo.Company != null && UserInfo.Company != _previousCompany)
+        {
+            _previousCompany = UserInfo.Company;
+            _ = LoadUsersAsync();
+        }
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        _isLoading = true;
+        var userList = await UserService.GetUsersByCompany(UserInfo.Company);
         if (userList is not null)
         {
             _users = userList;
-            _isLoading = false;
         }
+        _isLoading = false;
+        StateHasChanged();
     }
 
     private Func<UserResponse, bool> _quickFilter => x =>

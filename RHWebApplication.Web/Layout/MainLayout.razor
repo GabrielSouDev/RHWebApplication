@@ -18,7 +18,7 @@
             if (_isStaff)
             {
                 <MudPaper hidden="@(!_isStaff)" Style="width: 200px; text-align: end; margin-right: 35px;" >
-                    <MudSelect Dense="true" @bind-Value="UserInfo.Company" Label="Company" >
+                    <MudSelect Dense="true" @bind-Value="UserInfo.Company" Label="Company">
                         <MudSelectItem Value="string.Empty">Show All</MudSelectItem Elevation="15">
                         @{
                             foreach (var company in _companyList)
@@ -42,10 +42,13 @@
         <MudButton Disabled="@_notLogged" hidden="@_notLogged" OnClick="LogoutAsync" Color="Color.Warning">Logout</MudButton>
         </MudAppBar>
         <MudDrawer Class="menu-section" Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="10">
-            <NavMenu></NavMenu>
+            <CascadingValue Value="UserInfo">
+                <NavMenu />
+            </CascadingValue>
         </MudDrawer>
         <MudMainContent Class="menu-content">
             <CascadingValue Value="UserInfo">
+                <ChildComponent />
                 @Body
             </CascadingValue>
 
@@ -55,6 +58,7 @@
 @code {
     private List<string> _companyList = new();
     private UserInfo UserInfo = new();
+    private string _userCompany = string.Empty;
     private bool _isStaff = false;
     private bool _drawerOpen = false;
     private bool _notLogged = true;
@@ -68,6 +72,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         if (user.Identity != null && user.Identity.IsAuthenticated)

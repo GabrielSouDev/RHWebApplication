@@ -31,7 +31,7 @@ public static class JobsExtensions
             var jobsResponse = new List<JobResponse>();
             foreach (var job in jobs)
             {
-                if (job.Company.CorporateName.Contains(company) || company == string.Empty)
+                if (job.Company.CorporateName == company || company == string.Empty)
                 {
                     jobsResponse.Add(new JobResponse(job.Id, job.Name, job.Description, job.UnhealthyLevel, job.IsPericulosity, job.OverTimeValue, job.BaseSalary, job.Company.CorporateName));
                 }
@@ -40,14 +40,15 @@ public static class JobsExtensions
             return Results.Ok(jobsResponse);
         });
 
-        jobGroup.MapGet("/Titles", async ([FromServices] DAL<JobTitle> dalJobs) =>
+        jobGroup.MapGet("/Titles/{company}", async ([FromServices] DAL<JobTitle> dalJobs, string company) =>
         {
             var jobs = await dalJobs.ToListAsync();
             List<string> titleList = new List<string>();
             foreach (var job in jobs)
             {
                 if(job.Name is not null)
-                    titleList.Add(job.Name);
+                    if(job.Company.CorporateName == company || company == string.Empty)
+                        titleList.Add(job.Name);
             }
 
             return Results.Ok(titleList);

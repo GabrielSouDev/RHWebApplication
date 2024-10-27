@@ -21,6 +21,13 @@ public class UserService
         var Response = await _httpClient.GetFromJsonAsync<List<UserResponse>>("User");
         return Response;
     }
+
+    public async Task<List<UserResponse>?> GetUsersByCompany(string company)
+    {
+        var Response = await _httpClient.GetFromJsonAsync<List<UserResponse>>($"User/{company}");
+        return Response;
+    }
+
     public async Task<HttpResponseMessage?> PutUser(UserRequest user)
     {
         var Response = await _httpClient.PutAsJsonAsync("/User", user);

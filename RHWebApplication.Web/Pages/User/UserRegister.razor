@@ -12,32 +12,41 @@
         <MudContainer Class="d-flex justify-center">
             <MudCard Style="width: 50%;">
                 <MudCardContent>
-                    <MudForm Model="@_userRequest">
-                        <MudText Class="align-center" Typo="Typo.h5">Register a User</MudText>
-                        <MudTextField @bind-Value="_userRequest.Name" Label="Name" Required="true" />
-                        <MudTextField @bind-Value="_userRequest.Login" Label="Login" Required="true" />
-                        <MudTextField @bind-Value="_userRequest.Password" Label="Password" InputType="InputType.Password" Required="true" />
-                        <MudTextField @bind-Value="_userRequest.Email" Label="Email" For="@(()=> _userRequest.Email)"  Required="true" />
-                        <MudSwipeArea Class="pt-6 d-flex justify-center flex-grow-1 gap-4 align-center">
-                            <MudText Align="Align.Center">Employee</MudText>
-                            <MudSwitch Color="Color.Primary" @bind-Value="_IsAdmin" />
-                            <MudText Align="Align.Center">Admin</MudText>
-                        </MudSwipeArea>
+                    @if (_isLoading)
+                    {
+                        <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+                            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                        </MudContainer>
+                    }
+                    else
+                    {
+                        <MudForm Model="@_userRequest">
+                            <MudText Class="align-center" Typo="Typo.h5">Register a User</MudText>
+                            <MudTextField @bind-Value="_userRequest.Name" Label="Name" Required="true" />
+                            <MudTextField @bind-Value="_userRequest.Login" Label="Login" Required="true" />
+                            <MudTextField @bind-Value="_userRequest.Password" Label="Password" InputType="InputType.Password" Required="true" />
+                            <MudTextField @bind-Value="_userRequest.Email" Label="Email" For="@(()=> _userRequest.Email)"  Required="true" />
+                            <MudSwipeArea Class="pt-6 d-flex justify-center flex-grow-1 gap-4 align-center">
+                                <MudText Align="Align.Center">Employee</MudText>
+                                <MudSwitch Color="Color.Primary" @bind-Value="_IsAdmin" />
+                                <MudText Align="Align.Center">Admin</MudText>
+                            </MudSwipeArea>
 
-                        <MudTextField  Disabled="@(_IsAdmin)" T="int" @bind-Value="_userRequest.Dependents" Label="Dependents" Required="@(!_IsAdmin)" />
-                        <MudSelect Disabled="@(_IsAdmin)" @bind-Value="_userRequest.JobTitle" Label="Job Title" Required="@(!_IsAdmin)">
-                            @{
-                                foreach(var job in _jobList)
-                                {
-                                    if(job is not null)
+                            <MudTextField  Disabled="@(_IsAdmin)" T="int" @bind-Value="_userRequest.Dependents" Label="Dependents" Required="@(!_IsAdmin)" />
+                            <MudSelect Disabled="@(_IsAdmin)" @bind-Value="_userRequest.JobTitle" Label="Job Title" Required="@(!_IsAdmin)">
+                                @{
+                                    foreach(var job in _jobList)
                                     {
-                                        <MudSelectItem Value="@job">@job</MudSelectItem>
+                                        if(job is not null)
+                                        {
+                                            <MudSelectItem Value="@job">@job</MudSelectItem>
+                                        }
                                     }
                                 }
-                            }
-                        </MudSelect>
-                        <MudButton type="Submit" OnClick="SubmitUserAsync" Color="Color.Primary">Submit</MudButton>
-                    </MudForm>
+                            </MudSelect>
+                            <MudButton type="Submit" OnClick="SubmitUserAsync" Color="Color.Primary">Submit</MudButton>
+                        </MudForm>
+                    }
                     <MudText Color="Color.Error">@_errorMenssage</MudText>
                 </MudCardContent>
             </MudCard>
@@ -52,17 +61,37 @@
 
 @code {
     [CascadingParameter]
-    public UserInfo? UserInfo { get; set; }
+    public UserInfo UserInfo { get; set; } = new();
     private EmployeeRequest _userRequest = new();
     private bool _IsAdmin = false;
     private string _errorMenssage = string.Empty;
     private List<string> _jobList = new();
+    private bool _isLoading = true;
+    private string _previousCompany;
 
     protected override async Task OnInitializedAsync()
     {
-        var jobs = await JobService.GetJobTitles();
+        _previousCompany = UserInfo.Company;
+        LoadJobsAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (UserInfo.Company != null && UserInfo.Company != _previousCompany)
+        {
+            _previousCompany = UserInfo.Company;
+            _ = LoadJobsAsync();
+        }
+    }
+
+    private async Task LoadJobsAsync()
+    {
+        _isLoading = true;
+        var jobs = await JobService.GetJobTitlesByCompany(UserInfo.Company);
         if (jobs is not null)
             _jobList = jobs;
+        _isLoading = false;
+        StateHasChanged();
     }
 
     public async Task SubmitUserAsync()

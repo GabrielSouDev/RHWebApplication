@@ -8,47 +8,56 @@
 <AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
         <MudContainer Class="d-flex justify-center">
-            <MudCard Style="width: 50%;">
-                <MudCardContent>
-                    <MudForm Model="@_payrollRequest">
-                        <MudText Class="align-center" Typo="Typo.h5">Register a Payroll</MudText>
-                        <MudSelect @bind-Value="_employeeSelectedName" Label="Employee Name">
-                            @{
-                                foreach (var employee in _employeeList)
-                                {
-                                    if (employee is not null)
+            @if (_isLoading)
+            {
+                <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                </MudContainer>
+            }
+            else
+            {
+                <MudCard Style="width: 50%;">
+                    <MudCardContent>
+                        <MudForm Model="@_payrollRequest">
+                            <MudText Class="align-center" Typo="Typo.h5">Register a Payroll</MudText>
+                            <MudSelect @bind-Value="_employeeSelectedName" Label="Employee Name">
+                                @{
+                                    foreach (var employee in _employeeList)
                                     {
-                                        <MudSelectItem Value="@employee">@employee</MudSelectItem>
+                                        if (employee is not null)
+                                        {
+                                            <MudSelectItem Value="@employee">@employee</MudSelectItem>
+                                        }
                                     }
                                 }
-                            }
-                        </MudSelect>
-                        <MudPaper Class="d-flex grow-1 gap-4">
-                            <MudText Class="flex-initial">OverTime:   </MudText>
-                            <MudNumericField Class="flex-initial" HideSpinButtons="true"
-                                             Style="width:30px;" T="float"
-                                             @bind-Value="_overTimeHours"
-                                             Placeholder="HH"
-                                             Format="N0" 
-                                             MaxLength="2"/>
-                            <MudText Class="flex-initial"> : </MudText>
-                            <MudNumericField Class="flex-initial" HideSpinButtons="true"
-                                             Style="width:30px;" T="float"
-                                             @bind-Value="_overTimeMinutes"
-                                             Placeholder="MM"
-                                             Format="N0"
-                                             MaxLength="2" />
-                        </MudPaper>
-                        <MudTextField Adornment="Adornment.Start" 
-                                      AdornmentIcon="@Icons.Material.Filled.AttachMoney" 
-                                      @bind-Value="_payrollRequest.Commission" 
-                                      Label="Commission" 
-                                      Required="true" />
-                        <MudButton type="Submit" OnClick="SubmitPayrollAsync" Color="Color.Primary">Submit</MudButton>
-                    </MudForm>
-                    <MudText Color="Color.Error">@_errorMenssage</MudText>
-                </MudCardContent>
-            </MudCard>
+                            </MudSelect>
+                            <MudPaper Class="d-flex grow-1 gap-4">
+                                <MudText Class="flex-initial">OverTime:   </MudText>
+                                <MudNumericField Class="flex-initial" HideSpinButtons="true"
+                                                 Style="width:30px;" T="float"
+                                                 @bind-Value="_overTimeHours"
+                                                 Placeholder="HH"
+                                                 Format="N0" 
+                                                 MaxLength="2"/>
+                                <MudText Class="flex-initial"> : </MudText>
+                                <MudNumericField Class="flex-initial" HideSpinButtons="true"
+                                                 Style="width:30px;" T="float"
+                                                 @bind-Value="_overTimeMinutes"
+                                                 Placeholder="MM"
+                                                 Format="N0"
+                                                 MaxLength="2" />
+                            </MudPaper>
+                            <MudTextField Adornment="Adornment.Start" 
+                                          AdornmentIcon="@Icons.Material.Filled.AttachMoney" 
+                                          @bind-Value="_payrollRequest.Commission" 
+                                          Label="Commission" 
+                                          Required="true" />
+                            <MudButton type="Submit" OnClick="SubmitPayrollAsync" Color="Color.Primary">Submit</MudButton>
+                        </MudForm>
+                        <MudText Color="Color.Error">@_errorMenssage</MudText>
+                    </MudCardContent>
+                </MudCard>
+            }
         </MudContainer>
     </Authorized>
     <NotAuthorized>
@@ -58,6 +67,9 @@
     </NotAuthorized>
 </AuthorizeView>
 @code {
+    [CascadingParameter]
+    public UserInfo UserInfo { get; set; } = new();
+
     private PayrollRequest _payrollRequest = new();
     private string _employeeSelectedName = string.Empty;
     private List<string> _employeeList = new();
@@ -65,17 +77,37 @@
     private float _overTimeMinutes = 0;
     private string _errorMenssage = string.Empty;
     List<EmployeeResponse> _employees = new();
+    private bool _isLoading = true;
+    private string _previousCompany;
 
     protected override async Task OnInitializedAsync()
     {
-        var employees = await EmployeeService.GetEmployees();
+        _previousCompany = UserInfo.Company;
+        LoadEmployeesAsync();
+    }
+
+
+    protected override void OnParametersSet()
+    {
+        if (UserInfo.Company != null && UserInfo.Company != _previousCompany)
+        {
+            _previousCompany = UserInfo.Company;
+            _ = LoadEmployeesAsync();
+        }
+    }
+
+    private async Task LoadEmployeesAsync()
+    {
+        _isLoading = true;
+        var employees = await EmployeeService.GetEmployeesByCompany(UserInfo.Company);
         if (employees is not null)
         {
             _employees = employees;
             _employeeList = _employees.Select(e => e.Name).ToList();
         }
+        _isLoading = false;
+        StateHasChanged();
     }
-
     public async Task SubmitPayrollAsync()
     {
         _errorMenssage = string.Empty;

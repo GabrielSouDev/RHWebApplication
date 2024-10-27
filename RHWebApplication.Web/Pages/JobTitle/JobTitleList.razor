@@ -58,15 +58,36 @@
     private string? _searchString;
     private List<string> _events = new();
     private bool _isLoading = true;
+    private string _previousCompany;
 
     protected override async Task OnInitializedAsync()
     {
+        _previousCompany = UserInfo.Company;
         var jobList = await JobService.GetJobListByCorpany(UserInfo.Company);
         if(jobList is not null)
         {
             _jobs = jobList;
             _isLoading = false;
         }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (UserInfo.Company != null && UserInfo.Company != _previousCompany)
+        {
+            _previousCompany = UserInfo.Company;
+            _ = LoadJobsAsync();
+        }
+    }
+
+    private async Task LoadJobsAsync()
+    {
+        _isLoading = true;
+        var jobs = await JobService.GetJobListByCorpany(UserInfo.Company);
+        if (jobs is not null)
+            _jobs = jobs;
+        _isLoading = false;
+        StateHasChanged();
     }
 
     private Func<JobResponse, bool> _quickFilter => x =>
