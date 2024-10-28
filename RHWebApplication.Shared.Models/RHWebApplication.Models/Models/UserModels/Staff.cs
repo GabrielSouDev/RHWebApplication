@@ -8,8 +8,8 @@ public class Staff : User
 	public Staff(string login, string password, string name, string email, Company company)
 	{
 		UserType = "Staff";
-        Company = company;
         CompanyId = company.Id;
-        CompanyName = Company.CorporateName;
+        Company = company;
+        CompanyName = company.CorporateName;
     }
 }

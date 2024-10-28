@@ -7,8 +7,9 @@ public class User
 {
     public User() {}
     public int Id { get; init; }
+    [ForeignKey("Company")]
     public int CompanyId { get; set; }
-    public virtual Company Company { get; set; }
+    public virtual Company Company { get; set; } = new Company();
     public string Login { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;

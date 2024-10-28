@@ -9,10 +9,9 @@ public class Admin : User
 
     public Admin(string login, string password, string name, string email, Company company)
     {
-        Company = company;
         UserType = "Admin";
+        CompanyId = company.Id;
         Company = company;
-        CompanyName = Company.CorporateName;
-        CompanyId = Company.Id;
+        CompanyName = company.CorporateName;
     }
 }

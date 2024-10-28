@@ -24,10 +24,8 @@ public class ApplicationContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer(ConnectionString)
-                .EnableSensitiveDataLogging()
-                .LogTo(Console.WriteLine, LogLevel.Information);
-            //.UseLazyLoadingProxies();
+            optionsBuilder.UseSqlServer(ConnectionString).EnableSensitiveDataLogging()
+                .UseLazyLoadingProxies();
         }
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,31 +50,39 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Staff>()
             .HasOne(s => s.Company)
             .WithMany(c => c.Staffs)
-            .HasForeignKey(s => s.CompanyId);
+            .HasForeignKey(s => s.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Admin>()
             .HasOne(a => a.Company)
             .WithMany(c => c.Admins)
-            .HasForeignKey(a => a.CompanyId);
+            .HasForeignKey(a => a.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Employee>()
             .HasOne(e => e.Company)
             .WithMany(c => c.Employees)
-            .HasForeignKey(e => e.CompanyId);
+            .HasForeignKey(e => e.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         //Configuração da relação entre employe e payroll, um para muitos.
-        modelBuilder.Entity<Employee>().HasMany(e => e.PayrollHistory)
-            .WithOne(p => p.Employee).HasForeignKey(p => p.EmployeeId);
+        modelBuilder.Entity<Employee>()
+            .HasMany(e => e.PayrollHistory)
+            .WithOne(p => p.Employee)
+            .HasForeignKey(p => p.EmployeeId);
 
         //Configuração da relação entre Company e JobTitles, um para muitos.
-        modelBuilder.Entity<Company>().HasMany(e => e.JobTitles)
-            .WithOne(p => p.Company).HasForeignKey(p => p.CompanyID);
+        modelBuilder.Entity<Company>()
+            .HasMany(e => e.JobTitles)
+            .WithOne(p => p.Company)
+            .HasForeignKey(p => p.CompanyID);
 
 
         // Configuração para a entidade Job
         modelBuilder.Entity<JobTitle>()
             .Property(j => j.BaseSalary)
             .HasPrecision(18, 2); // 18 é a precisão, 2 é a escala = decimal
+
         modelBuilder.Entity<JobTitle>()
             .Property(j => j.OverTimeValue)
             .HasPrecision(18, 2);
