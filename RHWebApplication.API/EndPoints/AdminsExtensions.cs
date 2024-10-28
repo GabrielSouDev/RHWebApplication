@@ -40,7 +40,7 @@ public static class AdminsExtensions
             var company = await dalCompanys.FindByAsync(c => c.CorporateName == adminRequest.CompanyName);
             if (company is not null)
             {
-                var admin = new Admin(adminRequest.Login, adminRequest.Password, adminRequest.Name, adminRequest.Email, company);
+                var admin = new Admin(adminRequest.Login, adminRequest.Password, adminRequest.Name, adminRequest.Email, company.Id);
                 await dalAdmins.AddAsync(admin);
                 return Results.Created();
             }

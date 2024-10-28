@@ -30,64 +30,43 @@ public class ApplicationContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //Configurações para o relacionamento TPT Employee:User e Admin:User
-        modelBuilder.Entity<User>().ToTable("Users");
-        modelBuilder.Entity<Employee>().ToTable("Employees");
-        modelBuilder.Entity<Admin>().ToTable("Admins");
-        modelBuilder.Entity<Staff>().ToTable("Staffs");
-
         modelBuilder.Entity<Company>().ToTable("Companies");
+        modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<Employee>().ToTable("Employees").HasBaseType<User>();
+        modelBuilder.Entity<Admin>().ToTable("Admins").HasBaseType<User>();
+        modelBuilder.Entity<Staff>().ToTable("Staffs").HasBaseType<User>();
 
-        modelBuilder.Entity<Employee>().HasBaseType<User>();
-        modelBuilder.Entity<Admin>().HasBaseType<User>();
-        modelBuilder.Entity<Staff>().HasBaseType<User>();
-
-        //configuraççao da rela~ção entre employee e job(employee tem um job, job tem muitos employees)
-        modelBuilder.Entity<Employee>().HasOne(e => e.Job)
-            .WithMany(j => j.Employees).HasForeignKey(e => e.JobId);
-
-        // Configurações de relação
-        modelBuilder.Entity<Staff>()
-            .HasOne(s => s.Company)
-            .WithMany(c => c.Staffs)
-            .HasForeignKey(s => s.CompanyId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Admin>()
-            .HasOne(a => a.Company)
-            .WithMany(c => c.Admins)
-            .HasForeignKey(a => a.CompanyId)
-            .OnDelete(DeleteBehavior.Cascade);
-
+        // Relações
         modelBuilder.Entity<Employee>()
-            .HasOne(e => e.Company)
-            .WithMany(c => c.Employees)
-            .HasForeignKey(e => e.CompanyId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasOne(e => e.Job)
+            .WithMany(j => j.Employees)
+            .HasForeignKey(e => e.JobId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        //Configuração da relação entre employe e payroll, um para muitos.
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Company)
+            .WithMany(c => c.Users)
+            .HasForeignKey(u => u.CompanyId);
+
         modelBuilder.Entity<Employee>()
             .HasMany(e => e.PayrollHistory)
             .WithOne(p => p.Employee)
             .HasForeignKey(p => p.EmployeeId);
 
-        //Configuração da relação entre Company e JobTitles, um para muitos.
         modelBuilder.Entity<Company>()
-            .HasMany(e => e.JobTitles)
-            .WithOne(p => p.Company)
-            .HasForeignKey(p => p.CompanyID);
+            .HasMany(c => c.JobTitles)
+            .WithOne(j => j.Company)
+            .HasForeignKey(j => j.CompanyID);
 
-
-        // Configuração para a entidade Job
+        // Propriedades com precisão
         modelBuilder.Entity<JobTitle>()
             .Property(j => j.BaseSalary)
-            .HasPrecision(18, 2); // 18 é a precisão, 2 é a escala = decimal
-
-        modelBuilder.Entity<JobTitle>()
-            .Property(j => j.OverTimeValue)
             .HasPrecision(18, 2);
 
-        // Configuração para a entidade Payroll
+        modelBuilder.Entity<JobTitle>()
+            .Property(p => p.OverTimeValue)
+            .HasPrecision(18, 2);
+
         modelBuilder.Entity<Payroll>()
             .Property(p => p.Commission)
             .HasPrecision(18, 2);
@@ -101,14 +80,6 @@ public class ApplicationContext : DbContext
             .HasPrecision(18, 2);
 
         modelBuilder.Entity<Payroll>()
-            .Property(p => p.Net)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<Payroll>()
-            .Property(p => p.OverTime)
-            .HasColumnType("float");
-
-        modelBuilder.Entity<Payroll>()
             .Property(p => p.INSSDeduction)
             .HasPrecision(18, 2);
 
@@ -117,39 +88,37 @@ public class ApplicationContext : DbContext
             .HasPrecision(18, 2);
 
         modelBuilder.Entity<Payroll>()
+            .Property(p => p.Net)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Payroll>()
             .Property(p => p.OverTimeAditionals)
             .HasPrecision(18, 2);
 
-        modelBuilder.Entity<Payroll>()
+                modelBuilder.Entity<Payroll>()
             .Property(p => p.PericulosityValue)
             .HasPrecision(18, 2);
 
-        modelBuilder.Entity<Payroll>()
+                modelBuilder.Entity<Payroll>()
             .Property(p => p.UnhealthyValue)
             .HasPrecision(18, 2);
 
-        modelBuilder.Entity<Payroll>()
-            .Property(p => p.Net)
-            .HasPrecision(18, 2);
 
-        modelBuilder.Entity<Payroll>()
-            .Property(p => p.Net)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<Payroll>()
-            .Property(p => p.Net)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<Payroll>()
-            .Property(p => p.Net)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<Company>().HasData(
-            new Company { Id = 1, CorporateName = "Staff", TradeName = "Staff", CNPJ = 0 }
-        );
-
-        modelBuilder.Entity<Staff>().HasData(
-            new Staff { Id = 1, Name = "Staff", Login = "staff", Password = "staff", Email = "staf@email.com", CreationDate = DateTime.Now, IsActive = true, UserType = "Staff", CompanyName = "Staff", CompanyId = 1 }
-        );
+        //var companyStaff = new Company { Id = 1, CorporateName = "Staff", TradeName = "Staff", CNPJ = 123 };
+        //modelBuilder.Entity<Company>().HasData(companyStaff);
+        //var userStaff = new Staff
+        //{
+        //    Id = 1,
+        //    CompanyId = companyStaff.Id,
+        //    CompanyName = "Staff",
+        //    CreationDate = DateTime.UtcNow,
+        //    Email = "staff@email.com",
+        //    IsActive = true,
+        //    Login = "staff",
+        //    Name = "Staff User",
+        //    Password = "staff",
+        //    UserType = "Staff"
+        //};
+        //modelBuilder.Entity<Staff>().HasData(userStaff);
     }
 }

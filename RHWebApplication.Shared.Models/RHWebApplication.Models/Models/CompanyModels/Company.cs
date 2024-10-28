@@ -12,8 +12,6 @@ public class Company
 		TradeName = tradeName;
 		CorporateName = corporateName;
 		CNPJ = cnpj;
-		JobTitles = new List<JobTitle>();
-		Admins = new List<Admin>();
 	}
 	[Key]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -21,8 +19,6 @@ public class Company
 	public string TradeName { get; set; } = string.Empty; //nome fantasia
 	public string CorporateName { get; set; } = string.Empty; //razão social
     public int CNPJ { get; set; }
-	public virtual List<JobTitle> JobTitles { get; set; } = new();
-	public virtual List<Admin> Admins { get; set; } = new();
-    public virtual List<Employee> Employees { get; set; } = new();
-    public virtual List<Staff> Staffs { get; set; } = new();
+	public virtual ICollection<JobTitle> JobTitles { get; set; }
+	public virtual ICollection<User> Users { get; set; }
 }

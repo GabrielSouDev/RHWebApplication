@@ -67,6 +67,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<DAL<User>>();
 builder.Services.AddTransient<DAL<Admin>>();
+builder.Services.AddTransient<DAL<Staff>>();
 builder.Services.AddTransient<DAL<Employee>>();
 builder.Services.AddTransient<DAL<Payroll>>();
 builder.Services.AddTransient<DAL<JobTitle>>();
@@ -89,6 +90,7 @@ app.UseHttpsRedirection();
 
 app.AddEndPointsAuthentication();
 app.AddEndPointsUsers();
+app.AddEndPointsStaffs();
 app.AddEndPointsAdmins();
 app.AddEndPointsEmployees();
 app.AddEndPointsPayrolls();

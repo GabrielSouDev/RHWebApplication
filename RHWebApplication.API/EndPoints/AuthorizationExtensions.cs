@@ -28,28 +28,14 @@ public static class AuthenticationExtensions
 				    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 				    new Claim(ClaimTypes.Name, user.Login),
 				    new Claim(ClaimTypes.Role, user.UserType),
+                    new Claim("company", user.CompanyName)
                  };
-                if (user.UserType == "Staff")
-                {
-                    var userStaff = await dalUser.FindByAsync<Staff>(a => a.Id == user.Id);
-                    if(userStaff is not null)
-                        claims.Add(new Claim("company", userStaff.CompanyName));
-                }
-
-                if (user.UserType == "Admin")
-                {
-                    var userAdmin = await dalUser.FindByAsync<Admin>(a => a.Id == user.Id);
-                    if (userAdmin is not null)
-                    {
-                        claims.Add(new Claim("company", userAdmin.CompanyName));
-                    }
-                }
+               
 				if (user.UserType == "Employee")
 				{
 					var userEmployee = await dalUser.FindByAsync<Employee>(a => a.Id == user.Id);
                     if(userEmployee is not null)
                     {
-                        claims.Add(new Claim("company", userEmployee.CompanyName));
                         claims.Add(new Claim("jobtitle", userEmployee.Job.Name));
                     }
 				}

@@ -1,13 +1,25 @@
 ﻿using RHWebApplication.Shared.Models.CompanyModels;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Xml.Linq;
 
 namespace RHWebApplication.Shared.Models.UserModels;
 public class User
 {
-    public User() {}
+    public User() { }
+    public User(string login, string password, string name, string email, int companyId) 
+    {
+        Login = login;
+        Password = password;
+        Name = name;
+        Email = email;
+        CompanyId = companyId;
+        CompanyName = Company.CorporateName;
+        CreationDate = DateTime.UtcNow;
+        IsActive = true;
+    }
     public int Id { get; init; }
-    [ForeignKey("Company")]
+    [ForeignKey("Companies")]
     public int CompanyId { get; set; }
     public virtual Company Company { get; set; } = new Company();
     public string Login { get; set; } = string.Empty;

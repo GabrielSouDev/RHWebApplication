@@ -9,14 +9,12 @@ public class Employee : User
     //implementar DataAnottation e saida de erros.
 #pragma warning disable CS8618
     public Employee() {}
-    public Employee(string login, string password, string name, string email, JobTitle job, int dependents, Company company)
+    public Employee(string login, string password, string name, string email, int companyId, JobTitle job, int dependents) : base(login, password, name, email, companyId)
     {
         PayrollHistory = new List<Payroll>();
         Job = job;
 		Dependents = dependents;
         UserType = "Employee";
-        Company = company;
-        CompanyName = Company.CorporateName;
     }
     public int Dependents { get; set; } = 0;
     public virtual ICollection<Payroll> PayrollHistory { get; set; }

@@ -43,3 +43,6 @@ X   criar visualização de holerite separado em staff,admin e employee
     adicionar suporte chat que com websocket,user:staff poderá ter diversos chats com user: admin
         admin pode abrir atendimento
         notifica suporte
+
+
+    register de jobtitle - OverTimeValue esta bugado
