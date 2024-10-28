@@ -41,7 +41,7 @@ public static class AuthenticationExtensions
                     var userAdmin = await dalUser.FindByAsync<Admin>(a => a.Id == user.Id);
                     if (userAdmin is not null)
                     {
-                        claims.Add(new Claim("company", userAdmin.Company.CorporateName));
+                        claims.Add(new Claim("company", userAdmin.CompanyName));
                     }
                 }
 				if (user.UserType == "Employee")
@@ -49,7 +49,7 @@ public static class AuthenticationExtensions
 					var userEmployee = await dalUser.FindByAsync<Employee>(a => a.Id == user.Id);
                     if(userEmployee is not null)
                     {
-                        claims.Add(new Claim("company", userEmployee.Job.Company.CorporateName));
+                        claims.Add(new Claim("company", userEmployee.CompanyName));
                         claims.Add(new Claim("jobtitle", userEmployee.Job.Name));
                     }
 				}

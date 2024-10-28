@@ -23,4 +23,6 @@ public class Company
     public int CNPJ { get; set; }
 	public virtual List<JobTitle> JobTitles { get; set; } = new();
 	public virtual List<Admin> Admins { get; set; } = new();
+    public virtual List<Employee> Employees { get; set; } = new();
+    public virtual List<Staff> Staffs { get; set; } = new();
 }

@@ -8,12 +8,11 @@ public class Admin : User
     public Admin() { }
 
     public Admin(string login, string password, string name, string email, Company company)
-    : base(login, password, name, email)
     {
         Company = company;
         UserType = "Admin";
-        CompanyName = company.CorporateName;
+        Company = company;
+        CompanyName = Company.CorporateName;
+        CompanyId = Company.Id;
     }
-    public virtual int CompanyId { get; set; }
-	public virtual Company Company { get; set; } = new Company();
 }

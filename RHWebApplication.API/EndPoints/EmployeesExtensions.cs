@@ -82,7 +82,7 @@ public static class EmployeesExtensions
             if (job is null)
                 return Results.NotFound(employeeRequest.JobTitle + " Job Title is not found!");
 
-            var employee = new Employee(employeeRequest.Login, employeeRequest.Password, employeeRequest.Name, employeeRequest.Email, job, employeeRequest.Dependents);
+            var employee = new Employee(employeeRequest.Login, employeeRequest.Password, employeeRequest.Name, employeeRequest.Email, job, employeeRequest.Dependents, job.Company);
             await dalEmployees.AddAsync(employee);
             return Results.Created();
         });

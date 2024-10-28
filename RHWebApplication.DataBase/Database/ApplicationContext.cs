@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RHWebApplication.Shared.Models.CompanyModels;
 using RHWebApplication.Shared.Models.PayrollModels;
 using RHWebApplication.Shared.Models.UserModels;
+using System.Data;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RHWebApplication.Database;
@@ -12,7 +14,7 @@ public class ApplicationContext : DbContext
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Admin> Admins { get; set; }
     public DbSet<Staff> Staffs { get; set; }
-    public DbSet<Company> Companys { get; set; }
+    public DbSet<Company> Companies { get; set; }
     public DbSet<JobTitle> jobTitles { get; set; }
     public DbSet<Payroll> PayrollHistory { get; set; }
 
@@ -23,7 +25,9 @@ public class ApplicationContext : DbContext
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder.UseSqlServer(ConnectionString)
-            .UseLazyLoadingProxies();
+                .EnableSensitiveDataLogging()
+                .LogTo(Console.WriteLine, LogLevel.Information);
+            //.UseLazyLoadingProxies();
         }
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -34,6 +38,8 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Admin>().ToTable("Admins");
         modelBuilder.Entity<Staff>().ToTable("Staffs");
 
+        modelBuilder.Entity<Company>().ToTable("Companies");
+
         modelBuilder.Entity<Employee>().HasBaseType<User>();
         modelBuilder.Entity<Admin>().HasBaseType<User>();
         modelBuilder.Entity<Staff>().HasBaseType<User>();
@@ -42,9 +48,21 @@ public class ApplicationContext : DbContext
         modelBuilder.Entity<Employee>().HasOne(e => e.Job)
             .WithMany(j => j.Employees).HasForeignKey(e => e.JobId);
 
-        //configuraççao da rela~ção entre Company e Admin(Admin tem uma Company, Company tem muitos Admins)
-        modelBuilder.Entity<Admin>().HasOne(e => e.Company)
-            .WithMany(j => j.Admins).HasForeignKey(e => e.CompanyId);
+        // Configurações de relação
+        modelBuilder.Entity<Staff>()
+            .HasOne(s => s.Company)
+            .WithMany(c => c.Staffs)
+            .HasForeignKey(s => s.CompanyId);
+
+        modelBuilder.Entity<Admin>()
+            .HasOne(a => a.Company)
+            .WithMany(c => c.Admins)
+            .HasForeignKey(a => a.CompanyId);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne(e => e.Company)
+            .WithMany(c => c.Employees)
+            .HasForeignKey(e => e.CompanyId);
 
         //Configuração da relação entre employe e payroll, um para muitos.
         modelBuilder.Entity<Employee>().HasMany(e => e.PayrollHistory)
@@ -120,8 +138,12 @@ public class ApplicationContext : DbContext
             .Property(p => p.Net)
             .HasPrecision(18, 2);
 
+        modelBuilder.Entity<Company>().HasData(
+            new Company { Id = 1, CorporateName = "Staff", TradeName = "Staff", CNPJ = 0 }
+        );
+
         modelBuilder.Entity<Staff>().HasData(
-            new Staff { Id = 1, Name = "Staff", Login = "staff", Password = "staff", Email = "staf@email.com", CreationDate = DateTime.Now, IsActive = true, UserType = "Staff", CompanyName = "Staff" }
+            new Staff { Id = 1, Name = "Staff", Login = "staff", Password = "staff", Email = "staf@email.com", CreationDate = DateTime.Now, IsActive = true, UserType = "Staff", CompanyName = "Staff", CompanyId = 1 }
         );
     }
 }
