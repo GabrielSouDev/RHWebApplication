@@ -9,71 +9,68 @@
 <PageTitle>Payrolls List</PageTitle>
 <AuthorizeView>
     <Authorized Context="authContext">
-        <MudContainer>
-            @if (_isLoading)
-            {
-                <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
-                    <MudProgressCircular 
-                        Color="Color.Primary" 
-                        Indeterminate="true" 
-                        Size="Size.Large" />
-                </MudContainer>
-            }
-            else
-            {
-                <MudDataGrid Dense="true" T="PayrollResponse" 
-                             Items="_payrollsSelected" 
-                             QuickFilter="@_quickFilter" 
-                             Striped="true" 
-                             Bordered="true" 
-                             Elevation="25">
-                    <ToolBarContent>
-                        <MudText Typo="Typo.h6">Admin Payroll List</MudText>
-                        <MudSpacer />
-                        <MudSelect Disabled="@UserInfo.Role.Equals("Employee")" @bind-Value="_employeeSelectedName" >
-                            <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
-                            @{
-                                foreach (var employee in _employeeList)
+        @if (_isLoading)
+        {
+            <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+                <MudProgressCircular 
+                    Color="Color.Primary" 
+                    Indeterminate="true" 
+                    Size="Size.Large" />
+            </MudContainer>
+        }
+        else
+        {
+            <MudDataGrid 
+                Height="80vh" 
+                Dense="true" T="PayrollResponse"
+                Items="_payrollsSelected" 
+                QuickFilter="@_quickFilter" 
+                Striped="true" 
+                Bordered="true" 
+                Elevation="25">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Payroll List</MudText>
+                    <MudSpacer />
+                    <MudSelect Disabled="@UserInfo.Role.Equals("Employee")" @bind-Value="_employeeSelectedName" >
+                        <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
+                        @{
+                            foreach (var employee in _employeeList)
+                            {
+                                if (employee is not null)
                                 {
-                                    if (employee is not null)
+                                    if(employee != "")
                                     {
-                                        if(employee != "")
-                                        {
-                                            <MudSelectItem Value="@employee">@employee</MudSelectItem>
+                                        <MudSelectItem Value="@employee">@employee</MudSelectItem>
 
-                                        }
-                                        else
-                                        {
+                                    }
+                                    else
+                                    {
 
-                                        }
                                     }
                                 }
                             }
-                        </MudSelect>
-                    </ToolBarContent>
-                    <Columns>
-                        <PropertyColumn Editable="false" Property="x => x.Id" />
-                        <PropertyColumn Property="x => x.EmployeeName" />
-                        <PropertyColumn Property="x => x.JobTitle" />
-                        <PropertyColumn Property="x => x.CreationDate" />
-                        <TemplateColumn Title="Options" StickyRight="true">
-                            <CellTemplate Context="cellContext">
-                                <MudButton Color="Color.Warning" 
-                                           Variant="Variant.Filled" 
-                                           OnClick="() => DetailsPayroll(cellContext.Item)" >Details</MudButton>
-                                <MudFab Color="Color.Error" 
-                                        StartIcon="@Icons.Material.Outlined.Delete" 
-                                        IconColor="Color.Surface" Size="@Size.Small" 
-                                        OnClick="() => DeleteUserAsync(cellContext.Item)" />
-                            </CellTemplate> 
-                        </TemplateColumn>
-                    </Columns>
-                    <PagerContent>
-                        <MudDataGridPager T="PayrollResponse" />
-                    </PagerContent>
-                </MudDataGrid>
-            }
-        </MudContainer>
+                        }
+                    </MudSelect>
+                </ToolBarContent>
+                <Columns>
+                    <PropertyColumn Editable="false" Property="x => x.Id" />
+                    <PropertyColumn Property="x => x.EmployeeName" />
+                    <PropertyColumn Property="x => x.JobTitle" />
+                    <PropertyColumn Property="x => x.CreationDate" />
+                    <TemplateColumn Title="Options" StickyRight="true">
+                        <CellTemplate Context="cellContext">
+                            <MudButton Color="Color.Warning" Variant="Variant.Filled" 
+                                       OnClick="() => DetailsPayroll(cellContext.Item)" >Details</MudButton>
+                            <MudFab Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Surface" Size="@Size.Small" 
+                                    OnClick="() => DeleteUserAsync(cellContext.Item)" />
+                        </CellTemplate> 
+                    </TemplateColumn>
+                </Columns>
+                <PagerContent>
+                    <MudDataGridPager T="PayrollResponse" />
+                </PagerContent>
+            </MudDataGrid>
+        }
     </Authorized>
     <NotAuthorized>
         @{
