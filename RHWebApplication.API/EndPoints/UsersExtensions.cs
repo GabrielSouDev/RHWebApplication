@@ -18,7 +18,7 @@ public static class UsersExtensions
             var usersResponse = new List<UserResponse>();
             foreach (var user in users)
             {
-                usersResponse.Add(new UserResponse(user.Id, user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.CompanyName, user.IsActive));
+                usersResponse.Add(new UserResponse(user.Id, user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.IsActive));
             }
             
             return Results.Ok(usersResponse);
@@ -30,8 +30,9 @@ public static class UsersExtensions
             var usersResponse = new List<UserResponse>();
             foreach (var user in users)
             {
-                if(user.CompanyName == company || company == string.Empty)
-                    usersResponse.Add(new UserResponse(user.Id, user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.CompanyName, user.IsActive));
+                if(user.Company.CorporateName == company || company == string.Empty)
+                    usersResponse.Add(new UserResponse(user.Id, user.Name, user.Login, user.Email, user.CreationDate, user.UserType,
+                        user.IsActive));
             }
 
             return Results.Ok(usersResponse);
@@ -43,7 +44,7 @@ public static class UsersExtensions
             if (user is null)
                 return Results.NotFound("User ID is not found!");
 
-            var usersResponse = new UserResponse(user.Id,user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.CompanyName, user.IsActive);
+            var usersResponse = new UserResponse(user.Id,user.Name, user.Login, user.Email, user.CreationDate, user.UserType, user.IsActive);
             return Results.Ok(usersResponse);
         });
 

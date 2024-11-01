@@ -73,7 +73,14 @@ builder.Services.AddTransient<DAL<Payroll>>();
 builder.Services.AddTransient<DAL<JobTitle>>();
 builder.Services.AddTransient<DAL<Company>>();
 
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+    dbContext.CreateTable().Wait();
+}
 
 app.UseCors("AllowAll");
 

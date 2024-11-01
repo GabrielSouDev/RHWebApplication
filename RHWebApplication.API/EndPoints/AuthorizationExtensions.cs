@@ -28,7 +28,7 @@ public static class AuthenticationExtensions
 				    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 				    new Claim(ClaimTypes.Name, user.Login),
 				    new Claim(ClaimTypes.Role, user.UserType),
-                    new Claim("company", user.CompanyName)
+                    new Claim("company", user.Company.CorporateName)
                  };
                
 				if (user.UserType == "Employee")

@@ -12,8 +12,8 @@ using RHWebApplication.Database;
 namespace RHWebApplication.Database.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20241028182533_CreateTableAgain")]
-    partial class CreateTableAgain
+    [Migration("20241101140801_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -162,10 +162,6 @@ namespace RHWebApplication.Database.Migrations
 
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");

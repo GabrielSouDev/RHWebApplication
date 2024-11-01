@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RHWebApplication.Shared.Models.CompanyModels;
 using RHWebApplication.Shared.Models.PayrollModels;
 using RHWebApplication.Shared.Models.UserModels;
 using System.Data;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace RHWebApplication.Database;
 public class ApplicationContext : DbContext
@@ -31,6 +33,7 @@ public class ApplicationContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Company>().ToTable("Companies");
+
         modelBuilder.Entity<User>().ToTable("Users");
         modelBuilder.Entity<Employee>().ToTable("Employees").HasBaseType<User>();
         modelBuilder.Entity<Admin>().ToTable("Admins").HasBaseType<User>();
@@ -102,23 +105,76 @@ public class ApplicationContext : DbContext
                 modelBuilder.Entity<Payroll>()
             .Property(p => p.UnhealthyValue)
             .HasPrecision(18, 2);
+    }
+    public async Task CreateTable()
+    {
+        await this.Database.MigrateAsync();
+        if (!this.Companies.Any())
+        {
+            await SeedStaffCompany();
+            await SeedStaffUser();
+            Console.WriteLine("STAFF SEEED FINISHED!");
+        }
+    }
+    public async Task SeedStaffCompany()
+    {
+        using (var connection = new SqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
 
+            // SQL para inserir dados
+            var sql = "INSERT INTO Companies (CNPJ, CorporateName, TradeName) VALUES (@CNPJ, @CorporateName, @TradeName)";
 
-        //var companyStaff = new Company { Id = 1, CorporateName = "Staff", TradeName = "Staff", CNPJ = 123 };
-        //modelBuilder.Entity<Company>().HasData(companyStaff);
-        //var userStaff = new Staff
-        //{
-        //    Id = 1,
-        //    CompanyId = companyStaff.Id,
-        //    CompanyName = "Staff",
-        //    CreationDate = DateTime.UtcNow,
-        //    Email = "staff@email.com",
-        //    IsActive = true,
-        //    Login = "staff",
-        //    Name = "Staff User",
-        //    Password = "staff",
-        //    UserType = "Staff"
-        //};
-        //modelBuilder.Entity<Staff>().HasData(userStaff);
+            using (var command = new SqlCommand(sql, connection))
+            {
+                // Adicionando parâmetros
+                command.Parameters.AddWithValue("@CNPJ", 123);
+                command.Parameters.AddWithValue("@CorporateName", "Staff");
+                command.Parameters.AddWithValue("@TradeName", "Staff");
+
+                await command.ExecuteNonQueryAsync();
+                await command.DisposeAsync();
+            }
+            await connection.DisposeAsync();
+        }
+    }
+    public async Task SeedStaffUser()
+    {
+
+        using (var connection = new SqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var sql = "INSERT INTO Users (Login, Password, Name, Email, UserType, CompanyId, CreationDate, IsActive) VALUES (@Login,       @Password,@Name, @Email, @UserType, @CompanyId, @CreationDate, @IsActive)";
+
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@Login", "staff");
+                command.Parameters.AddWithValue("@Password", "staff");
+                command.Parameters.AddWithValue("@Name", "Staff User");
+                command.Parameters.AddWithValue("@Email", "staff@email.com");
+                command.Parameters.AddWithValue("@UserType", "Staff");
+                command.Parameters.AddWithValue("@CompanyId", 1);
+                command.Parameters.AddWithValue("@CreationDate", DateTime.UtcNow);
+                command.Parameters.AddWithValue("@IsActive", true);
+
+                await command.ExecuteNonQueryAsync();
+                await command.DisposeAsync();
+            }
+            await connection.DisposeAsync();
+        }
+
+        using (var connection = new SqlConnection(ConnectionString))
+        {
+            await connection.OpenAsync();
+            var sql = "INSERT INTO Staffs (Id) VALUES (@Id)";
+
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@Id", 1);
+                await command.ExecuteNonQueryAsync();
+                await command.DisposeAsync();
+            }
+            await connection.DisposeAsync();
+        }
     }
 }
