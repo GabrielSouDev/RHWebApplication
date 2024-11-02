@@ -3,91 +3,90 @@
 <MudDialog Class="d-flex align-center justify-center mud-width-full">
 	<DialogContent>
 		<MudGrid Style="padding-left:25px;">
+			<MudItem xs="12"/>
+			<MudItem Class="pt-2 pb-4" Style="@_gridStyle" xs="12">
+				<MudItem Class="d-flex">
+					<MudText Style="@_boldStyle">Razão social:&nbsp;</MudText>
+					<MudText>@Payroll.CompanyTradeName</MudText>
+				</MudItem>
 
-			<MudItem xs="8"/>
-			<MudItem xs="4">
-				<MudText Align="Align.End" Typo="Typo.h6">Folha de Pagamento</MudText>
-			</MudItem>
-			
-			<MudItem Style="@_gridStyle" xs="12">
-				<MudText>Razão social: razão social..</MudText>
-				<MudText>CNPJ: cnpj..</MudText>
-			</MudItem>
-
-			<MudItem Style="@_gridStyle" xs="12">
-				<MudText>ID: @Payroll.Id	 -	 Nome: @Payroll.EmployeeName	 -	 Cargo: @Payroll.JobTitle </MudText>
+				<MudItem xs="12" Class="d-flex">
+					<MudText Style="@_boldStyle">CNPJ:&nbsp;</MudText>
+					<MudText>@Payroll.CompanyCNPJ</MudText>
+				</MudItem>
 			</MudItem>
 
-			<MudItem Style="@_gridStyle" xs="1">
-				<MudText Align="Align.Center" Style="@_descriptionStyle">Cod.</MudText>
-				<MudText>0001</MudText>
-				<MudText>0020</MudText>
-				<MudText>0021</MudText>
-				<MudText>0018</MudText>
-				<MudText>0010</MudText>
-				<MudText>1600</MudText>
-				<MudText>0561</MudText>
 
+			<MudItem Class="pt-1 pb-1"  Style="@_gridStyle" xs="12">
+				<MudItem Class="d-flex">
+					<MudText Style="@_boldStyle">ID:&nbsp;</MudText>
+					<MudText>@Payroll.EmployeeId&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</MudText>
+					<MudText Style="@_boldStyle">Nome:&nbsp;</MudText>
+					<MudText>@Payroll.EmployeeName&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;</MudText>
+					<MudText Style="@_boldStyle">Cargo:&nbsp;</MudText>
+					<MudText>@Payroll.JobTitle</MudText>
+				</MudItem>
 			</MudItem>
-			<MudItem Style="@_gridStyle" xs="5">
-				<MudText Align="Align.Center" Style="@_descriptionStyle">Descrição</MudText>
-				<MudText>Salario Base</MudText>
-				<MudText>Insalubridade</MudText>
-				<MudText>Periculosidade</MudText>
-				<MudText>Hora Extra</MudText>
-				<MudText>Comissão</MudText>
-				<MudText>INSS</MudText>
-				<MudText>IRRF</MudText>
 
-			</MudItem>
-			<MudItem Style="@_gridStyle" xs="2">
-				<MudText Align="Align.Center" Style="@_descriptionStyle">Referencia</MudText>
-				<MudText>30 dias</MudText>
-				<MudText>@(UnhealthyLevel[Payroll.UnhealthyLevel])</MudText>
-				@if (Payroll.IsPericulosity)
-				{
-					<MudText>30%</MudText>
-								} 
-				else
-				{
-				<MudText></MudText>
-				}	
-				<MudText>@((int)Payroll.OverTime) : @((int)((@Payroll.OverTime - (int)@Payroll.OverTime) * 60))</MudText>
-				<MudText>- - -</MudText>
-				<MudText>- - -</MudText>
+			<MudItem xs="1" Class="pt-0" Style="@_gridStyle" ><MudText Style="@_boldStyle" >Cod.</MudText></MudItem>
+			<MudItem xs="5" Class="pt-0" Style="@_gridStyle" ><MudText Style="@_boldStyle" >Descrição</MudText></MudItem>
+			<MudItem xs="2" Class="pt-0" Style="@_gridStyle" ><MudText Style="@_boldStyle" >Referencia</MudText></MudItem>
+			<MudItem xs="2" Class="pt-0" Style="@_gridStyle" ><MudText Style="@_boldStyle" >Proventos</MudText></MudItem>
+			<MudItem xs="2" Class="pt-0" Style="@_gridStyle" ><MudText Style="@_boldStyle" >Descontos</MudText></MudItem>
 
-				
-			</MudItem>
-			<MudItem Style="@_gridStyle" xs="2">
-				<MudText Align="Align.Center" Style="@_descriptionStyle">Proventos</MudText>
-				<MudText>@Payroll.BaseSalary</MudText>
-				<MudText>@Payroll.UnhealthyValue</MudText>
-				<MudText>@Payroll.PericulosityValue</MudText>
-				<MudText>@Payroll.OverTimeAditionals</MudText>
-				<MudText>@Payroll.Commission</MudText>
-				<MudText>- - -</MudText>
-				<MudText>- - -</MudText>
+			<MudItem xs="1" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">0001</MudText></MudItem>
+			<MudItem xs="5" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">Salario Base</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">30 dias</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@Payroll.BaseSalary</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
 
-			</MudItem>
-			<MudItem Style="@_gridStyle" xs="2">
-				<MudText Align="Align.Center" Style="@_descriptionStyle">Descontos</MudText>
-				<MudText>- - -</MudText>
-				<MudText>- - -</MudText>
-				<MudText>- - -</MudText>
-				<MudText>- - -</MudText>
-				<MudText>- - -</MudText>
-				<MudText>@Payroll.INSSDeduction</MudText>
-				<MudText>@Payroll.IRRFDeduction</MudText>
+			<MudItem xs="1" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">0020</MudText></MudItem>
+			<MudItem xs="5" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">Insalubridade</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@(UnhealthyLevel[Payroll.UnhealthyLevel])</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@Payroll.UnhealthyValue</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
 
-			</MudItem>
-			
-			<MudItem Style="@_gridStyle" xs="8"></MudItem>
-			<MudItem Style="@_gridStyle" xs="2">@Payroll.Gross</MudItem>
-			<MudItem Style="@_gridStyle" xs="2">@Payroll.Deductions</MudItem>
+			<MudItem xs="1" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">0021</MudText></MudItem>
+			<MudItem xs="5" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">Periculosidade</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@(Payroll.IsPericulosity ? "30%" : "0%")</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@Payroll.PericulosityValue</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
 
-			<MudItem Style="@_gridStyle" xs="8"></MudItem>
-			<MudItem Style="@_gridStyle" xs="2"></MudItem>
-			<MudItem Style="@_gridStyle" xs="2">@Payroll.Net</MudItem>
+			<MudItem xs="1" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">0018</MudText></MudItem>
+			<MudItem xs="5" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">Hora Extra</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@((int)Payroll.OverTime) : @((int)((@Payroll.OverTime - (int)@Payroll.OverTime) * 60))</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@Payroll.OverTimeAditionals</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
+
+			<MudItem xs="1" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">0010</MudText></MudItem>
+			<MudItem xs="5" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">Comissão</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@Payroll.Commission</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
+
+			<MudItem xs="1" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">1600</MudText></MudItem>
+			<MudItem xs="5" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">INSS</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@Payroll.INSSDeduction</MudText></MudItem>
+
+			<MudItem xs="1" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">0561</MudText></MudItem>
+			<MudItem xs="5" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">IRRF</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">- - -</MudText></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"><MudText Style="@_paddingLeft">@Payroll.IRRFDeduction</MudText></MudItem>
+
+			<MudItem xs="1" Style="@_sideGridStyle"></MudItem>
+			<MudItem xs="5" Style="@_sideGridStyle"></MudItem>
+			<MudItem xs="2" Style="@_sideGridStyle"></MudItem>
+			<MudItem Class="pt-1 pb-1" Style="@_gridStyle" xs="2"><MudText Style="@_boldStyle">Bruto => @Payroll.Gross</MudText></MudItem>
+			<MudItem Class="pt-1 pb-1" Style="@_gridStyle" xs="2"><MudText Style="@_boldStyle">Descontos => @Payroll.Deductions</MudText></MudItem>
+
+			<MudItem xs="1" Style="@_FinalsideGridStyle"></MudItem>
+			<MudItem xs="5" Style="@_FinalsideGridStyle"></MudItem>
+			<MudItem xs="2" Style="@_FinalsideGridStyle"></MudItem>
+			<MudItem Style="@_sideGridStyle" xs="2"></MudItem>
+			<MudItem Class="pt-1 pb-1" Style="@_gridStyle" xs="2"><MudText Style="@_boldStyle">Liquido => @Payroll.Net</MudText></MudItem>
 
 			<MudItem Style="@_gridStyle" xs="12"></MudItem>
 			
@@ -112,8 +111,11 @@
 													 { 2, "20%" },
 													 { 3, "40%" }};
 
-	private string _descriptionStyle = "font-weight: bold; border-bottom: 2px solid black;";
-	private string _gridStyle = "padding-left: 0; padding-top: 0; border: 2px solid black;";
+	private string _boldStyle = "font-weight: bold;";
+	private string _gridStyle = "border: 2px solid black;";
+	private string _paddingLeft = "padding-left: 10px;";
+	private string _sideGridStyle = "padding-top: 0;border-right: 2px solid black; border-left: 2px solid black;";
+	private string _FinalsideGridStyle = "padding-top: 0;border-right: 2px solid black; border-left: 2px solid black; border-bottom: 2px solid black; border-left: 2px solid black;";
 
 	private void Close()
 	{

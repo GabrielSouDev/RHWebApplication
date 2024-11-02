@@ -30,8 +30,8 @@ public static class CompanyExtensions
             List<string> CompanyList = new List<string>();
             foreach (var company in companys)
             {
-                if (company.CorporateName is not null)
-                    CompanyList.Add(company.CorporateName);
+                if (company.TradeName is not null)
+                    CompanyList.Add(company.TradeName);
             }
 
             return Results.Ok(CompanyList);

@@ -11,8 +11,8 @@ public class UserResponse
         Login = login;
         Email = email;
         UserType = userType;
-        CompanyName = companyName;
         CreationDate = creationDate;
+        CompanyName = companyName;
         IsActive = isActive;
     }
     public int Id { get; set; }

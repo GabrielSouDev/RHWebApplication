@@ -44,7 +44,10 @@ public class Payroll
     private decimal CalcPericulosityValue()
     {
         if (Employee.Job.IsPericulosity)
-            return CalcGross() * (decimal)0.3f;
+        {
+            var PericulosityValue = Employee.Job.BaseSalary * (decimal)0.3f;
+            return PericulosityValue;
+        }
 
         return 0;
     }
@@ -66,23 +69,28 @@ public class Payroll
         else
             UnhealthyPorcent = 0;
 
-        return CalcGross() * (decimal)UnhealthyPorcent;
+        var unhealthyValue = Employee.Job.BaseSalary * (decimal)UnhealthyPorcent;
+        return unhealthyValue;
     }
     private decimal CalcGross()
     {
-        return Employee.Job.BaseSalary + Commission + CalcOverTimeValue() + PericulosityValue + UnhealthyValue;
+        var gross = Employee.Job.BaseSalary + Commission + CalcOverTimeValue() + PericulosityValue + UnhealthyValue;
+        return gross;
     }
     private decimal CalcOverTimeValue()
-    {
-        return Employee.Job.OverTimeValue * (decimal)OverTime;
+    {                            
+        var overTimeValue = Employee.Job.OverTimeValue * (decimal)OverTime;
+        return overTimeValue;
     }
     private decimal CalcDeductions()
     {
-        return CalcINSS() + CalcularIRRF();
+        var deductions = CalcINSS() + CalcularIRRF();
+        return deductions;
     }
     private decimal CalcNet()
     {
-        return CalcGross() - CalcDeductions();
+        var net = CalcGross() - CalcDeductions();
+        return net;
     }
     private decimal CalcINSS()
     {

@@ -16,7 +16,7 @@ public class Employee : User
 		Dependents = dependents;
         UserType = "Employee";
     }
-    public int Dependents { get; set; } = 0;
+    public int Dependents { get; set; }
     public virtual ICollection<Payroll> PayrollHistory { get; set; }
     public int JobId { get; set; }
     public virtual JobTitle Job { get; set; }

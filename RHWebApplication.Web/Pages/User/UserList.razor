@@ -15,15 +15,16 @@
         }
         else
         {
-            <MudDataGrid 
-                    Height="80vh" 
-                    Dense="true" 
-                    T="UserResponse" 
-                    Items="_users" 
-                    Striped="true" 
-                    Bordered="true" 
-                    QuickFilter="@_quickFilter" 
-                    Elevation="25">
+            <MudDataGrid
+                Class="pl-5"
+                Height="80vh" 
+                Dense="true" 
+                T="UserResponse" 
+                Items="_users" 
+                Striped="true" 
+                Bordered="true" 
+                QuickFilter="@_quickFilter" 
+                Elevation="25">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">User List</MudText>
                     <MudSpacer />

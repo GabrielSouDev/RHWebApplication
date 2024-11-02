@@ -21,6 +21,7 @@
         else
         {
             <MudDataGrid 
+                Class="pl-5"
                 Height="80vh" 
                 Dense="true" T="PayrollResponse"
                 Items="_payrollsSelected" 
@@ -56,6 +57,7 @@
                     <PropertyColumn Editable="false" Property="x => x.Id" />
                     <PropertyColumn Property="x => x.EmployeeName" />
                     <PropertyColumn Property="x => x.JobTitle" />
+                    <PropertyColumn Property="x => x.CompanyTradeName" />
                     <PropertyColumn Property="x => x.CreationDate" />
                     <TemplateColumn Title="Options" StickyRight="true">
                         <CellTemplate Context="cellContext">

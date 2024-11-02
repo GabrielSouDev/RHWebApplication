@@ -20,12 +20,12 @@ public class User
     public int Id { get; init; }
     [ForeignKey("Companies")]
     public int CompanyId { get; set; }
-    public virtual Company Company { get; set; } = new Company();
-    public string Login { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string Name { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string UserType { get; set; } = string.Empty;
-    public DateTime CreationDate { get; init; } = default;
-    public bool IsActive { get; set; } = true;
+    public virtual Company Company { get; set; } 
+    public string Login { get; set; }
+    public string Password { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string UserType { get; set; }
+    public DateTime CreationDate { get; init; }
+    public bool IsActive { get; set; }
 }

@@ -4,7 +4,7 @@ namespace RHWebApplication.API.Responses;
 
 public class UserResponse
 {
-    public UserResponse(int id, string name,string login, string email, DateTime creationDate, string userType, bool isActive)
+    public UserResponse(int id, string name,string login, string email, DateTime creationDate, string userType, string companyName,bool isActive)
     {
         Id = id;
         Name = name;
@@ -12,6 +12,7 @@ public class UserResponse
         Email = email;
         UserType = userType;
         CreationDate = creationDate;
+        CompanyName = companyName;
         IsActive = isActive;
     }
     public int Id { get; set; }
@@ -21,5 +22,6 @@ public class UserResponse
     public string Email { get; set; } = string.Empty;
     public DateTime CreationDate { get; init; } = default;
     public string UserType { get; set; } = string.Empty;
+    public string CompanyName { get; set; }= string.Empty;
     public bool IsActive { get; set; } = true;
 }

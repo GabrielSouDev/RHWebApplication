@@ -37,7 +37,7 @@ public static class StaffsExtensions
 
         StaffGroup.MapPost("/", async ([FromServices] DAL<Staff> dalStaffs, [FromServices] DAL<Company> dalCompanys, [FromBody] StaffRequest StaffRequest) =>
         {
-            var company = await dalCompanys.FindByAsync(c => c.CorporateName == StaffRequest.CompanyName);
+            var company = await dalCompanys.FindByAsync(c => c.TradeName == StaffRequest.CompanyName);
             if (company is not null)
             {
                 var Staff = new Staff(StaffRequest.Login, StaffRequest.Password, StaffRequest.Name, StaffRequest.Email, company.Id);

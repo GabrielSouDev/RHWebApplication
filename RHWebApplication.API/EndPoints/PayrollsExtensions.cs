@@ -21,10 +21,11 @@ public static class PayrollsExtensions
             var payrollsResponse = new List<PayrollResponse>();
             foreach (var payroll in payrolls)
             {
-                payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
-	payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
-	payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
-	payroll.Gross, payroll.CreationDate));
+                payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Id, payroll.Employee.Name, payroll.Employee.Job.Company.CorporateName, 
+                payroll.Employee.Job.Company.CNPJ, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
+	            payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
+	            payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
+	            payroll.Gross, payroll.CreationDate));
 			}
             
             return Results.Ok(payrollsResponse);
@@ -36,10 +37,11 @@ public static class PayrollsExtensions
             if (payroll is null)
                 return Results.NotFound("Payroll is not found!");
 
-            var payrollResponse = new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
-	payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
-	payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
-	payroll.Gross, payroll.CreationDate);
+            var payrollResponse = new PayrollResponse(payroll.Id, payroll.Employee.Id, payroll.Employee.Name, payroll.Employee.Job.Company.CorporateName,
+				payroll.Employee.Job.Company.CNPJ, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
+				payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
+				payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
+				payroll.Gross, payroll.CreationDate);
 
 		return Results.Ok(payrollResponse);
         });
@@ -52,10 +54,11 @@ public static class PayrollsExtensions
             {
                 if(payroll.Employee.Login == login || login == string.Empty)
                 {
-                    payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name,     payroll.Employee.Job.Name,payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
-                    payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
-                    payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions,   payroll.Employee.Job.BaseSalary, payroll.Net,
-                    payroll.Gross, payroll.CreationDate));
+                    payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Id, payroll.Employee.Name, payroll.Employee.Job.Company.CorporateName,
+				payroll.Employee.Job.Company.CNPJ, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
+				payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
+				payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
+				payroll.Gross, payroll.CreationDate));
                 }
             }
 
@@ -68,12 +71,13 @@ public static class PayrollsExtensions
             var payrollsResponse = new List<PayrollResponse>();
             foreach (var payroll in payrolls)
             {
-                if (payroll.Employee.Job.Company.CorporateName == company || company == string.Empty)
+                if (payroll.Employee.Job.Company.TradeName == company || company == string.Empty)
                 {
-                    payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Name, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
-                    payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
-                    payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
-                    payroll.Gross, payroll.CreationDate));
+                    payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Id, payroll.Employee.Name, payroll.Employee.Job.Company.CorporateName,
+				payroll.Employee.Job.Company.CNPJ, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,
+				payroll.OverTime, payroll.OverTimeAditionals, payroll.PericulosityValue, payroll.UnhealthyValue,
+				payroll.Commission, payroll.INSSDeduction, payroll.IRRFDeduction, payroll.Deductions, payroll.Employee.Job.BaseSalary, payroll.Net,
+				payroll.Gross, payroll.CreationDate));
                 }
             }
 

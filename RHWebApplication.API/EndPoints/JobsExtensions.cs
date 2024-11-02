@@ -31,7 +31,7 @@ public static class JobsExtensions
             var jobsResponse = new List<JobResponse>();
             foreach (var job in jobs)
             {
-                if (job.Company.CorporateName == company || company == string.Empty)
+                if (job.Company.TradeName == company || company == string.Empty)
                 {
                     jobsResponse.Add(new JobResponse(job.Id, job.Name, job.Description, job.UnhealthyLevel, job.IsPericulosity, job.OverTimeValue, job.BaseSalary, job.Company.CorporateName));
                 }
@@ -47,7 +47,7 @@ public static class JobsExtensions
             foreach (var job in jobs)
             {
                 if(job.Name is not null)
-                    if(job.Company.CorporateName == company || company == string.Empty)
+                    if(job.Company.TradeName == company || company == string.Empty)
                         titleList.Add(job.Name);
             }
 
@@ -70,7 +70,7 @@ public static class JobsExtensions
 
             if(job is null)
             {
-                var company = await dalCompanys.FindByAsync(c => c.CorporateName == jobRequest.CompanyName);
+                var company = await dalCompanys.FindByAsync(c => c.TradeName == jobRequest.CompanyName);
                 if(company is not null)
                 {
 				    await dalJobs.AddAsync(new JobTitle(jobRequest.Title, jobRequest.Description, jobRequest.UnhealthyLevel,

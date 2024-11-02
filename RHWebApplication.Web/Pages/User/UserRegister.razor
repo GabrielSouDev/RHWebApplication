@@ -9,8 +9,8 @@
 <PageTitle> Register a User</PageTitle>
 <AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
-        <MudCard Style="width: 100%; height: 93vh;">
-            <MudCardContent Class="start" Style="width: 50%;">
+        <MudCard Class="pt-5 pl-10" Style="width: 100%; height: 93vh;">
+            <MudCardContent  Class="start" Style="width: 50%;">
                 @if (_isLoading)
                 {
                     <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">

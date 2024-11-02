@@ -8,11 +8,17 @@
             <MudNavLink IconColor="Color.Tertiary" Icon="@Icons.Material.Filled.PeopleAlt" Href="/CompanyRegister">Register a Company</MudNavLink>
         }
     }
-        <MudNavLink IconColor="Color.Tertiary" Icon="@Icons.Material.Filled.Payments" Href="/PayrollList">Payroll List</MudNavLink>
+
     @{
         if(UserInfo.Role != "Employee")
         {
             <MudNavLink IconColor="Color.Tertiary" Icon="@Icons.Material.Filled.Payments" Href="/PayrollRegister">Register a payroll</MudNavLink>
+        }
+    }
+        <MudNavLink IconColor="Color.Tertiary" Icon="@Icons.Material.Filled.Payments" Href="/PayrollList">Payroll List</MudNavLink>
+    @{
+        if(UserInfo.Role != "Employee")
+        {
 
             <MudNavGroup IconColor="Color.Tertiary" Title="Users" Icon="@Icons.Material.Filled.People" Expanded="false">
                 <MudNavLink IconColor="Color.Tertiary" Href="/UserRegister">Register a User</MudNavLink>
@@ -26,7 +32,7 @@
 
             <MudNavGroup IconColor="Color.Tertiary" Title="Charts" Icon="@Icons.Material.Filled.AreaChart" Expanded="false">
                 <MudNavLink IconColor="Color.Tertiary" Href="/">Chart1</MudNavLink>
-                <MudNavLink IconColor="Color.Tertiary" Href="/">Chart1</MudNavLink>
+                <MudNavLink IconColor="Color.Tertiary" Href="/">Chart2</MudNavLink>
             </MudNavGroup>
         }
     }
