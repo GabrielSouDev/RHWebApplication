@@ -1,12 +1,14 @@
-﻿@namespace RHWebApplication.Web.Dialogs
+﻿@inject ISnackbar Snackbar
+@inject UserService UserService
+@namespace RHWebApplication.Web.Dialogs
 
 <MudDialog>
-	<TitleContent>Editing User</TitleContent>
 	<DialogContent>
-		<MudTextField @bind-Value="user.Name" Label="Name" />
-		<MudTextField @bind-Value="user.Login" Label="Login" />
-		<MudTextField @bind-Value="user.Password" InputType="InputType.Password" Label="Password" />
-		<MudTextField @bind-Value="user.Email" Label="Email" />
+		<MudText Class="align-center" Typo="Typo.h5">>Editing User</MudText>
+		<MudTextField @bind-Value="userRequest.Name" Label="Name" />
+		<MudTextField @bind-Value="userRequest.Login" Label="Login" />
+		<MudTextField @bind-Value="userRequest.Password" InputType="InputType.Password" Label="Password" />
+		<MudTextField @bind-Value="userRequest.Email" Label="Email" />
 	</DialogContent>
 	<DialogActions>
 		<MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
@@ -18,11 +20,18 @@
 	[CascadingParameter]
 	MudDialogInstance MudDialog { get; set; } = new();
 	[Parameter]
-	public UserRequest user { get; set; } = new();
+	public UserRequest userRequest { get; set; } = new();
 
-	private void Save()
+	private async Task Save()
 	{
-		MudDialog.Close(DialogResult.Ok(user));
+		var response = await UserService.PutUser(userRequest);
+		if (response is not null)
+		{
+			if (response.IsSuccessStatusCode)
+				Snackbar.Add("User has been Updated!", Severity.Success);
+		}
+		else Snackbar.Add("User has not altered!", Severity.Error);
+		MudDialog.Close(DialogResult.Ok(userRequest));
 	}
 
 	private void Cancel()

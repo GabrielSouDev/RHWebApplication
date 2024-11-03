@@ -1,5 +1,6 @@
 ﻿@inject NavigationManager NavigationManager
 @inject UserService UserService
+@inject EmployeeService EmployeeService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @page "/UserList"
@@ -33,14 +34,14 @@
                         Immediate="true" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"/>
                 </ToolBarContent>
                 <Columns>
-                    <PropertyColumn Editable="false" Property="x => x.Id" />
-                    <PropertyColumn Property="x => x.Name" />
-                    <PropertyColumn Property="x => x.Login" />
-                    <PropertyColumn Property="x => x.Email" />
-                    <PropertyColumn Property="x => x.CreationDate" />
-                    <PropertyColumn Property="x => x.UserType" />
-                    <PropertyColumn Property="x => x.CompanyName" />
-                    <PropertyColumn Property="x => x.IsActive" />
+                    <PropertyColumn Title="Id" Editable="false" Property="x => x.Id" />
+                    <PropertyColumn Title="Name" Property="x => x.Name" />
+                    <PropertyColumn Title="Login" Property="x => x.Login" />
+                    <PropertyColumn Title="E-mail" Property="x => x.Email" />
+                    <PropertyColumn Title="Creation Date" Property="x => x.CreationDate" />
+                    <PropertyColumn Title="User Type" Property="x => x.UserType" />
+                    <PropertyColumn Title="Company" Property="x => x.CompanyTradeName" />
+                    <PropertyColumn Title="Active" Property="x => x.IsActive" />
                     <TemplateColumn Title="Options" StickyRight="true">
                         <CellTemplate Context="cellContext">
                             <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Edit" IconColor="Color.Surface" Size="@Size.Small" 
@@ -129,36 +130,20 @@
 
     private async Task EditUserDialogAsync(UserResponse user) // dividir edição de employee e admin
     {
-        UserRequest userRequest = new(user.Id, user.Login, string.Empty, user.Name,user.Email);
-        var parameters = new DialogParameters { ["user"] = userRequest };
-        var dialog = DialogService.Show<EditUserDialog>(null, parameters);
-        var result = await dialog.Result;
-        if(result is not null)
+        if(user.UserType == "Employee")
         {
-            var updatedUser = (UserRequest?)result.Data;
+            var employee = await EmployeeService.GetEmployeeById(user.Id);
+            EmployeeRequest employeeRequest = new(employee.Id, employee.Login, string.Empty, employee.Name, employee.Email, employee.Dependents, employee.JobTitle, employee.CompanyTradeName);
+            var parameters = new DialogParameters { ["employeeRequest"] = employeeRequest };
+            var dialog = DialogService.Show<EditEmployeeDialog>(null, parameters);
 
-            //talvez precise converter para request
-            if (!result.Canceled && updatedUser != null)
-            {
-                var response = await UserService.PutUser(updatedUser);
-                if (response is not null)
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var index = _users.FindIndex(j => j.Id == updatedUser.Id);
-
-                        if (index != -1)
-                        {
-                            var updatedUserTableElement = new UserResponse(updatedUser.Id, updatedUser.Login, updatedUser.Name, updatedUser.Email, user.CreationDate, user.UserType, user.CompanyName, user.IsActive); ;
-                            _users[index] = updatedUserTableElement;
-                        }
-                        Snackbar.Add("User has been Updated!", Severity.Success);
-                    }
-                }
-                else Snackbar.Add("User has not altered!", Severity.Error);
-            }
-            else Snackbar.Add("User has not altered!", Severity.Error);
-        }   
+        }else
+        {
+            UserRequest userRequest = new(user.Id, user.Login, string.Empty, user.Name, user.Email, user.CompanyTradeName);
+            var parameters = new DialogParameters { ["userRequest"] = userRequest };
+            var dialog = DialogService.Show<EditUserDialog>(null, parameters);
+        }
+        await LoadUsersAsync();
     }
 
     private async Task DeleteUserAsync(UserResponse user)

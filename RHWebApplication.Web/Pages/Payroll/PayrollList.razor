@@ -55,11 +55,11 @@
                     </MudSelect>
                 </ToolBarContent>
                 <Columns>
-                    <PropertyColumn Editable="false" Property="x => x.Id" />
-                    <PropertyColumn Property="x => x.EmployeeName" />
-                    <PropertyColumn Property="x => x.JobTitle" />
-                    <PropertyColumn Property="x => x.CompanyTradeName" />
-                    <PropertyColumn Property="x => x.CreationDate" />
+                    <PropertyColumn Title="Id" Editable="false" Property="x => x.Id" />
+                    <PropertyColumn Title="Name" Property="x => x.EmployeeName" />
+                    <PropertyColumn Title="Job Title" Property="x => x.JobTitle" />
+                    <PropertyColumn Title="Company" Property="x => x.CompanyTradeName" />
+                    <PropertyColumn Title="Creation Date" Property="x => x.CreationDate" />
                     <TemplateColumn Title="Options" StickyRight="true">
                         <CellTemplate Context="cellContext">
                             <MudButton Color="Color.Warning" Variant="Variant.Filled" 

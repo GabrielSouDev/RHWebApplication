@@ -4,6 +4,7 @@ using RHWebApplication.Shared.Models.UserModels;
 using RHWebApplication.API.Responses;
 using System.Linq;
 using RHWebApplication.API.Requests;
+using RHWebApplication.Shared.Models.CompanyModels;
 
 namespace RHWebApplication.API.EndPoints;
 
@@ -53,6 +54,7 @@ public static class UsersExtensions
             var user = await dalUsers.FindByAsync(a => a.Id == userRequest.Id);
             if (user is null)
                 return Results.NotFound("Admin ID is not found!");
+
             user.Login = userRequest.Login;
             user.Password = userRequest.Password;
             user.Name = userRequest.Name;

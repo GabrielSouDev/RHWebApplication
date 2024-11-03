@@ -1,3 +1,3 @@
 ﻿namespace RHWebApplication.Web.Requests;
-public record AdminRequest(string Login, string Password, string Name, string Email, string CompanyName);
+public record AdminRequest(string Login, string Password, string Name, string Email, string CompanyTradeName);
 

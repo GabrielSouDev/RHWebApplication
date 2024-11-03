@@ -28,9 +28,12 @@ public class EmployeeService
         var response = await _httpClient.GetFromJsonAsync<List<string>>($"/Employee/Names/{company}");
         return response;
     }
-
-
-    public async Task<HttpResponseMessage> PostEmployee(EmployeeRequest employee)
+	public async Task<EmployeeResponse> GetEmployeeById(int id)
+	{
+		var response = await _httpClient.GetFromJsonAsync<EmployeeResponse>($"/Employee/{id}");
+		return response;
+	}
+	public async Task<HttpResponseMessage> PostEmployee(EmployeeRequest employee)
     {
         var response = await _httpClient.PostAsJsonAsync("/Employee", employee);
         return response;
@@ -41,4 +44,9 @@ public class EmployeeService
         var response = await _httpClient.GetFromJsonAsync<List<String>>("/Employee/Names");
         return response;
     }
+	public async Task<HttpResponseMessage?> PutUser(EmployeeRequest user)
+	{
+		var Response = await _httpClient.PutAsJsonAsync("/Employee", user);
+		return Response;
+	}
 }

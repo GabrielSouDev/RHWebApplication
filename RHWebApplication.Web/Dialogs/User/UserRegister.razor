@@ -81,7 +81,7 @@
         HttpResponseMessage? response = null;
         if (_IsAdmin) //admin
         {
-            AdminRequest adminRequest = new(_userRequest.Login, _userRequest.Password, _userRequest.Name, _userRequest.Email, Company);
+            AdminRequest adminRequest = new(_userRequest.Login, _userRequest.Password, _userRequest.Name, _userRequest.Email, _userRequest.CompanyTradeName);
             response = await AdminService.PostAdmin(adminRequest);
         }
         else //employee

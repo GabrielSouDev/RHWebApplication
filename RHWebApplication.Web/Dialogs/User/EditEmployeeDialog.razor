@@ -1,0 +1,72 @@
+﻿@inject ISnackbar Snackbar
+@inject EmployeeService EmployeeService
+@inject JobService JobService
+@namespace RHWebApplication.Web.Dialogs
+
+<MudDialog>
+	<DialogContent>
+		<MudText Class="align-center" Typo="Typo.h5">>Editing Employee</MudText>
+		<MudTextField @bind-Value="employeeRequest.Name" Label="Name" />
+		<MudTextField @bind-Value="employeeRequest.Login" Label="Login" />
+		<MudTextField @bind-Value="employeeRequest.Password" InputType="InputType.Password" Label="Password" />
+		<MudTextField @bind-Value="employeeRequest.Email" Label="Email" />
+		<MudTextField @bind-Value="employeeRequest.Dependents" Label="Dependents" />
+		<MudSelect @bind-Value="employeeRequest.JobTitle" Label="Job Title">
+			@{
+				foreach (var job in _jobList)
+				{
+					if (job is not null)
+					{
+						<MudSelectItem Value="@job">@job</MudSelectItem>
+					}
+				}
+			}
+		</MudSelect>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+		<MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter]
+	MudDialogInstance MudDialog { get; set; } = new();
+	[Parameter]
+	public EmployeeRequest employeeRequest { get; set; } = new();
+
+	private List<string> _jobList = new();
+	private bool _isLoading = true;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadJobsAsync();
+	}
+
+	private async Task LoadJobsAsync()
+	{
+		_isLoading = true;
+		var jobs = await JobService.GetJobTitlesByCompany(employeeRequest.CompanyTradeName);
+		if (jobs is not null)
+			_jobList = jobs;
+		_isLoading = false;
+		StateHasChanged();
+	}
+
+	private async Task Save()
+	{
+		var response = await EmployeeService.PutUser(employeeRequest);
+		if (response is not null)
+		{
+			if (response.IsSuccessStatusCode)
+				Snackbar.Add("User has been Updated!", Severity.Success);
+		}
+		else Snackbar.Add("User has not altered!", Severity.Error);
+	MudDialog.Close(DialogResult.Ok(employeeRequest));
+	}
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}

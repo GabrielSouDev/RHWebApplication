@@ -19,7 +19,7 @@ public static class EmployeesExtensions
             var employeesResponse = new List<EmployeeResponse>();
             foreach(var employee in employees)
             {
-                employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Name, employee.CreationDate, employee.TerminationDate, employee.IsActive));
+                employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Name, employee.CreationDate, employee.TerminationDate, employee.IsActive, employee.Job.Company.TradeName));
             }
             return Results.Ok(employeesResponse);
         });
@@ -29,8 +29,8 @@ public static class EmployeesExtensions
             var employee = await dalUsers.FindByAsync<Employee>(a => a.Id == Id);
             if (employee is null)
                 return Results.NotFound("Employee ID is not found!");
-            var employeeResponse = new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Name, employee.CreationDate, employee.TerminationDate, employee.IsActive);
-        return Results.Ok(employeeResponse);
+            var employeeResponse = new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Name, employee.CreationDate, employee.TerminationDate, employee.IsActive, employee.Job.Company.TradeName);
+		return Results.Ok(employeeResponse);
         });
 
         employeeGroup.MapGet("/{company}", async ([FromServices] DAL<User> dalUsers, string company) =>
@@ -42,8 +42,8 @@ public static class EmployeesExtensions
             {
                 if (employee.Job.Company.TradeName == company || company == string.Empty)
                 {
-                    employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Name, employee.CreationDate, employee.TerminationDate, employee.IsActive));
-                }
+                    employeesResponse.Add(new EmployeeResponse(employee.Id, employee.Login, employee.Name, employee.Email, employee.Dependents, employee.Job.Name, employee.CreationDate, employee.TerminationDate, employee.IsActive, employee.Job.Company.TradeName));
+				}
             }
             return Results.Ok(employeesResponse);
         });

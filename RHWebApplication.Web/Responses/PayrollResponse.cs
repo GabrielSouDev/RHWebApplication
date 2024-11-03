@@ -8,7 +8,7 @@ namespace RHWebApplication.Web.Responses;
 public class PayrollResponse
 {
 	public PayrollResponse() { }
-	public PayrollResponse(int id, int employeeId, string employeeName, string companyTradeName, int companyCNPJ, string jobTitle, int unhealthyLevel, bool isPericulosity,
+	public PayrollResponse(int id, int employeeId, string employeeName, string corporateName, string companyTradeName, int companyCNPJ, string jobTitle, int unhealthyLevel, bool isPericulosity,
 	float overTime, decimal overTimeAditionals, decimal periculosityValue, decimal unhealthyValue,
 	decimal commission, decimal inssDeduction, decimal irrfDeduction, decimal deductions, decimal baseSalary,
 	decimal net, decimal gross, DateTime creationDate)
@@ -16,7 +16,8 @@ public class PayrollResponse
 		Id = id;
 		EmployeeId = employeeId;
 		EmployeeName = employeeName;
-		CompanyTradeName = companyTradeName;
+		CorporateName = corporateName;
+        CompanyTradeName = companyTradeName;
 		CompanyCNPJ = companyCNPJ;
 		JobTitle = jobTitle;
 		UnhealthyLevel = unhealthyLevel;
@@ -38,7 +39,8 @@ public class PayrollResponse
 	public int Id { get; set; }
 	public int EmployeeId { get; set; }
 	public string EmployeeName { get; set; }
-	public string CompanyTradeName { get; set; }
+    public string CorporateName { get; set; }
+    public string CompanyTradeName { get; set; }
 	public int CompanyCNPJ { get; set; }
 	public string JobTitle { get; set; }
 	public bool IsPericulosity { get; set; }

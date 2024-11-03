@@ -1,32 +1,31 @@
 ﻿X   Criar Classe staff: user 
+
 X   Criar Classe Company
+
 X   relacionar jobTitle(antigo job) com Company
     
 X   Staff manipulará criação de admin com Company
+
 X   admin manipulará funcionarios e jobtittles
     
 X   restringir paginas e visualização de menu por roles
     
 X   criar visualização de holerite separado em staff,admin e employee
     
-X   ligar todos employes a uma company e realizar busca de companys por company
+X   ligar todos employes a uma company e realizar busca de tudo por company
 
 X   colocar senha padrão staff na area do login
 
-    criar edição de dados do user será de acordo com usertype
-    
-    criar grafitos para admin e staff.
-    	admin visualizará apenas graficos da sua empresa
-    	staff visualizará empresa que selecionar e jobtitles que selecionar
+X   criar edição de dados do user será de acordo com usertype
 
     estilizar todo sistema
 X       estilizar holerite
 X   	tentar colocar as tabelas em fullscreen na listagem de job/user/payroll
     	alterar cores e design
     
-    passar responsabilidade do edit e delete para o dialog
+X   passar responsabilidade do edit e delete para o dialog
 
-    converter paginas de registros para dialogs e colocar em botões nas listas
+X   converter paginas de registros para dialogs e colocar em botões nas listas
 
     certificar validações
     
@@ -36,9 +35,13 @@ X   	tentar colocar as tabelas em fullscreen na listagem de job/user/payroll
 
     tratar exceptions ao enviar requisições http
 
+    criar grafitos para admin e staff.
+    	admin visualizará apenas graficos da sua empresa
+    	staff visualizará empresa que selecionar e jobtitles que selecionar
+
     implementar /home com boas vindas descrevendo funcionalidades funcionalidades
 
-    implementar visualização de senha staff padrão para testarem
+X   implementar visualização de senha staff padrão para testarem
 
 X   implementar cnpj e razão social no holerite
 

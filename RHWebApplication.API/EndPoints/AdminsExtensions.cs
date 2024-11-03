@@ -37,7 +37,7 @@ public static class AdminsExtensions
 
         adminGroup.MapPost("/", async ([FromServices] DAL<Admin> dalAdmins, [FromServices] DAL <Company> dalCompanys, [FromBody] AdminRequest adminRequest) =>
         {
-            var company = await dalCompanys.FindByAsync(c => c.TradeName == adminRequest.CompanyName);
+            var company = await dalCompanys.FindByAsync(c => c.TradeName == adminRequest.CompanyTradeName);
             if (company is not null)
             {
                 var admin = new Admin(adminRequest.Login, adminRequest.Password, adminRequest.Name, adminRequest.Email, company.Id);
