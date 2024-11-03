@@ -28,6 +28,7 @@
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Edit a JobTitle</MudText>
                     <MudSpacer />
+                    <MudButton Disabled="@UserInfo.Role.Equals("Employee")" Class="mr-10" Variant="Variant.Filled" Color="Color.Warning" OnClick="JobtitleRegister">JobTitle Register</MudButton>
                     <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" 
                         Immediate="true" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"/>
                 </ToolBarContent>
@@ -98,6 +99,17 @@
             _jobs = jobs;
         _isLoading = false;
         StateHasChanged();
+    }
+    
+    private async Task JobtitleRegister()
+    {
+        var parameters = new DialogParameters { ["Company"] = UserInfo.Company };
+        var dialog = DialogService.Show<JobtitleRegister>(null, parameters);
+        var result = await dialog.Result;
+        if (result != null && result.Data != null)
+        {
+            await LoadJobsAsync();
+        }
     }
 
     private Func<JobResponse, bool> _quickFilter => x =>

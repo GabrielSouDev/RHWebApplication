@@ -28,6 +28,7 @@
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">User List</MudText>
                     <MudSpacer />
+                    <MudButton Disabled="@UserInfo.Role.Equals("Employee")" Class="mr-10" Variant="Variant.Filled" Color="Color.Warning" OnClick="UserRegister">User Register</MudButton>
                     <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" 
                         Immediate="true" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"/>
                 </ToolBarContent>
@@ -74,7 +75,7 @@
     protected override async Task OnInitializedAsync()
     {
         _previousCompany = UserInfo.Company;
-        LoadUsersAsync();
+        await LoadUsersAsync();
     }
 
     protected override void OnParametersSet()
@@ -96,6 +97,17 @@
         }
         _isLoading = false;
         StateHasChanged();
+    }
+
+    private async Task UserRegister()
+    {
+        var parameters = new DialogParameters { ["Company"] = UserInfo.Company };
+        var dialog = DialogService.Show<UserRegister>(null, parameters);
+        var result = await dialog.Result;
+        if (result != null && result.Data != null)
+        {
+            await LoadUsersAsync();
+        }
     }
 
     private Func<UserResponse, bool> _quickFilter => x =>

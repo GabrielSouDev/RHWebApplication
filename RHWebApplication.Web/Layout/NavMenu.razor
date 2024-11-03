@@ -1,34 +1,12 @@
 ﻿<MudNavMenu Color="Color.Primary" Class="mud-width-full mt-4">
 
     <MudNavLink IconColor="Color.Tertiary" Href="/Home" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-
-    @{
-        if(UserInfo.Role == "Staff")
-        {
-            <MudNavLink IconColor="Color.Tertiary" Icon="@Icons.Material.Filled.PeopleAlt" Href="/CompanyRegister">Register a Company</MudNavLink>
-        }
-    }
-
+    <MudNavLink IconColor="Color.Tertiary" Icon="@Icons.Material.Filled.Payments" Href="/PayrollList">Payrolls</MudNavLink>
     @{
         if(UserInfo.Role != "Employee")
         {
-            <MudNavLink IconColor="Color.Tertiary" Icon="@Icons.Material.Filled.Payments" Href="/PayrollRegister">Register a payroll</MudNavLink>
-        }
-    }
-        <MudNavLink IconColor="Color.Tertiary" Icon="@Icons.Material.Filled.Payments" Href="/PayrollList">Payroll List</MudNavLink>
-    @{
-        if(UserInfo.Role != "Employee")
-        {
-
-            <MudNavGroup IconColor="Color.Tertiary" Title="Users" Icon="@Icons.Material.Filled.People" Expanded="false">
-                <MudNavLink IconColor="Color.Tertiary" Href="/UserRegister">Register a User</MudNavLink>
-                <MudNavLink IconColor="Color.Tertiary" Href="/UserList">User List</MudNavLink>
-            </MudNavGroup>
-
-            <MudNavGroup IconColor="Color.Tertiary" Title="Job Titles" Icon="@Icons.Material.Filled.Anchor" Expanded="false">
-                <MudNavLink IconColor="Color.Tertiary" Href="/JobRegister">Register a job title</MudNavLink>
-                <MudNavLink IconColor="Color.Tertiary" Href="/JobList">jobTitle List</MudNavLink>
-            </MudNavGroup>
+            <MudNavLink Icon="@Icons.Material.Filled.People" IconColor="Color.Tertiary" Href="/UserList">Users</MudNavLink>
+            <MudNavLink Icon="@Icons.Material.Filled.Anchor" IconColor="Color.Tertiary" Href="/JobList">jobTitles</MudNavLink>
 
             <MudNavGroup IconColor="Color.Tertiary" Title="Charts" Icon="@Icons.Material.Filled.AreaChart" Expanded="false">
                 <MudNavLink IconColor="Color.Tertiary" Href="/">Chart1</MudNavLink>

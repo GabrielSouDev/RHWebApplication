@@ -26,7 +26,8 @@ public static class AuthenticationExtensions
 				var claims = new List<Claim>
 				{
 				    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-				    new Claim(ClaimTypes.Name, user.Name),
+                    new Claim("id", Convert.ToString(user.Id)),
+                    new Claim(ClaimTypes.Name, user.Name),
 				    new Claim(ClaimTypes.Role, user.UserType),
                     new Claim("company", user.Company.TradeName)
                  };

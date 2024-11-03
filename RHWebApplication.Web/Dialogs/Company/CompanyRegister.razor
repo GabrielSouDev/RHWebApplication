@@ -1,0 +1,49 @@
+﻿@inject CompanyService CompanyService
+@inject ISnackbar Snackbar
+@namespace RHWebApplication.Web.Dialogs
+
+<MudDialog>
+	<DialogContent>
+		<MudForm>
+			<MudText Class="align-center" Typo="Typo.h5">Register a Company</MudText>
+			<MudTextField @bind-Value="_companyRequest.CorporateName" Label="Corporate Name" Required="true" />
+			<MudTextField @bind-Value="_companyRequest.TradeName" Label="Trade Name" Required="true" />
+			<MudNumericField @bind-Value="_companyRequest.CNPJ" T="int" Label="CNPJ" HideSpinButtons="true" Required="true" />
+		</MudForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+		<MudButton OnClick="Register" Color="Color.Primary">Register</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter]
+	MudDialogInstance MudDialog { get; set; } = new();
+
+	private CompanyRequest _companyRequest = new();
+	private string _errorMenssage = string.Empty;
+
+	private async Task Register()
+	{
+		_errorMenssage = string.Empty;
+
+		var response = await CompanyService.PostCompany(_companyRequest);
+		if (!response.IsSuccessStatusCode)
+		{
+			if (response.RequestMessage is not null)
+				_errorMenssage = await response.Content.ReadAsStringAsync();
+			Snackbar.Add("Company has not Registred!", Severity.Error);
+		}
+		else
+		{
+			Snackbar.Add("Company has been successfully Registered!", Severity.Success);
+		}
+		MudDialog.Close(DialogResult.Ok(_companyRequest));
+	}
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}

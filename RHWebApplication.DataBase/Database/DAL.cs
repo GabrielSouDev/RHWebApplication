@@ -38,10 +38,6 @@ public class DAL<T> where T : class
         _context.Set<T>().Remove(t);
         await _context.SaveChangesAsync();
     }
-    public async Task<T?> FindBy(Expression<Func<T, bool>> e)
-    {
-        return _context.Set<T>().FirstOrDefault(e);
-    }
     public async Task<T?> FindByAsync(Expression<Func<T, bool>> e)
     {
         return await _context.Set<T>().FirstOrDefaultAsync(e);

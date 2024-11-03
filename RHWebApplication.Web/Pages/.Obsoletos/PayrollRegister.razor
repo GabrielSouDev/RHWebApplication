@@ -7,60 +7,56 @@
 <PageTitle> Register a Payroll</PageTitle>
 <AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
-        <MudCard Class="pt-5 pl-10" Style="width: 100%; height: 93vh;">
-            <MudCardContent Class="start" Style="width: 50%;">
-                @if (_isLoading)
-                {
-                    <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
-                        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-                    </MudContainer>
-                }
-                else
-                {
-                    <MudCard Style="width: 50%;">
-                        <MudCardContent>
-                            <MudForm Model="@_payrollRequest">
-                                <MudText Class="align-center" Typo="Typo.h5">Register a Payroll</MudText>
-                                <MudSelect @bind-Value="_employeeSelectedName" Label="Employee Name">
-                                    @{
-                                        foreach (var employee in _employeeList)
-                                        {
-                                            if (employee is not null)
-                                            {
-                                                <MudSelectItem Value="@employee">@employee</MudSelectItem>
-                                            }
-                                        }
+        @if (_isLoading)
+        {
+            <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+            </MudContainer>
+        }
+        else
+        {
+            <MudCard Class="pt-5 pl-10" Style="width: 100%; height: 93vh;">
+                <MudCardContent Class="start" Style="width: 50%;">
+                    <MudForm Model="@_payrollRequest">
+                        <MudText Class="align-center" Typo="Typo.h5">Register a Payroll</MudText>
+                        <MudSelect @bind-Value="_employeeSelectedName" Label="Employee Name">
+                            @{
+                                foreach (var employee in _employeeList)
+                                {
+                                    if (employee is not null)
+                                    {
+                                        <MudSelectItem Value="@employee">@employee</MudSelectItem>
                                     }
-                                </MudSelect>
-                                <MudPaper Class="d-flex grow-1 gap-4">
-                                    <MudText Class="flex-initial">OverTime:   </MudText>
-                                    <MudNumericField Class="flex-initial" HideSpinButtons="true"
-                                                     Style="width:30px;" T="float"
-                                                     @bind-Value="_overTimeHours"
-                                                     Placeholder="HH"
-                                                     Format="N0" 
-                                                     MaxLength="2"/>
-                                    <MudText Class="flex-initial"> : </MudText>
-                                    <MudNumericField Class="flex-initial" HideSpinButtons="true"
-                                                     Style="width:30px;" T="float"
-                                                     @bind-Value="_overTimeMinutes"
-                                                     Placeholder="MM"
-                                                     Format="N0"
-                                                     MaxLength="2" />
-                                </MudPaper>
-                                <MudTextField Adornment="Adornment.Start" 
-                                              AdornmentIcon="@Icons.Material.Filled.AttachMoney" 
-                                              @bind-Value="_payrollRequest.Commission" 
-                                              Label="Commission" 
-                                              Required="true" />
-                                <MudButton type="Submit" OnClick="SubmitPayrollAsync" Color="Color.Primary">Submit</MudButton>
-                            </MudForm>
-                            <MudText Color="Color.Error">@_errorMenssage</MudText>
-                        </MudCardContent>
-                    </MudCard>
-                }
-            </MudCardContent>
-        </MudCard>
+                                }
+                            }
+                        </MudSelect>
+                        <MudPaper Class="d-flex grow-1 gap-4">
+                            <MudText Class="flex-initial">OverTime:   </MudText>
+                            <MudNumericField Class="flex-initial" HideSpinButtons="true"
+                                             Style="width:30px;" T="float"
+                                             @bind-Value="_overTimeHours"
+                                             Placeholder="HH"
+                                             Format="N0" 
+                                             MaxLength="2"/>
+                            <MudText Class="flex-initial"> : </MudText>
+                            <MudNumericField Class="flex-initial" HideSpinButtons="true"
+                                             Style="width:30px;" T="float"
+                                             @bind-Value="_overTimeMinutes"
+                                             Placeholder="MM"
+                                             Format="N0"
+                                             MaxLength="2" />
+                        </MudPaper>
+                        <MudTextField Adornment="Adornment.Start" 
+                                      AdornmentIcon="@Icons.Material.Filled.AttachMoney" 
+                                      @bind-Value="_payrollRequest.Commission" 
+                                      Label="Commission" 
+                                      Required="true" />
+                        <MudButton type="Submit" OnClick="SubmitPayrollAsync" Color="Color.Primary">Submit</MudButton>
+                    </MudForm>
+                    <MudText Color="Color.Error">@_errorMenssage</MudText>
+                </MudCardContent>
+            </MudCard>
+        }
     </Authorized>
     <NotAuthorized>
         @{
@@ -85,7 +81,7 @@
     protected override async Task OnInitializedAsync()
     {
         _previousCompany = UserInfo.Company;
-        LoadEmployeesAsync();
+        await LoadEmployeesAsync();
     }
 
 

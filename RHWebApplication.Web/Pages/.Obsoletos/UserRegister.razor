@@ -9,16 +9,16 @@
 <PageTitle> Register a User</PageTitle>
 <AuthorizeView Roles="Admin, Staff">
     <Authorized Context="authContext">
-        <MudCard Class="pt-5 pl-10" Style="width: 100%; height: 93vh;">
-            <MudCardContent  Class="start" Style="width: 50%;">
-                @if (_isLoading)
-                {
-                    <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
-                        <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
-                    </MudContainer>
-                }
-                else
-                {
+        @if (_isLoading)
+        {
+            <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+                <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+            </MudContainer>
+        }
+        else
+        {
+            <MudCard Class="pt-5 pl-10" Style="width: 100%; height: 93vh;">
+                <MudCardContent Class="start" Style="width: 50%;">
                     <MudForm Class="p-5" Model="@_userRequest">
                         <MudText Class="align-center" Typo="Typo.h5">Register a User</MudText>
                         <MudTextField @bind-Value="_userRequest.Name" Label="Name" Required="true" />
@@ -45,10 +45,10 @@
                         </MudSelect>
                         <MudButton type="Submit" OnClick="SubmitUserAsync" Color="Color.Primary">Submit</MudButton>
                     </MudForm>
-                }
-                <MudText Color="Color.Error">@_errorMenssage</MudText>
-            </MudCardContent>
-        </MudCard>
+                </MudCardContent>
+            </MudCard>
+        }
+        <MudText Color="Color.Error">@_errorMenssage</MudText>
     </Authorized>
     <NotAuthorized>
         @{
@@ -70,7 +70,7 @@
     protected override async Task OnInitializedAsync()
     {
         _previousCompany = UserInfo.Company;
-        LoadJobsAsync();
+        await LoadJobsAsync();
     }
 
     protected override void OnParametersSet()

@@ -2,6 +2,7 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 @inject CompanyService CompanyService
+@inject IDialogService DialogService
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@currentTheme" />
@@ -17,7 +18,8 @@
         @{
             if (_isStaff)
             {
-                <MudPaper hidden="@(!_isStaff)" Style="width: 200px; text-align: end; margin-right: 35px;" >
+                <MudButton Class="mr-10" Variant="Variant.Filled" Color="Color.Secondary" OnClick="CompanyRegister">Company Register</MudButton>
+                <MudPaper hidden="@(!_isStaff)" Class="text-align-center" Style="width: 200px; text-align: end; margin-right: 35px;" >
                     <MudSelect Dense="true" @bind-Value="UserInfo.Company" Label="Company">
                         <MudSelectItem Value="string.Empty">Show All</MudSelectItem Elevation="15">
                         @{
@@ -91,6 +93,9 @@
                 if (companys is not null)
                     _companyList = companys;
             }
+            var id = await AuthStateProvider.GetClaim("id");
+            if (id is not null)
+                UserInfo.Id = int.Parse(id);
 
             var company = await AuthStateProvider.GetClaim("company");
             if (company is not null)
@@ -106,6 +111,18 @@
             _logged = true;
             _notLogged = false;
             _drawerOpen = true;
+        }
+    }
+
+    async Task CompanyRegister()
+    {
+        var dialog = DialogService.Show<CompanyRegister>(null, new DialogParameters());
+        var result = await dialog.Result;
+        if (result != null && result.Data != null)
+        {
+            var newCompany = (CompanyRequest)result.Data;
+            _companyList.Add(newCompany.TradeName);
+
         }
     }
 

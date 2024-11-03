@@ -46,13 +46,13 @@ public static class PayrollsExtensions
 		return Results.Ok(payrollResponse);
         });
 
-        payrollGroup.MapGet("/{login}", async ([FromServices] DAL<Payroll> dalPayrolls, string login) =>
+        payrollGroup.MapGet("/employee/{Id}", async ([FromServices] DAL<Payroll> dalPayrolls, int Id) =>
         {
             var payrolls = await dalPayrolls.ToListAsync();
             var payrollsResponse = new List<PayrollResponse>();
             foreach (var payroll in payrolls)
             {
-                if(payroll.Employee.Login == login || login == string.Empty)
+                if(payroll.Employee.Id == Id)
                 {
                     payrollsResponse.Add(new PayrollResponse(payroll.Id, payroll.Employee.Id, payroll.Employee.Name, payroll.Employee.Job.Company.CorporateName,
 				payroll.Employee.Job.Company.CNPJ, payroll.Employee.Job.Name, payroll.Employee.Job.UnhealthyLevel, payroll.Employee.Job.IsPericulosity,

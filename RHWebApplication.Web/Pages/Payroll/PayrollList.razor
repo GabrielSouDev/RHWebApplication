@@ -32,6 +32,7 @@
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Payroll List</MudText>
                     <MudSpacer />
+                    <MudButton Disabled="@UserInfo.Role.Equals("Employee")" Class="mr-10" Variant="Variant.Filled" Color="Color.Warning" OnClick="PayrollRegister">Payroll Register</MudButton>
                     <MudSelect Disabled="@UserInfo.Role.Equals("Employee")" @bind-Value="_employeeSelectedName" >
                         <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
                         @{
@@ -63,7 +64,7 @@
                         <CellTemplate Context="cellContext">
                             <MudButton Color="Color.Warning" Variant="Variant.Filled" 
                                        OnClick="() => DetailsPayroll(cellContext.Item)" >Details</MudButton>
-                            <MudFab Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Surface" Size="@Size.Small" 
+                            <MudFab Disabled="@UserInfo.Role.Equals("Employee")" Color="Color.Error" StartIcon="@Icons.Material.Outlined.Delete" IconColor="Color.Surface" Size="@Size.Small"
                                     OnClick="() => DeleteUserAsync(cellContext.Item)" />
                         </CellTemplate> 
                     </TemplateColumn>
@@ -98,15 +99,26 @@
     {
         _previousEmployeeSelectedName = string.Empty;
         _previousCompany = UserInfo.Company;
-        LoadPayrollsAsync();
+        await LoadPayrollsAsync();
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (UserInfo.Company != null && UserInfo.Company != _previousCompany || _employeeSelectedName != _previousEmployeeSelectedName)
         {
             _previousCompany = UserInfo.Company;
-            _ = LoadPayrollsAsync();
+            await LoadPayrollsAsync();
+        }
+    }
+
+    private async Task PayrollRegister()
+    {
+        var parameters = new DialogParameters { ["Company"] = UserInfo.Company };
+        var dialog = DialogService.Show<PayrollRegister>(null, parameters);
+        var result = await dialog.Result;
+        if (result != null && result.Data != null)
+        {
+            await LoadPayrollsAsync();
         }
     }
 
@@ -120,7 +132,7 @@
 
         if(UserInfo.Role == "Employee")
         {
-            payrolls = await PayrollService.GetPayrollsByEmployee(UserInfo.UserName);
+            payrolls = await PayrollService.GetPayrollsByEmployee(UserInfo.Id);
 
         }
         else

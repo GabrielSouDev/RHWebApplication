@@ -1,0 +1,72 @@
+﻿@inject NavigationManager NavigationManager
+@inject JobService JobService
+@inject CustomAuthStateProvider AuthStateProvider
+@inject ISnackbar Snackbar
+@namespace RHWebApplication.Web.Dialogs
+
+<MudDialog>
+	<DialogContent>
+        <MudForm>
+            <MudText Class="align-center" Typo="Typo.h5">Register a Job Tittle</MudText>
+            <MudTextField @bind-Value="_jobRequest.Title" Label="Title" Required="true" />
+            <MudTextField @bind-Value="_jobRequest.Description" Label="Description" Required="true" />
+            <MudNumericField Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+                             Style="width:80%;" @bind-Value="_jobRequest.BaseSalary"
+                             HideSpinButtons="true" T="decimal" Label="Base Salary" Required="true" />
+            <MudPaper Class="d-flex align-center">
+                <MudSelect @bind-Value="_jobRequest.UnhealthyLevel" Label="Unhealthy Level" Required="true">
+                    <MudSelectItem Value="0">None</MudSelectItem>
+                    <MudSelectItem Value="1">Minimum </MudSelectItem>
+                    <MudSelectItem Value="2">Medium </MudSelectItem>
+                    <MudSelectItem Value="3">Maximum</MudSelectItem>
+                </MudSelect>
+                <MudSwipeArea>
+                    <MudSwitch Color="Color.Primary" @bind-Value="_jobRequest.IsPericulosity" Label="IsPericulosity" />
+                </MudSwipeArea>
+                <MudNumericField Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+                                 Style="width:80%;" @bind-Value="_jobRequest.OverTimeValue"
+                                 HideSpinButtons="true" T="decimal" Label="Over Time Value" Required="true" />
+            </MudPaper>
+        </MudForm>
+        <MudText Color="Color.Error">@_errorMenssage</MudText>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
+		<MudButton OnClick="Register" Color="Color.Primary">Register</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter]
+	MudDialogInstance MudDialog { get; set; } = new();
+    [Parameter]
+    public string? Company { get; set; } = string.Empty;
+
+    private JobRequest _jobRequest = new();
+    private string _errorMenssage = string.Empty;
+
+	private async Task Register()
+	{
+        _errorMenssage = string.Empty;
+        _jobRequest.CompanyName = Company;
+
+        var response = await JobService.PostJob(_jobRequest);
+        if (!response.IsSuccessStatusCode)
+        {
+            if (response.RequestMessage is not null)
+                _errorMenssage = await response.Content.ReadAsStringAsync();
+            Snackbar.Add("Job has not Registred!", Severity.Error);
+        }
+        else
+        {
+            Snackbar.Add("JobTitle has been successfully Registered!", Severity.Success);
+            _jobRequest = new JobRequest();
+        }
+        MudDialog.Close(DialogResult.Ok(_jobRequest));
+	}
+
+	private void Cancel()
+	{
+		MudDialog.Cancel();
+	}
+}
