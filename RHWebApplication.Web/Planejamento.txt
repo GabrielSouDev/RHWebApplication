@@ -18,39 +18,45 @@ X   colocar senha padrão staff na area do login
 
 X   criar edição de dados do user será de acordo com usertype
 
-    estilizar todo sistema
-X       estilizar holerite
-X   	tentar colocar as tabelas em fullscreen na listagem de job/user/payroll
-    	alterar cores e design
+X   estilizar holerite
+
+X   tentar colocar as tabelas em fullscreen na listagem de job/user/payroll
     
 X   passar responsabilidade do edit e delete para o dialog
 
 X   converter paginas de registros para dialogs e colocar em botões nas listas
 
-    certificar validações
-    
-    autenticar requisiçoes por roles
-    
-	integrar dockers e subir aplicação
+X   implementar visualização de senha staff padrão para testarem
 
-    tratar exceptions ao enviar requisições http
+X   implementar cnpj e razão social no holerite
+
+X   adicionar falso delete em user
+
+X   register de jobtitle - OverTimeValue esta bugado
+
+    implementar impressão do holerite.
+
+    criar seed para uma empresa exemplo com funcionario e holerites para gerar grafico exemplo
 
     criar grafitos para admin e staff.
     	admin visualizará apenas graficos da sua empresa
     	staff visualizará empresa que selecionar e jobtitles que selecionar
 
+    certificar validações
+    
+    tratar exceptions ao enviar requisições http
+
+    autenticar requisiçoes por roles
+    
     implementar /home com boas vindas descrevendo funcionalidades funcionalidades
 
-X   implementar visualização de senha staff padrão para testarem
+    estilizar todo sistema
 
-X   implementar cnpj e razão social no holerite
+    alterar cores e design
 
-    implementar impressão do holerite.
+	integrar dockers e subir aplicação
 
     adicionar suporte chat que com websocket,user:staff poderá ter diversos chats com user: admin
         admin pode abrir atendimento
         notifica suporte
     
-    adicionar falso delete em user
-
-X   register de jobtitle - OverTimeValue esta bugado

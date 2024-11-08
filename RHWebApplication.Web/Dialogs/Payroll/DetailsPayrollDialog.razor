@@ -1,4 +1,5 @@
-﻿@namespace RHWebApplication.Web.Dialogs
+﻿@inject IJSRuntime JS
+@namespace RHWebApplication.Web.Dialogs
 
 <MudDialog Class="d-flex align-center justify-center mud-width-full">
 	<DialogContent>
@@ -94,6 +95,7 @@
 	</DialogContent>
 	
 	<DialogActions>
+		<MudButton OnClick="PrintDialog" Color="Color.Primary">Imprimir</MudButton>
 		<MudButton OnClick="Close" Color="Color.Primary">Fechar</MudButton>
 	</DialogActions>
 </MudDialog>
@@ -116,6 +118,11 @@
 	private string _paddingLeft = "padding-left: 10px;";
 	private string _sideGridStyle = "padding-top: 0;border-right: 2px solid black; border-left: 2px solid black;";
 	private string _FinalsideGridStyle = "padding-top: 0;border-right: 2px solid black; border-left: 2px solid black; border-bottom: 2px solid black; border-left: 2px solid black;";
+
+	private void PrintDialog()
+	{
+		JS.InvokeVoidAsync("printDialogContent");
+	}
 
 	private void Close()
 	{

@@ -38,4 +38,10 @@ public class UserService
         var Response = await _httpClient.DeleteAsync($"/User/{id}");
         return Response;
     }
+
+	public async Task<HttpResponseMessage> Active(int Id)
+	{
+		var response = await _httpClient.PutAsync($"/User/FalseDelete/{Id}/", null);
+		return response;
+	}
 }

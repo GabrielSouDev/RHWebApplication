@@ -137,36 +137,36 @@
             var parameters = new DialogParameters { ["employeeRequest"] = employeeRequest };
             var dialog = DialogService.Show<EditEmployeeDialog>(null, parameters);
 
-        }else
+            var result = await dialog.Result;
+            if (result != null && result.Data != null)
+            {
+                await LoadUsersAsync();
+            }
+        }
+        else
         {
             UserRequest userRequest = new(user.Id, user.Login, string.Empty, user.Name, user.Email, user.CompanyTradeName);
             var parameters = new DialogParameters { ["userRequest"] = userRequest };
             var dialog = DialogService.Show<EditUserDialog>(null, parameters);
+
+            var result = await dialog.Result;
+            if (result != null && result.Data != null)
+            {
+                await LoadUsersAsync();
+            }
         }
-        await LoadUsersAsync();
+
     }
 
     private async Task DeleteUserAsync(UserResponse user)
     {
-        var parameters = new DialogParameters { ["login"] = user.Name };
+        var parameters = new DialogParameters { ["user"] = user };
         var dialog = DialogService.Show<DeleteUserDialog>(null, parameters);
+
         var result = await dialog.Result;
-        if(result is not null)
+        if (result != null && result.Data != null)
         {
-            if (!result.Canceled)
-            {
-                var response = await UserService.DeleteUser(user.Id);
-                if (response.IsSuccessStatusCode)
-                {
-                    if(_users.Contains(user))
-                    {
-                        _users.Remove(user);
-                        Snackbar.Add("User has been Deleted!", Severity.Success);
-                    }
-                }
-                else Snackbar.Add("User has not altered!", Severity.Error);
-            }
-            else Snackbar.Add("User has not altered!", Severity.Error);
+            await LoadUsersAsync();
         }
     }
 }

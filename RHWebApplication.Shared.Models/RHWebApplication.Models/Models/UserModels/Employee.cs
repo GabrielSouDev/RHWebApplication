@@ -11,8 +11,12 @@ public class Employee : User
     public Employee() {}
     public Employee(string login, string password, string name, string email, int companyId, JobTitle job, int dependents) : base(login, password, name, email, companyId)
     {
+        Login = login;
+        Password = password;
+        Email = email;
         PayrollHistory = new List<Payroll>();
         Job = job;
+        CompanyId = companyId;
 		Dependents = dependents;
         UserType = "Employee";
     }

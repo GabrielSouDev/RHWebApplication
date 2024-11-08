@@ -10,6 +10,10 @@ public class Admin : User
 
     public Admin(string login, string password, string name, string email, int companyId) : base(login, password, name, email, companyId)
     {
+        Login = login;
+        Password = password;
+        Email = email;
         UserType = "Admin";
+        CompanyId = companyId;
     }
 }

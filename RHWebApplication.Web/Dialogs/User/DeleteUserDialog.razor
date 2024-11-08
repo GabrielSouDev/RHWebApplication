@@ -1,7 +1,9 @@
-﻿@namespace RHWebApplication.Web.Dialogs
+﻿@inject ISnackbar Snackbar
+@inject UserService UserService
+@namespace RHWebApplication.Web.Dialogs
 
 <MudDialog>
-	<TitleContent>Are you sure to delete @login?</TitleContent>
+	<TitleContent>@_deleteText</TitleContent>
 	<DialogActions>
 		<MudButton OnClick="Cancel" Color="Color.Error">Cancel</MudButton>
 		<MudButton OnClick="Save" Color="Color.Primary">Yes</MudButton>
@@ -12,15 +14,39 @@
 	[CascadingParameter]
 	MudDialogInstance MudDialog { get; set; } = new();
 	[Parameter]
-	public string login { get; set; } = string.Empty;
+	public UserResponse user { get; set; } = new();
 
-	private void Save()
+	private string _deleteText = string.Empty;
+
+	protected override void OnInitialized()
 	{
-		MudDialog.Close(DialogResult.Ok(login));
+		if (user.UserType.Equals("Employee"))
+		{
+			var active = user.IsActive ? "disable" : "activate";
+			_deleteText = $"Are you sure you want to {active} {user.Login} user?";
+		}
+		else
+			_deleteText = $"Are you sure to delete {user.Login}?";
+	}
+
+	private async Task Save()
+	{
+		HttpResponseMessage response;
+		if(user.UserType == "Employee")
+		{
+			response = await UserService.Active(user.Id);
+		}else
+			response = await UserService.DeleteUser(user.Id);
+
+		if (response.IsSuccessStatusCode)
+			Snackbar.Add("User has been Deleted!", Severity.Success);
+
+		MudDialog.Close(DialogResult.Ok(response));
 	}
 
 	private void Cancel()
 	{
+		Snackbar.Add("User has not altered!", Severity.Error);
 		MudDialog.Cancel();
 	}
 }

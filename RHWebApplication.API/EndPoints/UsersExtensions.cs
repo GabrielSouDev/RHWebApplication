@@ -63,6 +63,19 @@ public static class UsersExtensions
             await dalUsers.UpdateAsync(user);
             return Results.NoContent();
         });
+
+        userGroup.MapPut("/FalseDelete/{Id}/", async ([FromServices] DAL<User> dalUsers,int Id) =>
+        {
+            var user = await dalUsers.FindByAsync(a => a.Id == Id);
+            if (user is null)
+                return Results.NotFound("Admin ID is not found!");
+
+            user.IsActive = !user.IsActive;
+
+            await dalUsers.UpdateAsync(user);
+            return Results.NoContent();
+        });
+
         userGroup.MapDelete("/{Id}", async ([FromServices] DAL<User> dalUsers, int Id) =>
         {
             var user = await dalUsers.FindByAsync(a => a.Id == Id);

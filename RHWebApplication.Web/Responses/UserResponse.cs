@@ -4,6 +4,7 @@ namespace RHWebApplication.Web.Responses;
 
 public class UserResponse
 {
+    public UserResponse() { }
     public UserResponse(int id, string name, string login, string email, DateTime creationDate, string userType, string companyTradeName, bool isActive)
     {
         Id = id;

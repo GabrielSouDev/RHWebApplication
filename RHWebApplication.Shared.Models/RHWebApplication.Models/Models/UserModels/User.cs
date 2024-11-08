@@ -16,6 +16,7 @@ public class User
         CompanyId = companyId;
         CreationDate = DateTime.UtcNow;
         IsActive = true;
+        UserType = null;
     }
     public int Id { get; init; }
     [ForeignKey("Companies")]
