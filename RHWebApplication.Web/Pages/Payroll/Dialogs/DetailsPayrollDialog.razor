@@ -1,7 +1,7 @@
 ﻿@inject IJSRuntime JS
 @namespace RHWebApplication.Web.Dialogs
 
-<MudDialog Class="d-flex align-center justify-center mud-width-full">
+<MudDialog id="dialog-content" Class="d-flex align-center justify-center mud-width-full">
 	<DialogContent>
 		<MudGrid Style="padding-left:25px;">
 			<MudItem xs="12"/>
@@ -100,6 +100,21 @@
 	</DialogActions>
 </MudDialog>
 
+<script>
+	function printDialogContent(){
+		var content = document.getElementById('dialog-content').innerHTML;
+
+		var printWindow = window.open('', '', 'height=600,width=800');
+
+		printWindow.document.write('<html><head><title>Print</title><link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" /><link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" /><link rel="stylesheet" href="css/app.css" /></head><body>');
+		printWindow.document.write(content);
+		printWindow.document.write('</body></html>');
+
+		printWindow.document.close();
+		printWindow.print();
+	}
+</script>
+
 @code {
 	[CascadingParameter]
 	MudDialogInstance MudDialog { get; set; } = new();
@@ -119,9 +134,9 @@
 	private string _sideGridStyle = "padding-top: 0;border-right: 2px solid black; border-left: 2px solid black;";
 	private string _FinalsideGridStyle = "padding-top: 0;border-right: 2px solid black; border-left: 2px solid black; border-bottom: 2px solid black; border-left: 2px solid black;";
 
-	private void PrintDialog()
+	private async Task PrintDialog()
 	{
-		JS.InvokeVoidAsync("printDialogContent");
+		await JS.InvokeVoidAsync("printDialogContent");
 	}
 
 	private void Close()

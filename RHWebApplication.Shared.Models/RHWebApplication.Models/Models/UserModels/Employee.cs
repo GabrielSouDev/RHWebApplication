@@ -14,15 +14,14 @@ public class Employee : User
         Login = login;
         Password = password;
         Email = email;
-        PayrollHistory = new List<Payroll>();
         Job = job;
         CompanyId = companyId;
 		Dependents = dependents;
         UserType = "Employee";
     }
     public int Dependents { get; set; }
-    public virtual ICollection<Payroll> PayrollHistory { get; set; }
-    public int JobId { get; set; }
+    public virtual ICollection<Payroll> PayrollHistory { get; set; } = new List<Payroll>();
+	public int JobId { get; set; }
     public virtual JobTitle Job { get; set; }
     public DateTime? TerminationDate { get; set; } = null;
 }

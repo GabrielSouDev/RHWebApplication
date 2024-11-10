@@ -34,13 +34,17 @@ X   adicionar falso delete em user
 
 X   register de jobtitle - OverTimeValue esta bugado
 
-    implementar impressão do holerite.
+X   implementar impressão do holerite.
 
-    criar seed para uma empresa exemplo com funcionario e holerites para gerar grafico exemplo
+X   criar seed para uma empresa exemplo com funcionario e holerites para gerar grafico exemplo
 
     criar grafitos para admin e staff.
-    	admin visualizará apenas graficos da sua empresa
-    	staff visualizará empresa que selecionar e jobtitles que selecionar
+X   	admin visualizará apenas graficos da sua empresa
+X   	staff visualizará empresa que selecionar e jobtitles que selecionar
+X           Busca holerites da Role(para garantir que staff possa visualizar todas as empresas)
+X               campo para selecionar ano dos holerites
+X               campo para selecionar jobtittle
+X               campo para selecionar funcionario
 
     certificar validações
     
@@ -56,7 +60,12 @@ X   register de jobtitle - OverTimeValue esta bugado
 
 	integrar dockers e subir aplicação
 
-    adicionar suporte chat que com websocket,user:staff poderá ter diversos chats com user: admin
+//Futuras implementações
+
+    Sistema cartão ponto integrado ao sistema.
+        com o cartão ponto o holerite será gerado automaticamente com o registro dos proprios funcionarios, com direito de ajuste da parte de funcionario e aceite de ajuste por parte de admin.
+
+    adicionar suporte chat em tempo real com websocket,user:staff poderá ter diversos chats com user: admin
         admin pode abrir atendimento
         notifica suporte
     

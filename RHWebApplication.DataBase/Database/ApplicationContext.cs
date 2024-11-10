@@ -4,9 +4,11 @@ using Microsoft.Extensions.Logging;
 using RHWebApplication.Shared.Models.CompanyModels;
 using RHWebApplication.Shared.Models.PayrollModels;
 using RHWebApplication.Shared.Models.UserModels;
+using System.ComponentModel.Design;
 using System.Data;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RHWebApplication.Database;
 public class ApplicationContext : DbContext
@@ -109,11 +111,16 @@ public class ApplicationContext : DbContext
     public async Task CreateTable()
     {
         await this.Database.MigrateAsync();
-        if (!this.Companies.Any())
+        if (!this.Companies.Any(c => c.TradeName == "Staff"))
         {
             await SeedStaffCompany();
             await SeedStaffUser();
             Console.WriteLine("STAFF SEEED FINISHED!");
+        }
+
+        if(!this.Companies.Any(c => c.TradeName == "Mercado Quero Mais"))
+        {
+            await SeedQueroMaisCompany();
         }
     }
     public async Task SeedStaffCompany()
@@ -177,4 +184,125 @@ public class ApplicationContext : DbContext
             await connection.DisposeAsync();
         }
     }
+
+	public async Task SeedQueroMaisCompany()
+	{
+		var company = new Company("Mercado Quero Mais", "Distribuidora Quero Mais LTDA.", 456);
+		await this.Companies.AddAsync(company);
+		await this.SaveChangesAsync();
+
+		var jobTitle = new JobTitle()
+		{
+			Name = "Operador de Caixa",
+			Description = "Operar Caixa",
+			UnhealthyLevel = 0,
+			IsPericulosity = false,
+			OverTimeValue = 10,
+			BaseSalary = 1800,
+			CompanyID = company.Id
+		};
+		await this.jobTitles.AddAsync(jobTitle);
+		await this.SaveChangesAsync();
+
+		var employee1 = new Employee()
+		{
+			Login = "jorgin12",
+			Password = "jorgin12",
+			Name = "Carlos Jorge dos Santos",
+			Email = "cjorge12@gmail.com",
+			CompanyId = company.Id,
+			JobId = jobTitle.Id,
+			Dependents = 2,
+			UserType = "Employee",
+			CreationDate = DateTime.UtcNow,
+			IsActive = true
+		};
+		await this.Employees.AddAsync(employee1);
+		await this.SaveChangesAsync();
+
+		var employee2 = new Employee()
+		{
+			Login = "marcos214",
+			Password = "marcos214",
+			Name = "Marcos Almeida da Silva",
+			Email = "marcos214@gmail.com",
+			CompanyId = company.Id,
+			JobId = jobTitle.Id,
+			Dependents = 1,
+			UserType = "Employee",
+			CreationDate = DateTime.UtcNow,
+			IsActive = true
+		};
+		await this.Employees.AddAsync(employee2);
+		await this.SaveChangesAsync();
+
+		var employee3 = new Employee()
+		{
+			Login = "franmartins",
+			Password = "franmartins",
+			Name = "Francielli Martins de Oliveira",
+			Email = "franmartins@gmail.com",
+			CompanyId = company.Id,
+			JobId = jobTitle.Id,
+			Dependents = 0,
+			UserType = "Employee",
+			CreationDate = DateTime.UtcNow,
+			IsActive = true
+		};
+		await this.Employees.AddAsync(employee3);
+		await this.SaveChangesAsync();
+
+        await SeedPayrollHistoryWith1year(employee1, 7, 250);
+		await SeedPayrollHistoryWith1year(employee2, 10, 500);
+		await SeedPayrollHistoryWith1year(employee3, 25, 1500);
+
+		var jobTitle2 = new JobTitle()
+		{
+			Name = "Gerente",
+			Description = "Gerenciar Mercado",
+			UnhealthyLevel = 0,
+			IsPericulosity = false,
+			OverTimeValue = 50,
+			BaseSalary = 8300,
+			CompanyID = company.Id
+		};
+		await this.jobTitles.AddAsync(jobTitle2);
+		await this.SaveChangesAsync();
+
+		var employee4 = new Employee()
+		{
+			Login = "martazeira",
+			Password = "martazeira",
+			Name = "Marta Gonçalvez da Silva",
+			Email = "martazeira@gmail.com",
+			CompanyId = company.Id,
+			JobId = jobTitle2.Id,
+			Dependents = 3,
+			UserType = "Employee",
+			CreationDate = DateTime.UtcNow,
+			IsActive = true
+		};
+		await this.Employees.AddAsync(employee4);
+		await this.SaveChangesAsync();
+
+		await SeedPayrollHistoryWith1year(employee4, 20, 4000);
+	}
+    private async Task SeedPayrollHistoryWith1year(Employee employee, int maxOverTime,int maxCommition)
+    {
+		var date = DateTime.UtcNow;
+		var rand = new Random();
+		var payrolls = new List<Payroll>();
+
+		for (int i = 1; i <= 12; i++)
+		{
+			var payroll = new Payroll(employee, rand.Next(0, maxOverTime), rand.Next(0, maxCommition))
+			{
+				CreationDate = new DateTime(date.Year, i, 10, date.Hour, date.Minute, date.Second, date.Millisecond, DateTimeKind.Utc)
+			};
+			payrolls.Add(payroll);
+		}
+
+		await this.PayrollHistory.AddRangeAsync(payrolls);
+		await this.SaveChangesAsync();
+	}
 }

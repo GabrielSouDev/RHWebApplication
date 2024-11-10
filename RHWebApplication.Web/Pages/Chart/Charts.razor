@@ -1,0 +1,191 @@
+﻿@page "/Charts"
+@inject NavigationManager NavigationManager
+@inject EmployeeService EmployeeService
+@inject JobService JobService
+@inject PayrollService PayrollService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Payrolls List</PageTitle>
+
+<AuthorizeView Roles="Admin, Staff">
+    <Authorized Context="authContext">
+        @if (_isLoading)
+        {
+            <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+                <MudProgressCircular Color="Color.Primary"
+                                     Indeterminate="true"
+                                     Size="Size.Large" />
+            </MudContainer>
+        }
+        else
+        {
+            <MudSelect @bind-Value="_selectedJobTitle" Label="JobTitle">
+                <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
+                @foreach (var jobTitle in _jobtitlesList)
+                {
+                    if (!string.IsNullOrEmpty(jobTitle))
+                    {
+                        <MudSelectItem Value="@jobTitle">@jobTitle</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+
+            <MudSelect @bind-Value="_selectedEmployeeName" Label="Employee">
+                <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
+                @foreach (var employee in _employeeList)
+                {
+                    if (!string.IsNullOrEmpty(employee))
+                    {
+                        <MudSelectItem Value="@employee">@employee</MudSelectItem>
+                    }
+                }
+            </MudSelect>
+
+            <MudSelect @bind-Value="_selectedYearPayroll" Label="Year">
+                <MudSelectItem Value="0">Show All</MudSelectItem>
+                @foreach (var year in _yearPayrollList)
+                {
+                    <MudSelectItem Value="@year">@year</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudField>Selected Jobtitle: @_selectedJobTitle</MudField>
+            <MudField>Selected Employee: @_selectedEmployeeName</MudField>
+
+            @foreach (var payroll in _payrollsSelected)
+            {
+                <h1>@payroll.EmployeeName, @payroll.CreationDate</h1>
+            }
+        }
+
+        <MudChart ChartSeries="" XAxisLabels="XAxisLabels" ChartType="ChartType.Line" Width="100%" Height="350px">
+            
+            <MudChartSeries Data="@SalaryData" Label="Average Salary" />
+            <MudChartAxis AxisType="AxisType.X" Labels="@XAxisLabels" />
+            <MudChartAxis AxisType="AxisType.Y" />
+        </MudChart>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/Login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [CascadingParameter]
+    public UserInfo UserInfo { get; set; } = new();
+    private bool _isLoading = true;
+    private string _selectedEmployeeName = string.Empty;
+    private string _selectedJobTitle = string.Empty;
+    private int _selectedYearPayroll;
+
+    private List<int> _yearPayrollList = new();
+    private List<string> _employeeList = new();
+    private List<string> _jobtitlesList = new();
+    private List<PayrollResponse> _payrolls = new();
+    private List<PayrollResponse> _payrollsSelected = new();
+
+    private List<ChartSeries> ChartSalaryData = new();
+    private List<decimal> SalaryData = new();
+    private List<string> XAxisLabels = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPayrollsAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await LoadPayrollsAsync();
+    }
+
+    private async Task LoadPayrollsAsync()
+    {
+        _isLoading = true;
+        List<PayrollResponse> payrolls;
+
+        // Buscar dados de folha de pagamento
+        if (string.IsNullOrEmpty(UserInfo.Company))
+        {
+            payrolls = await PayrollService.GetPayrolls();
+        }
+        else
+        {
+            payrolls = await PayrollService.GetPayrollsByCompany(UserInfo.Company);
+        }
+
+        // Carregar lista de anos disponíveis
+        _yearPayrollList = payrolls.Select(p => p.CreationDate.Year).Distinct().ToList();
+
+        // Carregar lista de empregados e cargos
+        var employees = await EmployeeService.GetEmployeesByCompany(UserInfo.Company);
+        if (employees != null)
+        {
+            if (_selectedJobTitle is null)
+            {
+                _employeeList = employees.Select(e => e.Name).ToList();
+            }
+            else
+            {
+                _employeeList = employees.Where(e => e.JobTitle.Contains(_selectedJobTitle)).Select(e => e.Name).ToList();
+            }
+        }
+
+        var jobtitles = await JobService.GetJobTitlesByCompany(UserInfo.Company);
+        if (jobtitles != null)
+        {
+            _jobtitlesList = jobtitles;
+        }
+
+        // Filtrando por JobTitle, EmployeeName e Year
+        if (!string.IsNullOrEmpty(_selectedJobTitle))
+        {
+            payrolls = payrolls.Where(p => p.JobTitle.Contains(_selectedJobTitle)).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(_selectedEmployeeName))
+        {
+            payrolls = payrolls.Where(p => p.EmployeeName.Contains(_selectedEmployeeName)).ToList();
+        }
+
+        if (_selectedYearPayroll != 0)
+        {
+            payrolls = payrolls.Where(p => p.CreationDate.Year.Equals(_selectedYearPayroll)).ToList();
+        }
+
+        // Organizando os dados para o gráfico
+        if (payrolls != null)
+        {
+            _payrollsSelected = payrolls;
+
+            var monthlySalaries = payrolls
+                .GroupBy(p => new { p.CreationDate.Year, p.CreationDate.Month })
+                .Select(g => new
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    AverageSalary = g.Average(p => p.BaseSalary)
+                })
+                .OrderBy(p => p.Year).ThenBy(p => p.Month)
+                .ToList();
+
+            // Preparar os dados para o gráfico
+            XAxisLabels = monthlySalaries.Select(m => $"{m.Month}-{m.Year}").ToList();
+            var salaryData = monthlySalaries.Select(m => m.AverageSalary).ToList();
+            SalaryData = new List<ChartSeries>
+            {
+                new ChartSeries
+                {
+                    Name = "Average Salary",  // Nome da série no gráfico
+                    Data = salaryData.Select(s => (double)s).ToList(),  // Convertendo decimal para double
+                }
+            };
+        }
+        }
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+}
