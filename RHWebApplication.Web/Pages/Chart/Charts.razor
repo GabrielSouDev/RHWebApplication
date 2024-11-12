@@ -59,7 +59,7 @@
             }
         }
 
-        <MudChart ChartSeries="" XAxisLabels="XAxisLabels" ChartType="ChartType.Line" Width="100%" Height="350px">
+        <MudChart ChartSeries="ChartSalaryData" XAxisLabels="XAxisLabels" ChartType="ChartType.Line" Width="100%" Height="350px">
             
             <MudChartSeries Data="@SalaryData" Label="Average Salary" />
             <MudChartAxis AxisType="AxisType.X" Labels="@XAxisLabels" />
@@ -88,8 +88,8 @@
     private List<PayrollResponse> _payrollsSelected = new();
 
     private List<ChartSeries> ChartSalaryData = new();
-    private List<decimal> SalaryData = new();
-    private List<string> XAxisLabels = new();
+    private decimal[] SalaryData = [];
+    private string[] XAxisLabels = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -172,20 +172,12 @@
                 .ToList();
 
             // Preparar os dados para o gráfico
-            XAxisLabels = monthlySalaries.Select(m => $"{m.Month}-{m.Year}").ToList();
+            XAxisLabels = monthlySalaries.Select(m => $"{m.Month}-{m.Year}").ToArray();
             var salaryData = monthlySalaries.Select(m => m.AverageSalary).ToList();
-            SalaryData = new List<ChartSeries>
-            {
-                new ChartSeries
-                {
-                    Name = "Average Salary",  // Nome da série no gráfico
-                    Data = salaryData.Select(s => (double)s).ToList(),  // Convertendo decimal para double
-                }
-            };
-        }
+            SalaryData = salaryData.Select(s => s).ToArray();
+
         }
         _isLoading = false;
         StateHasChanged();
     }
-
 }
