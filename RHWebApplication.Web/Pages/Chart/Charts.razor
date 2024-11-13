@@ -20,51 +20,59 @@
         }
         else
         {
-            <MudSelect @bind-Value="_selectedJobTitle" Label="JobTitle">
-                <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
-                @foreach (var jobTitle in _jobtitlesList)
-                {
-                    if (!string.IsNullOrEmpty(jobTitle))
-                    {
-                        <MudSelectItem Value="@jobTitle">@jobTitle</MudSelectItem>
-                    }
-                }
-            </MudSelect>
+            <MudPaper Class="pa-5" Style="height: 93vh;">
+                <MudPaper Class="d-flex flex-grow-1 gap-4">
+                    <MudSelect @bind-Value="_selectedJobTitle" Label="JobTitle" ShrinkLabel="true">
+                        <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
+                        @foreach (var jobTitle in _jobtitlesList)
+                        {
+                            if (!string.IsNullOrEmpty(jobTitle))
+                            {
+                                <MudSelectItem Value="@jobTitle">@jobTitle</MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
 
-            <MudSelect @bind-Value="_selectedEmployeeName" Label="Employee">
-                <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
-                @foreach (var employee in _employeeList)
-                {
-                    if (!string.IsNullOrEmpty(employee))
-                    {
-                        <MudSelectItem Value="@employee">@employee</MudSelectItem>
-                    }
-                }
-            </MudSelect>
+                    <MudSelect @bind-Value="_selectedEmployeeName" Label="Employee" ShrinkLabel="true">
+                        <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
+                        @foreach (var employee in _employeeList)
+                        {
+                            if (!string.IsNullOrEmpty(employee))
+                            {
+                                <MudSelectItem Value="@employee">@employee</MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
 
-            <MudSelect @bind-Value="_selectedYearPayroll" Label="Year">
-                <MudSelectItem Value="0">Show All</MudSelectItem>
-                @foreach (var year in _yearPayrollList)
-                {
-                    <MudSelectItem Value="@year">@year</MudSelectItem>
-                }
-            </MudSelect>
+                    <MudSelect @bind-Value="_selectedYearPayroll" Label="Year" ShrinkLabel="true">
+                        <MudSelectItem Value="0">Show All</MudSelectItem>
+                        @foreach (var year in _yearPayrollList)
+                        {
+                            <MudSelectItem Value="@year">@year</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudPaper>
 
-            <MudField>Selected Jobtitle: @_selectedJobTitle</MudField>
-            <MudField>Selected Employee: @_selectedEmployeeName</MudField>
+                <MudCardContent Class="d-flex justify-center">
+                    <MudCard Style="width: 65VW">
+                        <MudText Typo="Typo.h6">Employee Cost Dashboard</MudText>
+                        <MudChart ChartType="ChartType.Donut" Width="400px" Height="400px"  InputData="@_datas.ToArray()"            InputLabels="@_labels.ToArray()">
+                            <CustomGraphics>
+                                <text class="donut-inner-text" x="50%" y="35%" dominant-baseline="middle" text-anchor="middle" fill="black"      font-family="Helvetica" font-size="3">Total</text>
+                                <text class="donut-inner-text" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black"  font-family="Helvetica" font-size="4">@_datas.Sum().ToString("F2")</text>>
+                            </CustomGraphics>
+                        </MudChart>
+                    </MudCard>
 
-            @foreach (var payroll in _payrollsSelected)
-            {
-                <h1>@payroll.EmployeeName, @payroll.CreationDate</h1>
-            }
+                    <MudCard Style="height: 500px; width:auto; text-align:right; color:red; font-size:8px; overflow: auto;">
+                        @foreach (var payroll in _payrollsSelected)
+                        {
+                            <h1>@payroll.EmployeeName, @payroll.CreationDate</h1>
+                        }
+                    </MudCard>
+                </MudCardContent>
+            </MudPaper>
         }
-
-        <MudChart ChartSeries="ChartSalaryData" XAxisLabels="XAxisLabels" ChartType="ChartType.Line" Width="100%" Height="350px">
-            
-            <MudChartSeries Data="@SalaryData" Label="Average Salary" />
-            <MudChartAxis AxisType="AxisType.X" Labels="@XAxisLabels" />
-            <MudChartAxis AxisType="AxisType.Y" />
-        </MudChart>
     </Authorized>
     <NotAuthorized>
         @{
@@ -80,6 +88,10 @@
     private string _selectedEmployeeName = string.Empty;
     private string _selectedJobTitle = string.Empty;
     private int _selectedYearPayroll;
+    private string _pvSelectedEmployeeName = string.Empty;
+    private string _pvSelectedJobTitle = string.Empty;
+    private int _pvSelectedYearPayroll;
+    private string _pvCompany = string.Empty;
 
     private List<int> _yearPayrollList = new();
     private List<string> _employeeList = new();
@@ -87,9 +99,8 @@
     private List<PayrollResponse> _payrolls = new();
     private List<PayrollResponse> _payrollsSelected = new();
 
-    private List<ChartSeries> ChartSalaryData = new();
-    private decimal[] SalaryData = [];
-    private string[] XAxisLabels = [];
+    private List<double> _datas = new List<double>();
+    private List<string> _labels = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,7 +109,17 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadPayrollsAsync();
+        if (UserInfo.Company != _pvCompany ||
+        _selectedEmployeeName != _pvSelectedEmployeeName ||
+        _selectedJobTitle != _pvSelectedJobTitle ||
+        _selectedYearPayroll != _pvSelectedYearPayroll)
+        {
+            _pvCompany = UserInfo.Company;
+            _pvSelectedEmployeeName = _selectedEmployeeName;
+            _pvSelectedJobTitle = _selectedJobTitle;
+            _pvSelectedYearPayroll = _selectedYearPayroll;
+            await LoadPayrollsAsync();
+        }
     }
 
     private async Task LoadPayrollsAsync()
@@ -159,23 +180,18 @@
         if (payrolls != null)
         {
             _payrollsSelected = payrolls;
+            _datas = new();
+            _labels = new();
 
-            var monthlySalaries = payrolls
-                .GroupBy(p => new { p.CreationDate.Year, p.CreationDate.Month })
-                .Select(g => new
-                {
-                    Year = g.Key.Year,
-                    Month = g.Key.Month,
-                    AverageSalary = g.Average(p => p.BaseSalary)
-                })
-                .OrderBy(p => p.Year).ThenBy(p => p.Month)
-                .ToList();
+            _datas.Add(Convert.ToDouble(payrolls.Select(p => p.OverTimeAditionals).Sum()));
+            _datas.Add(Convert.ToDouble(payrolls.Select(p => p.PericulosityValue).Sum()));
+            _datas.Add(Convert.ToDouble(payrolls.Select(p => p.UnhealthyValue).Sum()));
+            _datas.Add(Convert.ToDouble(payrolls.Select(p => p.Commission).Sum()));
+            _datas.Add(Convert.ToDouble(payrolls.Select(p => p.INSSDeduction).Sum()));
+            _datas.Add(Convert.ToDouble(payrolls.Select(p => p.IRRFDeduction).Sum()));
+            _datas.Add(Convert.ToDouble(payrolls.Select(p => p.BaseSalary).Sum()));
 
-            // Preparar os dados para o gráfico
-            XAxisLabels = monthlySalaries.Select(m => $"{m.Month}-{m.Year}").ToArray();
-            var salaryData = monthlySalaries.Select(m => m.AverageSalary).ToList();
-            SalaryData = salaryData.Select(s => s).ToArray();
-
+            _labels = ["OverTime Aditionals", "Periculosity Value", "Unhealthy Value", "Commission", "INSS Deduction", "IRRF Deduction", "BaseSalary"];
         }
         _isLoading = false;
         StateHasChanged();
