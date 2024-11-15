@@ -38,13 +38,18 @@ X   implementar impressão do holerite.
 
 X   criar seed para uma empresa exemplo com funcionario e holerites para gerar grafico exemplo
 
-    criar grafitos para admin e staff.
+/   criar grafitos para admin e staff.
 X   	admin visualizará apenas graficos da sua empresa
 X   	staff visualizará empresa que selecionar e jobtitles que selecionar
 X           Busca holerites da Role(para garantir que staff possa visualizar todas as empresas)
 X               campo para selecionar ano dos holerites
 X               campo para selecionar jobtittle
 X               campo para selecionar funcionario
+
+    fazer graficos em grid
+        colocar log de holerites em botão dentro do grafico.
+        transferir responsabilidade de filtro para cada componente de grafico tornando filtro dependente de unico grafico
+        sistema de botões para abrir graficos automaticamente e adaptar no grid
 
     certificar validações
     

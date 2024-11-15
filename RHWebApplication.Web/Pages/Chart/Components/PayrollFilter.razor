@@ -1,0 +1,140 @@
+﻿@namespace RHWebApplication.Web.Pages.Charts
+@inject EmployeeService EmployeeService
+@inject JobService JobService
+@inject PayrollService PayrollService
+
+<MudGrid>
+    <MudItem xs="12" sm="4">
+        <MudSelect @bind-Value="_selectedJobTitle" Label="JobTitle" ShrinkLabel="true">
+            <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
+            @foreach (var jobTitle in _jobtitlesList)
+            {
+                if (!string.IsNullOrEmpty(jobTitle))
+                {
+                    <MudSelectItem Value="@jobTitle">@jobTitle</MudSelectItem>
+                }
+            }
+        </MudSelect>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
+        <MudSelect @bind-Value="_selectedEmployeeName" Label="Employee" ShrinkLabel="true">
+            <MudSelectItem Value="@string.Empty">Show All</MudSelectItem>
+            @foreach (var employee in _employeeList)
+            {
+                if (!string.IsNullOrEmpty(employee))
+                {
+                    <MudSelectItem Value="@employee">@employee</MudSelectItem>
+                }
+            }
+        </MudSelect>
+    </MudItem>
+        
+    <MudItem xs="12" sm="4">
+        <MudSelect @bind-Value="_selectedYearPayroll" Label="Year" ShrinkLabel="true">
+            <MudSelectItem Value="0">Show All</MudSelectItem>
+            @foreach (var year in _yearPayrollList)
+            {
+                <MudSelectItem Value="@year">@year</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+        
+</MudGrid>
+
+@code {
+    [CascadingParameter]
+    public UserInfo UserInfo { get; set; } = new();
+
+    [CascadingParameter]
+    public EmployeeCost EmployeeCost { get; set; } = new();
+
+    private string _selectedEmployeeName = string.Empty;
+    private string _selectedJobTitle = string.Empty;
+    private int _selectedYearPayroll;
+    private string _pvSelectedEmployeeName = string.Empty;
+    private string _pvSelectedJobTitle = string.Empty;
+    private int _pvSelectedYearPayroll;
+    private string _pvCompany = string.Empty;
+
+    private List<int> _yearPayrollList = new();
+    private List<string> _employeeList = new();
+    private List<string> _jobtitlesList = new();
+    private List<PayrollResponse> _payrolls = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPayrollsAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (UserInfo.Company != _pvCompany ||
+        _selectedEmployeeName != _pvSelectedEmployeeName ||
+        _selectedJobTitle != _pvSelectedJobTitle ||
+        _selectedYearPayroll != _pvSelectedYearPayroll)
+        {
+            _pvCompany = UserInfo.Company;
+            _pvSelectedEmployeeName = _selectedEmployeeName;
+            _pvSelectedJobTitle = _selectedJobTitle;
+            _pvSelectedYearPayroll = _selectedYearPayroll;
+            await LoadPayrollsAsync();
+        }
+    }
+
+    private async Task LoadPayrollsAsync()
+    {
+        EmployeeCost._isLoading = true;
+        List<PayrollResponse> payrolls;
+
+        // Buscar dados de folha de pagamento
+        if (string.IsNullOrEmpty(UserInfo.Company))
+        {
+            payrolls = await PayrollService.GetPayrolls();
+        }
+        else
+        {
+            payrolls = await PayrollService.GetPayrollsByCompany(UserInfo.Company);
+        }
+
+        // Carregar lista de anos disponíveis
+        _yearPayrollList = payrolls.Select(p => p.CreationDate.Year).Distinct().ToList();
+
+        // Carregar lista de empregados e cargos
+        var employees = await EmployeeService.GetEmployeesByCompany(UserInfo.Company);
+        if (employees != null)
+        {
+            if (_selectedJobTitle is null)
+            {
+                _employeeList = employees.Select(e => e.Name).ToList();
+            }
+            else
+            {
+                _employeeList = employees.Where(e => e.JobTitle.Contains(_selectedJobTitle)).Select(e => e.Name).ToList();
+            }
+        }
+
+        var jobtitles = await JobService.GetJobTitlesByCompany(UserInfo.Company);
+        if (jobtitles != null)
+        {
+            _jobtitlesList = jobtitles;
+        }
+
+        // Filtrando por JobTitle, EmployeeName e Year
+        if (!string.IsNullOrEmpty(_selectedJobTitle))
+        {
+            payrolls = payrolls.Where(p => p.JobTitle.Contains(_selectedJobTitle)).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(_selectedEmployeeName))
+        {
+            payrolls = payrolls.Where(p => p.EmployeeName.Contains(_selectedEmployeeName)).ToList();
+        }
+
+        if (_selectedYearPayroll != 0)
+        {
+            payrolls = payrolls.Where(p => p.CreationDate.Year.Equals(_selectedYearPayroll)).ToList();
+        }
+        EmployeeCost.LoadChart(payrolls);
+    }
+}

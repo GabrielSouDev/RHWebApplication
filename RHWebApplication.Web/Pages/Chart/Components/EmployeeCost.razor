@@ -1,39 +1,79 @@
 ﻿@namespace RHWebApplication.Web.Pages.Charts
-<MudCard Style="width: 65VW">
-    <MudText Typo="Typo.h6">Employee Cost Dashboard</MudText>
-    <MudChart ChartType="ChartType.Donut" Width="400px" Height="400px"  InputData="@_datas.ToArray()"            InputLabels="@_labels.ToArray()">
-        <CustomGraphics>
-            <text class="donut-inner-text" x="50%" y="35%" dominant-baseline="middle" text-anchor="middle" fill="black"      font-family="Helvetica" font-size="3">Total</text>
-            <text class="donut-inner-text" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black"  font-family="Helvetica" font-size="4">@_datas.Sum().ToString("F2")</text>>
-        </CustomGraphics>
-    </MudChart>
-</MudCard>
+<MudGrid style="position: relative; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
+    <MudItem xs="12">
+        <CascadingValue Value="this">
+            <PayrollFilter/>
+        </CascadingValue>
+    </MudItem>
+    @if (_isLoading)
+    {
+        <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+            <MudProgressCircular Color="Color.Primary"
+                                 Indeterminate="true"
+                                 Size="Size.Large" />
+        </MudContainer>
+    }
+    else
+    {
+        <MudItem xs="12" sm="8">
+            <MudText Typo="Typo.h6">Employee Cost Dashboard</MudText>
+            <MudChart ChartType="ChartType.Donut" Height="400px" InputData="@_datas.ToArray()" InputLabels="@_labels.ToArray()" LegendPosition="Position.Right">
+                <CustomGraphics>
+                    <text class="donut-inner-text" x="50%" y="35%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="3">Total</text>
+                    <text class="donut-inner-text" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-family="Helvetica" font-size="4">@_datas.Sum().ToString("F2")</text>
+                </CustomGraphics>
+            </MudChart>
+        </MudItem>
+
+        <MudItem Class="pa-5" xs="12" sm="4">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudButton FullWidth="true" Variant="Variant.Filled" OnClick="ShowPayrollList" Color="Color.Secondary">Payroll List</MudButton>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudButton FullWidth="true" Variant="Variant.Filled" OnClick="ShowPayrollList" Color="Color.Secondary">Payroll List</MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+        <MudContainer hidden="@_hidePayrollList" style="background-color:snow; position:absolute; top: 0; right: 0; width:auto; height:525px; overflow:scroll;">
+            @foreach (var payroll in _payrollsSelected)
+            {
+                <p style="color:red; font-size:20px; font-weight:400; text-align:right;">@payroll.EmployeeName - @payroll.CreationDate</p>
+            }
+        </MudContainer>
+        <MudButton hidden="@_hidePayrollList" Variant="Variant.Filled" OnClick="ShowPayrollList" Color="Color.Secondary" style="position:absolute; bottom: 0; right: 0;">Close</MudButton>
+    }
+</MudGrid>
+
 
 @code {
-    [CascadingParameter]
-    public List<PayrollResponse> _payrollsSelected { get; set; }
+    public List<PayrollResponse> _payrollsSelected = new();
+
+    public bool _isLoading = true;
 
     private List<double> _datas = new List<double>();
     private List<string> _labels = new List<string>();
+    private bool _hidePayrollList = true;
 
-    protected override void OnParametersSet()
-    {
-        LoadChart();
-    }
+    private void ShowPayrollList() => _hidePayrollList = !_hidePayrollList;
 
-    private void LoadChart()
+    public void LoadChart(List<PayrollResponse> payrollsSelected)
     {
+        _payrollsSelected = payrollsSelected;
         _datas = new();
         _labels = new();
 
-        _datas.Add(Convert.ToDouble(_payrollsSelected.Select(p => p.OverTimeAditionals).Sum()));
-        _datas.Add(Convert.ToDouble(_payrollsSelected.Select(p => p.PericulosityValue).Sum()));
-        _datas.Add(Convert.ToDouble(_payrollsSelected.Select(p => p.UnhealthyValue).Sum()));
-        _datas.Add(Convert.ToDouble(_payrollsSelected.Select(p => p.Commission).Sum()));
-        _datas.Add(Convert.ToDouble(_payrollsSelected.Select(p => p.INSSDeduction).Sum()));
-        _datas.Add(Convert.ToDouble(_payrollsSelected.Select(p => p.IRRFDeduction).Sum()));
-        _datas.Add(Convert.ToDouble(_payrollsSelected.Select(p => p.BaseSalary).Sum()));
+        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.OverTimeAditionals).Sum()));
+        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.PericulosityValue).Sum()));
+        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.UnhealthyValue).Sum()));
+        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.Commission).Sum()));
+        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.INSSDeduction).Sum()));
+        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.IRRFDeduction).Sum()));
+        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.BaseSalary).Sum()));
 
         _labels = ["OverTime Aditionals", "Periculosity Value", "Unhealthy Value", "Commission", "INSS Deduction", "IRRF Deduction", "BaseSalary"];
+        _isLoading = false;
+        StateHasChanged();
     }
 }
