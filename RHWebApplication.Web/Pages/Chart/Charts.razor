@@ -9,15 +9,16 @@
     <Authorized Context="authContext">
         <MudPaper Class="pa-5" MinHeight="93vh" Style="height: auto;">
             <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <EmployeeCost/>
+                <MudItem xs="12">
+                    <MudButton OnClick="AddEmployeeCostChart">Employee Cost</MudButton>
                 </MudItem>
-                <MudItem xs="12" sm="6">
-                    <EmployeeCost />
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <EmployeeCost />
-                </MudItem>
+
+                @foreach (var id in _employeeCost)
+                {
+                    <MudItem xs="12" sm="6">
+                        <EmployeeCost Id="id" />
+                    </MudItem>
+                }
             </MudGrid>
 
         </MudPaper>
@@ -30,5 +31,12 @@
 </AuthorizeView>
 
 @code {
+    private List<int> _employeeCost = new();
+    private int counterId = 1;
 
+    private void AddEmployeeCostChart()
+    {
+        _employeeCost.Add(counterId);
+        counterId++;
+    }
 }
