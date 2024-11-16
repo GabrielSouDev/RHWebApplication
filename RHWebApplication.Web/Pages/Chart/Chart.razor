@@ -1,0 +1,57 @@
+﻿@namespace RHWebApplication.Web.Pages.Charts
+@page "/Charts"
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@using RHWebApplication.Web.Pages.Charts
+
+<PageTitle>Payrolls List</PageTitle>
+
+<AuthorizeView Roles="Admin, Staff">
+    <Authorized Context="authContext">
+        <MudPaper Class="pa-5" MinHeight="93vh" Style="height: auto;">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Secondary" OnClick="AddEmployeeCostChart">Employee Cost</MudButton>
+                </MudItem>
+                <MudItem xs="12" sm="6"></MudItem>
+                <CascadingValue Value="this">
+                @foreach (var chartId in _employeeCost)
+                {
+                    <MudItem xs="12" sm="6" id="@chartId.ToString()">
+                        <EmployeeCost Id="chartId" />
+                    </MudItem>
+                }
+                </CascadingValue>
+            </MudGrid>
+
+        </MudPaper>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            NavigationManager.NavigateTo("/Login");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+<script>
+    function removeChart(id)
+    {
+        const chart = document.getElementById(id);
+        chart.remove();
+    }
+</script>
+@code {
+    private List<int> _employeeCost = new();
+    private int counterId = 1;
+
+    public void RemoveChart(int id)
+    {
+        JSRuntime.InvokeVoidAsync("removeChart", id.ToString());
+    }
+
+    private void AddEmployeeCostChart()
+    {
+        _employeeCost.Add(counterId);
+        counterId++;
+    }
+}

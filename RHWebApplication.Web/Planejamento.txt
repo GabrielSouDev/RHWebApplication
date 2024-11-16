@@ -46,10 +46,13 @@ X               campo para selecionar ano dos holerites
 X               campo para selecionar jobtittle
 X               campo para selecionar funcionario
 
-    fazer graficos em grid
-        colocar log de holerites em botão dentro do grafico.
-        transferir responsabilidade de filtro para cada componente de grafico tornando filtro dependente de unico grafico
-        sistema de botões para abrir graficos automaticamente e adaptar no grid
+X   fazer graficos em grid
+X       colocar log de holerites em botão dentro do grafico.
+X       transferir responsabilidade de filtro para cada componente de grafico tornando filtro dependente de unico grafico
+X       sistema de botões para abrir graficos e fechar automaticamente e adaptar no grid
+
+    implementar no holerite se funcionario esta ativo ou inativo
+        implementar botão no grafico EmployeeCost para mostrar apenas funcionarios ativos, apenas funcionarios inativos e ambos.
 
     certificar validações
     

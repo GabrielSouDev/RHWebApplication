@@ -28,13 +28,12 @@
         <MudItem Class="pa-5" xs="12" sm="4">
             <MudGrid>
                 <MudItem xs="12" sm="6">
-                    <MudButton FullWidth="true" Variant="Variant.Filled" OnClick="ShowPayrollList" Color="Color.Secondary">Payroll List</MudButton>
-                </MudItem>
-                <MudItem xs="12" sm="6">
-                    <MudButton FullWidth="true" Variant="Variant.Filled" OnClick="ShowPayrollList" Color="Color.Secondary">Payroll List</MudButton>
+                    <MudButton FullWidth="true" Variant="Variant.Filled" OnClick="() => _hidePayrollList = !_hidePayrollList" Color="Color.Secondary">Payroll List</MudButton>
                 </MudItem>
             </MudGrid>
         </MudItem>
+
+        <MudButton Variant="Variant.Filled" OnClick="() => Charts.RemoveChart(Id)" Color="Color.Error" style="position:absolute; top: 10px; right: 10px;">X</MudButton>
 
         <MudContainer Class="pa-5" hidden="@_hidePayrollList" style="border: 2px solid black; border-radius: 15px; background-color:snow; position:absolute; top: 0; right: 0; width:auto; height:475px; overflow:scroll;">
             @foreach (var payroll in _payrollsSelected)
@@ -42,14 +41,16 @@
                 <p style="color:red; font-size:20px; font-weight:400; text-align:right;">@payroll.EmployeeName - @payroll.CreationDate</p>
             }
         </MudContainer>
-        <MudButton hidden="@_hidePayrollList" Variant="Variant.Filled" OnClick="ShowPayrollList" Color="Color.Secondary" style="position:absolute; bottom: 10px; right: 10px;">Close</MudButton>
+
+        <MudButton hidden="@_hidePayrollList" Variant="Variant.Filled" OnClick="() => _hidePayrollList = !_hidePayrollList" Color="Color.Secondary" style="position:absolute; bottom: 10px; right: 10px;">Close</MudButton>
     }
 </MudGrid>
-
-
 @code {
     [Parameter]
     public int Id { get; set; }
+
+    [CascadingParameter]
+    public Chart Charts { get; set; } = new();
 
     public List<PayrollResponse> _payrollsSelected = new();
 
@@ -59,7 +60,7 @@
     private List<string> _labels = new List<string>();
     private bool _hidePayrollList = true;
 
-    private void ShowPayrollList() => _hidePayrollList = !_hidePayrollList;
+
 
     public void LoadChart(List<PayrollResponse> payrollsSelected)
     {
