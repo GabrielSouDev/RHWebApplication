@@ -1,4 +1,7 @@
-﻿@namespace RHWebApplication.Web.Pages.Charts
+﻿@inherits ChartBase
+
+@namespace RHWebApplication.Web.Pages.Charts
+
 <MudGrid style="position: relative; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
     <MudItem xs="12">
         <CascadingValue Value="this">
@@ -7,7 +10,7 @@
     </MudItem>
     @if (_isLoading)
     {
-        <MudContainer Class="d-flex justify-center align-center" Style="height: 100vh">
+        <MudContainer Class="d-flex justify-center align-center" Style="height: 455px">
             <MudProgressCircular Color="Color.Primary"
                                  Indeterminate="true"
                                  Size="Size.Large" />
@@ -15,18 +18,18 @@
     }
     else
     {
-        <MudItem xs="12" sm="8">
+        <MudText style="position:absolute; top: 150px; left: 10px;">Thousand</MudText>
+
+        <MudItem xs="12">
             <MudText Typo="Typo.h6">Employee Cost Per Month Dashboard</MudText>
-            <MudChart ChartType="ChartType.Line" Height="400px" ChartSeries="Series" InputLabels="@_labels.ToArray()" LegendPosition="Position.Right"/>
+            <MudChart ChartType="ChartType.Line" Height="400px" ChartSeries="Series" LegendPosition="Position.Right" XAxisLabels="@_labels.ToArray()" ChartOptions="_chartOptions" >
+                <CustomGraphics >
+
+                </CustomGraphics>
+            </MudChart>
         </MudItem>
 
-        <MudItem Class="pa-5" xs="12" sm="4">
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudButton FullWidth="true" Variant="Variant.Filled" OnClick="() => _hidePayrollList = !_hidePayrollList" Color="Color.Secondary">Payroll List</MudButton>
-                </MudItem>
-            </MudGrid>
-        </MudItem>
+        <MudButton style="position:absolute; top: 75px; right: 10px;" Variant="Variant.Filled" OnClick="() => _hidePayrollList = !_hidePayrollList" Color="Color.Warning">Payroll List</MudButton>
 
         <MudButton Variant="Variant.Filled" OnClick="() => Charts.RemoveChart(Id)" Color="Color.Error" style="position:absolute; top: 10px; right: 10px;">X</MudButton>
 
@@ -49,28 +52,49 @@
 
     public List<PayrollResponse> _payrollsSelected = new();
 
-    public bool _isLoading = true;
+    private bool _isLoading = true;
 
-    public List<ChartSeries> Series = new List<ChartSeries>();
+    public override bool IsLoading
+    {
+        get => _isLoading;
+        set => _isLoading = value;
+    }
 
+    private List<ChartSeries> Series = new();
+    private ChartOptions _chartOptions = new()
+    {
+        YAxisTicks = 1
+    };
     private string[] _labels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     private bool _hidePayrollList = true;
 
-
-    public void LoadChart(List<PayrollResponse> payrollsSelected)
+    public override void LoadChart(List<PayrollResponse> payrollsSelected)
     {
-        List<double> _datas = new List<double>();
+        Series.Clear();
+        _payrollsSelected = payrollsSelected;
+        var payrollDictionary = payrollsSelected.GroupBy(p => p.EmployeeName);
+        int i = 1;
+        foreach (var employee in payrollDictionary)
+        {
+            List<double> value = new();
+            foreach(var payroll in employee)
+            {
+                value.Add(Convert.ToDouble(payroll.OverTimeAditionals +
+                                          payroll.PericulosityValue +
+                                          payroll.UnhealthyValue +
+                                          payroll.Commission +
+                                          payroll.INSSDeduction +
+                                          payroll.IRRFDeduction +
+                                          payroll.BaseSalary
+                )/1000);
+            }
 
-        //_payrollsSelected 
-        var aadww = payrollsSelected.GroupBy(p => p.EmployeeName);
-
-        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.OverTimeAditionals).Sum()));
-        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.PericulosityValue).Sum()));
-        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.UnhealthyValue).Sum()));
-        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.Commission).Sum()));
-        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.INSSDeduction).Sum()));
-        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.IRRFDeduction).Sum()));
-        _datas.Add(Convert.ToDouble(payrollsSelected.Select(p => p.BaseSalary).Sum()));
+            Series.Add(new ChartSeries()
+            {
+                Name = employee.Key,
+                Data =  value.ToArray()
+            });
+        }
 
         _isLoading = false;
         StateHasChanged();

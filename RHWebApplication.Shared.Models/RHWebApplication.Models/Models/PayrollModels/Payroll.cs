@@ -21,7 +21,7 @@ public class Payroll
         Deductions = CalcDeductions();
         Gross = CalcGross();
         Net = CalcNet();
-        CreationDate = DateTime.Now;
+        CreationDate = DateTime.UtcNow;
 
     }
     [Key]

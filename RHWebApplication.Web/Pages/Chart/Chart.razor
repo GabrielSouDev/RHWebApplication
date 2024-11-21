@@ -12,16 +12,29 @@
         <MudPaper Class="pa-5" MinHeight="93vh" Style="height: auto;">
             <MudGrid>
                 <MudItem xs="12" sm="6">
-                    <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Secondary" OnClick="AddEmployeeCostChart">Employee Cost</MudButton>
+                    <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Secondary" 
+                    OnClick="() => AddChart(new EmployeeCost())">Add Employee Cost Dashboard</MudButton>
                 </MudItem>
-                <MudItem xs="12" sm="6"></MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Secondary"
+                           OnClick="() => AddChart(new EmployeeCostPerMonth())">Add Employee Cost Per Mounth Dashboard</MudButton>
+                </MudItem>
                 <CascadingValue Value="this">
-                @foreach (var chartId in _employeeCost)
-                {
-                    <MudItem xs="12" sm="6" id="@chartId.ToString()">
-                        <EmployeeCost Id="chartId" />
-                    </MudItem>
-                }
+                    @foreach (var Chart in _chartList)
+                    {
+                        if(Chart.Value is EmployeeCost)
+                        {
+                            <MudItem xs="12" sm="6" id="@Chart.Key.ToString()">
+                                <EmployeeCost Id="Chart.Key" />
+                            </MudItem>
+                        }
+                        else if (Chart.Value is EmployeeCostPerMonth)
+                        {
+                            <MudItem xs="12" sm="6" id="@Chart.Key.ToString()">
+                                <EmployeeCostPerMonth Id="Chart.Key" />
+                            </MudItem>
+                        }
+                    }
                 </CascadingValue>
             </MudGrid>
 
@@ -41,17 +54,22 @@
     }
 </script>
 @code {
-    private List<int> _employeeCost = new();
-    private int counterId = 1;
+    private Dictionary<int, object> _chartList = new();
 
     public void RemoveChart(int id)
     {
         JSRuntime.InvokeVoidAsync("removeChart", id.ToString());
     }
 
-    private void AddEmployeeCostChart()
+    private void AddChart(object chart)
     {
-        _employeeCost.Add(counterId);
-        counterId++;
+        if (_chartList.Count == 0)
+        {
+            _chartList.Add(0, chart);
+        }else
+        {
+            var i = _chartList.Last().Key + 1;
+            _chartList.Add(i, chart);
+        }
     }
 }

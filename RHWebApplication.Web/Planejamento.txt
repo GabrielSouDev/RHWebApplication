@@ -51,8 +51,7 @@ X       colocar log de holerites em botão dentro do grafico.
 X       transferir responsabilidade de filtro para cada componente de grafico tornando filtro dependente de unico grafico
 X       sistema de botões para abrir graficos e fechar automaticamente e adaptar no grid
 
-    implementar no holerite se funcionario esta ativo ou inativo
-        implementar botão no grafico EmployeeCost para mostrar apenas funcionarios ativos, apenas funcionarios inativos e ambos.
+    exportação de dados por filtro.
 
     certificar validações
     

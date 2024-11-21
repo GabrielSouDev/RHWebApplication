@@ -47,7 +47,7 @@
     public UserInfo UserInfo { get; set; } = new();
 
     [CascadingParameter]
-    public EmployeeCost EmployeeCost { get; set; } = new();
+    public ChartBase Chart { get; set; }
 
     private string _selectedEmployeeName = string.Empty;
     private string _selectedJobTitle = string.Empty;
@@ -84,7 +84,7 @@
 
     private async Task LoadPayrollsAsync()
     {
-        EmployeeCost._isLoading = true;
+        Chart.IsLoading = true;
         List<PayrollResponse> payrolls;
 
         // Buscar dados de folha de pagamento
@@ -135,6 +135,6 @@
         {
             payrolls = payrolls.Where(p => p.CreationDate.Year.Equals(_selectedYearPayroll)).ToList();
         }
-        EmployeeCost.LoadChart(payrolls);
+        Chart.LoadChart(payrolls);
     }
 }
